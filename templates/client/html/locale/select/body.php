@@ -7,10 +7,9 @@
 
 $enc = $this->encoder();
 
-
 ?>
-<div class="section aimeos locale-select" data-jsonurl="<?= $enc->attr( $this->link( 'client/jsonapi/url' ) ) ?>">
+<div class="section aimeos locale-select" data-jsonurl="<?= $enc->attr($this->link('client/jsonapi/url')) ?>">
 
-	<?= $this->get( 'body' ) ?>
+	<?= $this->get('body') ?>
 
 </div>

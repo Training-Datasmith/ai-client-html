@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Metaways Infosystems GmbH, 2014
@@ -8,9 +10,7 @@
  * @subpackage Html
  */
 
-
 namespace Aimeos\Client\Html\Common\Client\Factory;
-
 
 /**
  * Common factory interface for all HTML client classes.
@@ -18,13 +18,12 @@ namespace Aimeos\Client\Html\Common\Client\Factory;
  * @package Client
  * @subpackage Html
  */
-interface Iface
-	extends \Aimeos\Client\Html\Iface
+interface Iface extends \Aimeos\Client\Html\Iface
 {
-	/**
-	 * Initializes the class instance.
-	 *
-	 * @param \Aimeos\MShop\ContextIface $context Context object
-	 */
-	public function __construct( \Aimeos\MShop\ContextIface $context );
+    /**
+     * Initializes the class instance.
+     *
+     * @param \Aimeos\MShop\ContextIface $context Context object
+     */
+    public function __construct(\Aimeos\MShop\ContextIface $context);
 }

@@ -6,4 +6,4 @@
  */
 
 ?>
-<?= $this->get( 'treeCountList', map() )->toJson( JSON_FORCE_OBJECT ) ?>
+<?= $this->get('treeCountList', map())->toJson(JSON_FORCE_OBJECT) ?>

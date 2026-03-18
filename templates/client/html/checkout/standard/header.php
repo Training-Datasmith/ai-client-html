@@ -7,11 +7,10 @@
 
 $enc = $this->encoder();
 
-
 ?>
-<title><?= $this->translate( 'client', $this->get( 'standardStepActive' ) ) ?> | <?= $enc->html( $this->get( 'contextSiteLabel', 'Aimeos' ) ) ?></title>
-<meta name="description" content="<?= $enc->attr( $this->get( 'contextSiteLabel', 'Aimeos' ) ) ?>">
+<title><?= $this->translate('client', $this->get('standardStepActive')) ?> | <?= $enc->html($this->get('contextSiteLabel', 'Aimeos')) ?></title>
+<meta name="description" content="<?= $enc->attr($this->get('contextSiteLabel', 'Aimeos')) ?>">
 
-<link rel="stylesheet" href="<?= $enc->attr( $this->content( $this->get( 'contextSiteTheme', 'default' ) . '/summary.css', 'fs-theme', true ) ) ?>">
-<link rel="stylesheet" href="<?= $enc->attr( $this->content( $this->get( 'contextSiteTheme', 'default' ) . '/checkout-standard.css', 'fs-theme', true ) ) ?>">
-<script defer src="<?= $enc->attr( $this->content( $this->get( 'contextSiteTheme', 'default' ) . '/checkout-standard.js', 'fs-theme', true ) ) ?>"></script>
+<link rel="stylesheet" href="<?= $enc->attr($this->content($this->get('contextSiteTheme', 'default') . '/summary.css', 'fs-theme', true)) ?>">
+<link rel="stylesheet" href="<?= $enc->attr($this->content($this->get('contextSiteTheme', 'default') . '/checkout-standard.css', 'fs-theme', true)) ?>">
+<script defer src="<?= $enc->attr($this->content($this->get('contextSiteTheme', 'default') . '/checkout-standard.js', 'fs-theme', true)) ?>"></script>

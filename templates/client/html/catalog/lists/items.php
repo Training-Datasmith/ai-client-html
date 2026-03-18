@@ -7,7 +7,6 @@
 
 $enc = $this->encoder();
 
-
 /** client/html/common/partials/products
  * Relative path to the products partial template file
  *
@@ -19,21 +18,20 @@ $enc = $this->encoder();
  * @since 2017.01
  */
 
-
 ?>
 <div class="catalog-list-items product-list"
-	data-infiniteurl="<?= $enc->attr( $this->get( 'infinite-url' ) ) ?>"
-	data-pinned="<?= $enc->attr( $this->session( 'aimeos/catalog/session/pinned/list', [] ) ) ?>">
+	data-infiniteurl="<?= $enc->attr($this->get('infinite-url')) ?>"
+	data-pinned="<?= $enc->attr($this->session('aimeos/catalog/session/pinned/list', [])) ?>">
 
 	<?= $this->partial(
-		$this->config( 'client/html/common/partials/products', 'common/partials/products' ),
-		array(
-			'require-stock' => (int) $this->config( 'client/html/basket/require-stock', true ),
-			'basket-add' => $this->config( 'client/html/catalog/lists/basket-add', false ),
-			'attributeTypes' => $this->get( 'attributeTypes', map() ),
-			'products' => $this->get( 'products', map() ),
-			'position' => $this->get( 'position' ),
-		)
+	    $this->config('client/html/common/partials/products', 'common/partials/products'),
+	    [
+	        'require-stock' => (int) $this->config('client/html/basket/require-stock', true),
+	        'basket-add' => $this->config('client/html/catalog/lists/basket-add', false),
+	        'attributeTypes' => $this->get('attributeTypes', map()),
+	        'products' => $this->get('products', map()),
+	        'position' => $this->get('position'),
+	    ]
 	) ?>
 
 </div>

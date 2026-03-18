@@ -29,15 +29,15 @@ $enc = $this->encoder();
  */
 
 ?>
-<div class="section aimeos catalog-product" data-jsonurl="<?= $enc->attr( $this->link( 'client/jsonapi/url' ) ) ?>">
+<div class="section aimeos catalog-product" data-jsonurl="<?= $enc->attr($this->link('client/jsonapi/url')) ?>">
 	<div class="catalog-product-items product-list container-xxl">
 
-		<?= $this->partial( $this->config( 'client/html/common/partials/products', 'common/partials/products' ),
-			array(
-				'require-stock' => (bool) $this->config( 'client/html/basket/require-stock', true ),
-				'basket-add' => $this->config( 'client/html/catalog/product/basket-add', false ),
-				'products' => $this->get( 'productItems', [] ),
-			)
+		<?= $this->partial($this->config('client/html/common/partials/products', 'common/partials/products'),
+		    [
+		        'require-stock' => (bool) $this->config('client/html/basket/require-stock', true),
+		        'basket-add' => $this->config('client/html/catalog/product/basket-add', false),
+		        'products' => $this->get('productItems', []),
+		    ]
 		) ?>
 
 	</div>

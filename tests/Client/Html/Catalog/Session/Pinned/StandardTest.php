@@ -1,106 +1,100 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2015-2026
  */
 
-
 namespace Aimeos\Client\Html\Catalog\Session\Pinned;
-
 
 class StandardTest extends \PHPUnit\Framework\TestCase
 {
-	private $object;
-	private $context;
-	private $view;
+    private $object;
+    private $context;
+    private $view;
 
+    protected function setUp(): void
+    {
+        \Aimeos\Controller\Frontend::cache(true);
+        \Aimeos\MShop::cache(true);
 
-	protected function setUp() : void
-	{
-		\Aimeos\Controller\Frontend::cache( true );
-		\Aimeos\MShop::cache( true );
+        $this->view = \TestHelper::view();
+        $this->context = \TestHelper::context();
 
-		$this->view = \TestHelper::view();
-		$this->context = \TestHelper::context();
+        $this->object = new \Aimeos\Client\Html\Catalog\Session\Pinned\Standard($this->context);
+        $this->object->setView($this->view);
+    }
 
-		$this->object = new \Aimeos\Client\Html\Catalog\Session\Pinned\Standard( $this->context );
-		$this->object->setView( $this->view );
-	}
+    protected function tearDown(): void
+    {
+        $this->context->session()->set('aimeos/catalog/session/pinned/list', null);
 
+        \Aimeos\Controller\Frontend::cache(false);
+        \Aimeos\MShop::cache(false);
 
-	protected function tearDown() : void
-	{
-		$this->context->session()->set( 'aimeos/catalog/session/pinned/list', null );
+        unset($this->object, $this->context, $this->view);
+    }
 
-		\Aimeos\Controller\Frontend::cache( false );
-		\Aimeos\MShop::cache( false );
+    public function testBody()
+    {
+        $pinned = [ $this->getProductItem('CNC')->getId() ];
+        $this->context->session()->set('aimeos/catalog/session/pinned/list', $pinned);
 
-		unset( $this->object, $this->context, $this->view );
-	}
+        $this->object->setView($this->object->data($this->view));
+        $output = $this->object->body();
 
+        $this->assertMatchesRegularExpression('#.*Cafe Noire Cappuccino.*#smU', $output);
+        $this->assertStringStartsWith('<div class="section catalog-session-pinned">', $output);
+    }
 
-	public function testBody()
-	{
-		$pinned = array( $this->getProductItem( 'CNC' )->getId() );
-		$this->context->session()->set( 'aimeos/catalog/session/pinned/list', $pinned );
+    public function testInitAdd()
+    {
+        $prodId = $this->getProductItem('CNE')->getId();
 
-		$this->object->setView( $this->object->data( $this->view ) );
-		$output = $this->object->body();
+        $param = [
+            'pin_action' => 'add',
+            'pin_id' => $prodId,
+        ];
 
-		$this->assertMatchesRegularExpression( '#.*Cafe Noire Cappuccino.*#smU', $output );
-		$this->assertStringStartsWith( '<div class="section catalog-session-pinned">', $output );
-	}
+        $helper = new \Aimeos\Base\View\Helper\Param\Standard($this->view, $param);
+        $this->view->addHelper('param', $helper);
 
+        $this->object->init();
 
-	public function testInitAdd()
-	{
-		$prodId = $this->getProductItem( 'CNE' )->getId();
+        $pinned = $this->context->session()->get('aimeos/catalog/session/pinned/list');
+        $this->assertEquals([ $prodId => $prodId ], $pinned);
+    }
 
-		$param = array(
-			'pin_action' => 'add',
-			'pin_id' => $prodId,
-		);
+    public function testInitDelete()
+    {
+        $prodId = $this->getProductItem('CNE')->getId();
+        $this->context->session()->set('aimeos/catalog/session/pinned/list', [ $prodId => $prodId ]);
 
-		$helper = new \Aimeos\Base\View\Helper\Param\Standard( $this->view, $param );
-		$this->view->addHelper( 'param', $helper );
+        $param = [
+            'pin_action' => 'delete',
+            'pin_id' => $prodId,
+        ];
 
-		$this->object->init();
+        $helper = new \Aimeos\Base\View\Helper\Param\Standard($this->view, $param);
+        $this->view->addHelper('param', $helper);
 
-		$pinned = $this->context->session()->get( 'aimeos/catalog/session/pinned/list' );
-		$this->assertEquals( array( $prodId => $prodId ), $pinned );
-	}
+        $this->object->init();
 
+        $pinned = $this->context->session()->get('aimeos/catalog/session/pinned/list');
+        $this->assertEquals([], $pinned);
+    }
 
-	public function testInitDelete()
-	{
-		$prodId = $this->getProductItem( 'CNE' )->getId();
-		$this->context->session()->set( 'aimeos/catalog/session/pinned/list', array( $prodId => $prodId ) );
-
-		$param = array(
-			'pin_action' => 'delete',
-			'pin_id' => $prodId,
-		);
-
-		$helper = new \Aimeos\Base\View\Helper\Param\Standard( $this->view, $param );
-		$this->view->addHelper( 'param', $helper );
-
-		$this->object->init();
-
-		$pinned = $this->context->session()->get( 'aimeos/catalog/session/pinned/list' );
-		$this->assertEquals( [], $pinned );
-	}
-
-
-	/**
-	 * Returns the product for the given code.
-	 *
-	 * @param string $code Unique product code
-	 * @throws \Exception If no product is found
-	 * @return \Aimeos\MShop\Product\Item\Iface
-	 */
-	protected function getProductItem( $code )
-	{
-		return \Aimeos\MShop::create( $this->context, 'product' )->find( $code );
-	}
+    /**
+     * Returns the product for the given code.
+     *
+     * @param string $code Unique product code
+     * @throws \Exception If no product is found
+     * @return \Aimeos\MShop\Product\Item\Iface
+     */
+    protected function getProductItem($code)
+    {
+        return \Aimeos\MShop::create($this->context, 'product')->find($code);
+    }
 }

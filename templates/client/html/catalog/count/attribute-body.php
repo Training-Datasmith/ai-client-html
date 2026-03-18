@@ -6,4 +6,4 @@
  */
 
 ?>
-<?= $this->get( 'attributeCountList', map() )->toJson( JSON_FORCE_OBJECT ) ?>
+<?= $this->get('attributeCountList', map())->toJson(JSON_FORCE_OBJECT) ?>

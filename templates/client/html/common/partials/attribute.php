@@ -11,7 +11,6 @@
  * - attributeTypes : List of attribute type items
  */
 
-
 /** client/html/catalog/attribute/preselect
  * Pre-select first item in selection list
  *
@@ -79,45 +78,43 @@
  * @see client/html/catalog/attribute/type
  */
 
-
 $enc = $this->encoder();
-$attrTypes = $this->get( 'attributeTypes', [] );
-
+$attrTypes = $this->get('attributeTypes', []);
 
 ?>
 <ul class="selection">
 
-	<?php foreach( $this->productItem->getRefItems( 'attribute', null, 'config' )->groupBy( 'attribute.type' ) as $code => $attributes ) : ?>
-		<?php $key = $this->productItem->getId() . '-' . $code . '_' . rand( 1, 1000 ) ?>
-		<?php $attributes = map( $attributes )->uasort( fn( $a, $b ) => $a->getPosition() <=> $b->getPosition() ?: $a->getName() <=> $b->getName() ) ?>
+	<?php foreach ($this->productItem->getRefItems('attribute', null, 'config')->groupBy('attribute.type') as $code => $attributes) : ?>
+		<?php $key = $this->productItem->getId() . '-' . $code . '_' . rand(1, 1000) ?>
+		<?php $attributes = map($attributes)->uasort(fn ($a, $b) => $a->getPosition() <=> $b->getPosition() ?: $a->getName() <=> $b->getName()) ?>
 
-		<li class="select-item <?= $enc->attr( $code . ' ' . $this->config( 'client/html/catalog/attribute/type/' . $code, 'select' ) ) ?>">
-			<label for="select-<?= $enc->attr( $key ) ?>" class="select-name"><?= $enc->html( isset( $attrTypes[$code] ) ? $attrTypes[$code]->getName() : $this->translate( 'client/code', $code ) ) ?></label>
+		<li class="select-item <?= $enc->attr($code . ' ' . $this->config('client/html/catalog/attribute/type/' . $code, 'select')) ?>">
+			<label for="select-<?= $enc->attr($key) ?>" class="select-name"><?= $enc->html(isset($attrTypes[$code]) ? $attrTypes[$code]->getName() : $this->translate('client/code', $code)) ?></label>
 
-			<?php if( $hint = $this->translate( 'client/code', $code . '-hint', null, 0, false ) ) : ?>
-				<div class="select-hint"><?= $enc->html( $hint ) ?></div>
+			<?php if ($hint = $this->translate('client/code', $code . '-hint', null, 0, false)) : ?>
+				<div class="select-hint"><?= $enc->html($hint) ?></div>
 			<?php endif ?>
 
 			<div class="select-value">
 
-				<?php if( $this->config( 'client/html/catalog/attribute/type/' . $code, 'select' ) === 'input' ) : ?>
+				<?php if ($this->config('client/html/catalog/attribute/type/' . $code, 'select') === 'input') : ?>
 
-					<ul id="select-<?= $enc->attr( $key ) ?>" class="select-list">
+					<ul id="select-<?= $enc->attr($key) ?>" class="select-list">
 
-						<?php foreach( $attributes as $attrId => $attribute ) : ?>
+						<?php foreach ($attributes as $attrId => $attribute) : ?>
 
 							<li class="input-group select-entry">
 								<input type="hidden"
-									value="<?= $enc->attr( $attrId ) ?>"
-									data-code="<?= $enc->attr( $attribute->getCode() ) ?>"
-									name="<?= $enc->attr( $this->formparam( ['b_prod', 0, 'attrconfid', 'id', ''] ) ) ?>"
+									value="<?= $enc->attr($attrId) ?>"
+									data-code="<?= $enc->attr($attribute->getCode()) ?>"
+									name="<?= $enc->attr($this->formparam(['b_prod', 0, 'attrconfid', 'id', ''])) ?>"
 								>
 								<input class="form-control select-option" type="number" value="0" step="1" min="0"
-									id="option-<?= $enc->attr( $this->productItem->getId() . '-' . $attrId ) ?>"
-									name="<?= $enc->attr( $this->formparam( ['b_prod', 0, 'attrconfid', 'qty', ''] ) ) ?>"
+									id="option-<?= $enc->attr($this->productItem->getId() . '-' . $attrId) ?>"
+									name="<?= $enc->attr($this->formparam(['b_prod', 0, 'attrconfid', 'qty', ''])) ?>"
 								><!--
-								--><label class="form-control select-label" for="option-<?= $enc->attr( $this->productItem->getId() . '-' . $attrId ) ?>">
-									<?= $enc->html( $this->attrname( $attribute ) ) ?>
+								--><label class="form-control select-label" for="option-<?= $enc->attr($this->productItem->getId() . '-' . $attrId) ?>">
+									<?= $enc->html($this->attrname($attribute)) ?>
 								</label>
 							</li>
 
@@ -125,33 +122,33 @@ $attrTypes = $this->get( 'attributeTypes', [] );
 
 					</ul>
 
-				<?php elseif( $this->config( 'client/html/catalog/attribute/type/' . $code, 'select' ) === 'radio' ) : ?>
+				<?php elseif ($this->config('client/html/catalog/attribute/type/' . $code, 'select') === 'radio') : ?>
 
-					<ul id="select-<?= $enc->attr( $key ) ?>" class="select-list">
+					<ul id="select-<?= $enc->attr($key) ?>" class="select-list">
 
-						<?php foreach( $attributes as $attrId => $attribute ) : ?>
+						<?php foreach ($attributes as $attrId => $attribute) : ?>
 
 							<li class="select-entry">
 								<input class="select-option" type="radio"
-									id="option-<?= $enc->attr( $this->productItem->getId() . '-' . $attrId ) ?>"
-									name="<?= $enc->attr( $this->formparam( ['b_prod', 0, 'attrconfid', 'id', ''] ) ) ?>"
-									value="<?= $enc->attr( $attrId ) ?>"
-									data-code="<?= $enc->attr( $attribute->getCode() ) ?>"
+									id="option-<?= $enc->attr($this->productItem->getId() . '-' . $attrId) ?>"
+									name="<?= $enc->attr($this->formparam(['b_prod', 0, 'attrconfid', 'id', ''])) ?>"
+									value="<?= $enc->attr($attrId) ?>"
+									data-code="<?= $enc->attr($attribute->getCode()) ?>"
 								>
-								<label class="select-label" for="option-<?= $enc->attr( $this->productItem->getId() . '-' . $attrId ) ?>"><!--
+								<label class="select-label" for="option-<?= $enc->attr($this->productItem->getId() . '-' . $attrId) ?>"><!--
 
-									<?php foreach( $attribute->getListItems( 'media', 'default', 'icon' ) as $listItem ) : ?>
-										<?php if( ( $item = $listItem->getRefItem() ) !== null ) : ?>
+									<?php foreach ($attribute->getListItems('media', 'default', 'icon') as $listItem) : ?>
+										<?php if (($item = $listItem->getRefItem()) !== null) : ?>
 
-											<?= '-->' . $this->partial( $this->config(
-												'client/html/common/partials/media', 'common/partials/media' ),
-												['item' => $item, 'boxAttributes' => ['class' => 'media-item']]
+											<?= '-->' . $this->partial($this->config(
+											    'client/html/common/partials/media', 'common/partials/media'),
+											    ['item' => $item, 'boxAttributes' => ['class' => 'media-item']]
 											) . '<!--' ?>
 
 										<?php endif ?>
 									<?php endforeach ?>
 
-									--><span><?= $enc->html( $this->attrname( $attribute ) ) ?></span><!--
+									--><span><?= $enc->html($this->attrname($attribute)) ?></span><!--
 								--></label>
 							</li>
 
@@ -161,18 +158,18 @@ $attrTypes = $this->get( 'attributeTypes', [] );
 
 				<?php else : ?>
 
-					<input type="hidden" value="1" name="<?= $enc->attr( $this->formparam( ['b_prod', 0, 'attrconfid', 'qty', ''] ) ) ?>">
-					<select id="select-<?= $enc->attr( $key ) ?>" class="form-select select-list"
-						name="<?= $enc->attr( $this->formparam( ['b_prod', 0, 'attrconfid', 'id', ''] ) ) ?>">
+					<input type="hidden" value="1" name="<?= $enc->attr($this->formparam(['b_prod', 0, 'attrconfid', 'qty', ''])) ?>">
+					<select id="select-<?= $enc->attr($key) ?>" class="form-select select-list"
+						name="<?= $enc->attr($this->formparam(['b_prod', 0, 'attrconfid', 'id', ''])) ?>">
 
-						<?php if( $this->config( 'client/html/catalog/attribute/preselect/' . $code, false ) === false ) : ?>
-							<option class="select-option" value=""><?= $enc->html( $this->translate( 'client', 'none' ) ) ?></option>
+						<?php if ($this->config('client/html/catalog/attribute/preselect/' . $code, false) === false) : ?>
+							<option class="select-option" value=""><?= $enc->html($this->translate('client', 'none')) ?></option>
 						<?php endif ?>
 
-						<?php foreach( $attributes as $id => $attribute ) : ?>
+						<?php foreach ($attributes as $id => $attribute) : ?>
 
-							<option class="select-option" value="<?= $enc->attr( $id ) ?>" data-code="<?= $enc->attr( $attribute->getCode() ) ?>">
-								<?= $enc->html( $this->attrname( $attribute ) ) ?>
+							<option class="select-option" value="<?= $enc->attr($id) ?>" data-code="<?= $enc->attr($attribute->getCode()) ?>">
+								<?= $enc->html($this->attrname($attribute)) ?>
 							</option>
 
 						<?php endforeach ?>
@@ -191,30 +188,33 @@ $attrTypes = $this->get( 'attributeTypes', [] );
 
 <ul class="selection">
 
-	<?php foreach( $this->productItem->getRefItems( 'attribute', null, 'custom' ) as $id => $attribute ) : ?>
+	<?php foreach ($this->productItem->getRefItems('attribute', null, 'custom') as $id => $attribute) : ?>
 		<?php $code = $attribute->getType() . '-' . $attribute->getCode() ?>
-		<?php $key = $this->productItem->getId() . '-' . $code . '_' . rand( 1, 1000 ) ?>
+		<?php $key = $this->productItem->getId() . '-' . $code . '_' . rand(1, 1000) ?>
 
-		<li class="select-item <?= $enc->attr( $code ) ?>">
-			<label for="select-<?= $enc->attr( $key ) ?>" class="select-name"><?= $enc->html( $this->translate( 'client/code', $attribute->getName() ) ) ?></label>
+		<li class="select-item <?= $enc->attr($code) ?>">
+			<label for="select-<?= $enc->attr($key) ?>" class="select-name"><?= $enc->html($this->translate('client/code', $attribute->getName())) ?></label>
 
-			<?php if( $hint = $this->translate( 'client/code', $code . '-hint', null, 0, false ) ) : ?>
-				<div class="select-hint"><?= $enc->html( $hint ) ?></div>
+			<?php if ($hint = $this->translate('client/code', $code . '-hint', null, 0, false)) : ?>
+				<div class="select-hint"><?= $enc->html($hint) ?></div>
 			<?php endif ?>
 
 			<div class="select-value">
 
-				<?php switch( $attribute->getType() ) : case 'price': ?>
-					<input id="select-<?= $enc->attr( $key ) ?>" class="form-control" type="number" min="0.01" step="0.01"
-						name="<?= $enc->attr( $this->formparam( ['b_prod', 0, 'attrcustid', $id] ) ) ?>"
-						<?php if( $price = $this->productItem->getRefItems( 'price', 'default', 'default' )->first() ) : ?>
-							value="<?= $enc->attr( $price->getValue() ) ?>"
+				<?php switch ($attribute->getType()) : case 'price': ?>
+					<input id="select-<?= $enc->attr($key) ?>" class="form-control" type="number" min="0.01" step="0.01"
+						name="<?= $enc->attr($this->formparam(['b_prod', 0, 'attrcustid', $id])) ?>"
+						<?php if ($price = $this->productItem->getRefItems('price', 'default', 'default')->first()) : ?>
+							value="<?= $enc->attr($price->getValue()) ?>"
 						<?php endif ?>
 					>
-				<?php break; case 'date': ?>
-					<input id="select-<?= $enc->attr( $key ) ?>" class="form-control" type="date" name="<?= $enc->attr( $this->formparam( ['b_prod', 0, 'attrcustid', $id] ) ) ?>">
-				<?php break; default: ?>
-					<input id="select-<?= $enc->attr( $key ) ?>" class="form-control" type="text" name="<?= $enc->attr( $this->formparam( ['b_prod', 0, 'attrcustid', $id] ) ) ?>">
+				<?php break;
+				    // no break
+				case 'date': ?>
+					<input id="select-<?= $enc->attr($key) ?>" class="form-control" type="date" name="<?= $enc->attr($this->formparam(['b_prod', 0, 'attrcustid', $id])) ?>">
+				<?php break;
+				default: ?>
+					<input id="select-<?= $enc->attr($key) ?>" class="form-control" type="text" name="<?= $enc->attr($this->formparam(['b_prod', 0, 'attrcustid', $id])) ?>">
 				<?php endswitch ?>
 
 			</div>

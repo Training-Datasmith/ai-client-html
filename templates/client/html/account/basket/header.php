@@ -7,8 +7,7 @@
 
 $enc = $this->encoder();
 
-
 ?>
-<link rel="stylesheet" href="<?= $enc->attr( $this->content( $this->get( 'contextSiteTheme', 'default' ) . '/summary.css', 'fs-theme', true ) ) ?>">
-<link rel="stylesheet" href="<?= $enc->attr( $this->content( $this->get( 'contextSiteTheme', 'default' ) . '/account-basket.css', 'fs-theme', true ) ) ?>">
-<script defer src="<?= $enc->attr( $this->content( $this->get( 'contextSiteTheme', 'default' ) . '/account-basket.js', 'fs-theme', true ) ) ?>"></script>
+<link rel="stylesheet" href="<?= $enc->attr($this->content($this->get('contextSiteTheme', 'default') . '/summary.css', 'fs-theme', true)) ?>">
+<link rel="stylesheet" href="<?= $enc->attr($this->content($this->get('contextSiteTheme', 'default') . '/account-basket.css', 'fs-theme', true)) ?>">
+<script defer src="<?= $enc->attr($this->content($this->get('contextSiteTheme', 'default') . '/account-basket.js', 'fs-theme', true)) ?>"></script>

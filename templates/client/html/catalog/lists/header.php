@@ -22,62 +22,61 @@ $enc = $this->encoder();
  * @see client/html/catalog/detail/metatags
  */
 
-$multi = $this->config( 'client/html/catalog/multiroute', false );
-$linkKey = $multi && $this->param( 'path' ) || $this->param( 'f_catid' ) ? 'client/html/catalog/tree/url' : 'client/html/catalog/lists/url';
-
+$multi = $this->config('client/html/catalog/multiroute', false);
+$linkKey = $multi && $this->param('path') || $this->param('f_catid') ? 'client/html/catalog/tree/url' : 'client/html/catalog/lists/url';
 
 ?>
-<?php if( (bool) $this->config( 'client/html/catalog/lists/metatags', true ) === true ) : ?>
-	<?php if( ( $catItem = $this->get( 'listCatPath', map() )->last() ) !== null ) : ?>
+<?php if ((bool) $this->config('client/html/catalog/lists/metatags', true) === true) : ?>
+	<?php if (($catItem = $this->get('listCatPath', map())->last()) !== null) : ?>
 
-		<?php if( $title = $catItem->getRefItems( 'text', 'meta-title', 'default' )->getContent()->first() ) : ?>
-			<title><?= $enc->html( $title ) ?></title>
+		<?php if ($title = $catItem->getRefItems('text', 'meta-title', 'default')->getContent()->first()) : ?>
+			<title><?= $enc->html($title) ?></title>
 		<?php else : ?>
-			<title><?= $enc->html( strip_tags( $catItem->getName() ) ) ?> | <?= $enc->html( $this->get( 'contextSiteLabel', 'Aimeos' ) ) ?></title>
+			<title><?= $enc->html(strip_tags($catItem->getName())) ?> | <?= $enc->html($this->get('contextSiteLabel', 'Aimeos')) ?></title>
 		<?php endif ?>
 
 
-		<link rel="canonical" href="<?= $enc->attr( $this->link( $linkKey, map( $this->get( 'listParams', [] ) )->except( 'f_sort' )->all(), ['absoluteUri' => true] ) ) ?>">
+		<link rel="canonical" href="<?= $enc->attr($this->link($linkKey, map($this->get('listParams', []))->except('f_sort')->all(), ['absoluteUri' => true])) ?>">
 
-		<?php foreach( $catItem->getRefItems( 'text', 'meta-keyword', 'default' ) as $textItem ) : ?>
-			<meta name="keywords" content="<?= $enc->attr( strip_tags( $textItem->getContent() ) ) ?>">
+		<?php foreach ($catItem->getRefItems('text', 'meta-keyword', 'default') as $textItem) : ?>
+			<meta name="keywords" content="<?= $enc->attr(strip_tags($textItem->getContent())) ?>">
 		<?php endforeach ?>
 
-		<?php foreach( $catItem->getRefItems( 'text', 'meta-description', 'default' ) as $textItem ) : ?>
-			<meta name="description" content="<?= $enc->attr( strip_tags( $textItem->getContent() ) ) ?>">
+		<?php foreach ($catItem->getRefItems('text', 'meta-description', 'default') as $textItem) : ?>
+			<meta name="description" content="<?= $enc->attr(strip_tags($textItem->getContent())) ?>">
 		<?php endforeach ?>
 
-	<?php elseif( $search = $this->param( 'f_search', null ) ) : /// Product search hint with user provided search string (%1$s) ?>
+	<?php elseif ($search = $this->param('f_search', null)) : /// Product search hint with user provided search string (%1$s)?>
 
-		<title><?= $enc->html( sprintf( $this->translate( 'client', 'Result for "%1$s"' ), strip_tags( $search ) ) ) ?> | <?= $enc->html( $this->get( 'contextSiteLabel', 'Aimeos' ) ) ?></title>
+		<title><?= $enc->html(sprintf($this->translate('client', 'Result for "%1$s"'), strip_tags($search))) ?> | <?= $enc->html($this->get('contextSiteLabel', 'Aimeos')) ?></title>
 
 	<?php else : ?>
 
-		<title><?= $enc->html( $this->translate( 'client', 'Found products' ) ) ?> | <?= $enc->html( $this->get( 'contextSiteLabel', 'Aimeos' ) ) ?></title>
-		<link rel="canonical" href="<?= $enc->attr( $this->link( 'client/html/catalog/lists/url', [], ['absoluteUri' => true] ) ) ?>">
+		<title><?= $enc->html($this->translate('client', 'Found products')) ?> | <?= $enc->html($this->get('contextSiteLabel', 'Aimeos')) ?></title>
+		<link rel="canonical" href="<?= $enc->attr($this->link('client/html/catalog/lists/url', [], ['absoluteUri' => true])) ?>">
 
 	<?php endif ?>
 
-	<?php if( $this->param( 'f_search' ) || $this->param( 'f_sort' ) ) : ?>
+	<?php if ($this->param('f_search') || $this->param('f_sort')) : ?>
 		<meta name="robots" content="noindex">
 	<?php endif ?>
 
-	<?php if( $this->get( 'listPageCurr', 0 ) > 1 ) : ?>
-		<link rel="prev" href="<?= $enc->attr( $this->link( 'client/html/catalog/lists/url', ['l_page' => $this->get( 'listPagePrev', 0 )] + $this->get( 'listParams', [] ), ['absoluteUri' => true] ) ) ?>">
+	<?php if ($this->get('listPageCurr', 0) > 1) : ?>
+		<link rel="prev" href="<?= $enc->attr($this->link('client/html/catalog/lists/url', ['l_page' => $this->get('listPagePrev', 0)] + $this->get('listParams', []), ['absoluteUri' => true])) ?>">
 	<?php endif ?>
 
 
-	<?php if( $this->get( 'listPageCurr', 0 ) > 1 && $this->get( 'listPageCurr', 0 ) < $this->get( 'listPageLast', 0 ) ) : // Optimization to avoid loading next page while the user is still filtering ?>
-		<link rel="next prefetch" href="<?= $enc->attr( $this->link( 'client/html/catalog/lists/url', ['l_page' => $this->get( 'listPageNext', 0 )] + $this->get( 'listParams', [] ), ['absoluteUri' => true] ) ) ?>">
+	<?php if ($this->get('listPageCurr', 0) > 1 && $this->get('listPageCurr', 0) < $this->get('listPageLast', 0)) : // Optimization to avoid loading next page while the user is still filtering?>
+		<link rel="next prefetch" href="<?= $enc->attr($this->link('client/html/catalog/lists/url', ['l_page' => $this->get('listPageNext', 0)] + $this->get('listParams', []), ['absoluteUri' => true])) ?>">
 	<?php endif ?>
 
 	<meta name="application-name" content="Aimeos">
 
 <?php endif ?>
 
-<link rel="stylesheet" href="<?= $enc->attr( $this->content( $this->get( 'contextSiteTheme', 'default' ) . '/catalog-lists.css', 'fs-theme', true ) ) ?>">
-<script defer src="<?= $enc->attr( $this->content( $this->get( 'contextSiteTheme', 'default' ) . '/catalog-lists.js', 'fs-theme', true ) ) ?>"></script>
+<link rel="stylesheet" href="<?= $enc->attr($this->content($this->get('contextSiteTheme', 'default') . '/catalog-lists.css', 'fs-theme', true)) ?>">
+<script defer src="<?= $enc->attr($this->content($this->get('contextSiteTheme', 'default') . '/catalog-lists.js', 'fs-theme', true)) ?>"></script>
 
-<?php foreach( $this->get( 'listStockUrl', [] ) as $url ) : ?>
-	<script class="items-stock" nonce="<?= $enc->attr( $this->get( 'contextNonce' ) ) ?>" defer src="<?= $enc->attr( $url ) ?>"></script>
+<?php foreach ($this->get('listStockUrl', []) as $url) : ?>
+	<script class="items-stock" nonce="<?= $enc->attr($this->get('contextNonce')) ?>" defer src="<?= $enc->attr($url) ?>"></script>
 <?php endforeach ?>

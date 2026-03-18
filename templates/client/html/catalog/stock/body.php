@@ -8,7 +8,6 @@
 
 $enc = $this->encoder();
 
-
 /** client/html/catalog/stock/level/low
  * The number of products in stock below it's considered a low stock level
  *
@@ -35,84 +34,83 @@ $enc = $this->encoder();
  * @since 2014.03
  * @see client/html/catalog/stock/sort
  */
-$stockLow = $this->config( 'client/html/catalog/stock/level/low', 5 );
+$stockLow = $this->config('client/html/catalog/stock/level/low', 5);
 
 /// Stock string composition with stock type (%1$s, normally left out) and stock level string (%2$s)
-$textStockIn = $this->translate( 'client', 'Stock: %1$s, %2$s' );
+$textStockIn = $this->translate('client', 'Stock: %1$s, %2$s');
 /// Stock string composition with stock type (%1$s, normally left out), stock level string (%2$s) and back in stock date (%3$s)
-$textStockOut = $this->translate( 'client', 'Stock: %1$s, %2$s, back on %3$s' );
-$dateFormat = $this->translate( 'client', 'Y-m-d' );
+$textStockOut = $this->translate('client', 'Stock: %1$s, %2$s, back on %3$s');
+$dateFormat = $this->translate('client', 'Y-m-d');
 
-$textStock = array(
-	/// code for "product is out of stock"
-	'stock-out' => nl2br( $enc->html( $this->translate( 'client', 'stock-out' ), $enc::TRUST ) ),
-	/// code for "only a few products are available"
-	'stock-low' => nl2br( $enc->html( $this->translate( 'client', 'stock-low' ), $enc::TRUST ) ),
-	/// code for "product is in stock"
-	'stock-high' => nl2br( $enc->html( $this->translate( 'client', 'stock-high' ), $enc::TRUST ) ),
-	/// code for "product is available (without stock limit)"
-	'stock-unlimited' => nl2br( $enc->html( $this->translate( 'client', 'stock-unlimited' ), $enc::TRUST ) ),
-);
-
+$textStock = [
+    /// code for "product is out of stock"
+    'stock-out' => nl2br($enc->html($this->translate('client', 'stock-out'), $enc::TRUST)),
+    /// code for "only a few products are available"
+    'stock-low' => nl2br($enc->html($this->translate('client', 'stock-low'), $enc::TRUST)),
+    /// code for "product is in stock"
+    'stock-high' => nl2br($enc->html($this->translate('client', 'stock-high'), $enc::TRUST)),
+    /// code for "product is available (without stock limit)"
+    'stock-unlimited' => nl2br($enc->html($this->translate('client', 'stock-unlimited'), $enc::TRUST)),
+];
 
 $result = [];
 
-foreach( $this->get( 'stockItemsByProducts', [] ) as $prodId => $list )
-{
-	$stocks = array( 'stock-unlimited' => '', 'stock-high' => '', 'stock-low' => '', 'stock-out' => '' );
+foreach ($this->get('stockItemsByProducts', []) as $prodId => $list) {
+    $stocks = [ 'stock-unlimited' => '', 'stock-high' => '', 'stock-low' => '', 'stock-out' => '' ];
 
-	foreach( $list as $item )
-	{
-		$stockType = 'stocktype:' . $item->getType();
+    foreach ($list as $item) {
+        $stockType = 'stocktype:' . $item->getType();
 
-		if( !isset( $typeText[$stockType] ) ) {
-			$typeText[$stockType] = $this->translate( 'client/code', $stockType );
-		}
+        if (!isset($typeText[$stockType])) {
+            $typeText[$stockType] = $this->translate('client/code', $stockType);
+        }
 
-		$stocklevel = $item->getStockLevel();
+        $stocklevel = $item->getStockLevel();
 
-		if( $stocklevel === null ) {
-			$level = 'stock-unlimited'; $link = 'http://schema.org/InStock';
-		} elseif( $stocklevel <= 0 ) {
-			$level = 'stock-out'; $link = 'http://schema.org/OutOfStock';
-		} elseif( $stocklevel <= $stockLow ) {
-			$level = 'stock-low'; $link = 'http://schema.org/LimitedAvailability';
-		} else {
-			$level = 'stock-high'; $link = 'http://schema.org/InStock';
-		}
+        if ($stocklevel === null) {
+            $level = 'stock-unlimited';
+            $link = 'http://schema.org/InStock';
+        } elseif ($stocklevel <= 0) {
+            $level = 'stock-out';
+            $link = 'http://schema.org/OutOfStock';
+        } elseif ($stocklevel <= $stockLow) {
+            $level = 'stock-low';
+            $link = 'http://schema.org/LimitedAvailability';
+        } else {
+            $level = 'stock-high';
+            $link = 'http://schema.org/InStock';
+        }
 
-		if( $stocklevel <= 0 && ( $date = $item->getDateBack() ) != '' )
-		{
-			$text = sprintf( $textStockOut,
-				$typeText[$stockType],
-				$textStock[$level],
-				date_create( $date )->format( $dateFormat )
-			);
-		}
-		else
-		{
-			$text = sprintf( $textStockIn,
-				$typeText[$stockType],
-				$textStock[$level]
-			);
-		}
+        if ($stocklevel <= 0 && ($date = $item->getDateBack()) != '') {
+            $text = sprintf(
+                $textStockOut,
+                $typeText[$stockType],
+                $textStock[$level],
+                date_create($date)->format($dateFormat)
+            );
+        } else {
+            $text = sprintf(
+                $textStockIn,
+                $typeText[$stockType],
+                $textStock[$level]
+            );
+        }
 
-		$stocks[$level] .= '
-			<div class="stockitem ' . $level . '" data-prodid="' . $enc->attr( $prodId ) . '" title="' . $enc->attr( $textStock[$level] ) . '">
+        $stocks[$level] .= '
+			<div class="stockitem ' . $level . '" data-prodid="' . $enc->attr($prodId) . '" title="' . $enc->attr($textStock[$level]) . '">
 				<meta itemprop="availability" href="' . $link . '">
 				<div class="stocklevel"></div>
-				<span class="stocktext">' . nl2br( $enc->html( $text, $enc::TRUST ) ) . '</span>
+				<span class="stocktext">' . nl2br($enc->html($text, $enc::TRUST)) . '</span>
 			</div>
 		';
-	}
+    }
 
-	$result[$prodId] = implode( '', $stocks );
+    $result[$prodId] = implode('', $stocks);
 }
-
 
 ?>
 // <!--
-var aimeosStockHtml = <?= json_encode( $result, JSON_FORCE_OBJECT ) ?>;
+var aimeosStockHtml = <?= json_encode($result, JSON_FORCE_OBJECT) ?>;
 
 document.querySelectorAll(".aimeos .product .stock-list .articleitem").forEach(function(elem) {
 	var prodid = elem.dataset.prodid;

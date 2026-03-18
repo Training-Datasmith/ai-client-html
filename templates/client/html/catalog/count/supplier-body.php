@@ -6,4 +6,4 @@
  */
 
 ?>
-<?= $this->get( 'supplierCountList', map() )->toJson( JSON_FORCE_OBJECT ) ?>
+<?= $this->get('supplierCountList', map())->toJson(JSON_FORCE_OBJECT) ?>

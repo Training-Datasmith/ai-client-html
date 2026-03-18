@@ -1,121 +1,115 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Metaways Infosystems GmbH, 2012
  * @copyright Aimeos (aimeos.org), 2015-2026
  */
 
-
 namespace Aimeos\Client\Html\Catalog\Filter\Tree;
-
 
 class StandardTest extends \PHPUnit\Framework\TestCase
 {
-	private $object;
-	private $context;
-	private $view;
+    private $object;
+    private $context;
+    private $view;
 
+    protected function setUp(): void
+    {
+        \Aimeos\Controller\Frontend::cache(true);
+        \Aimeos\MShop::cache(true);
 
-	protected function setUp() : void
-	{
-		\Aimeos\Controller\Frontend::cache( true );
-		\Aimeos\MShop::cache( true );
+        $this->view = \TestHelper::view();
+        $this->context = \TestHelper::context();
 
-		$this->view = \TestHelper::view();
-		$this->context = \TestHelper::context();
+        $this->object = new \Aimeos\Client\Html\Catalog\Filter\Tree\Standard($this->context);
+        $this->object->setView($this->view);
+    }
 
-		$this->object = new \Aimeos\Client\Html\Catalog\Filter\Tree\Standard( $this->context );
-		$this->object->setView( $this->view );
-	}
+    protected function tearDown(): void
+    {
+        \Aimeos\Controller\Frontend::cache(false);
+        \Aimeos\MShop::cache(false);
 
+        unset($this->object, $this->context, $this->view);
+    }
 
-	protected function tearDown() : void
-	{
-		\Aimeos\Controller\Frontend::cache( false );
-		\Aimeos\MShop::cache( false );
+    public function testBody()
+    {
+        $catalogManager = \Aimeos\MShop::create(\TestHelper::context(), 'catalog');
+        $node = $catalogManager->getTree(null, [], \Aimeos\MW\Tree\Manager\Base::LEVEL_LIST);
 
-		unset( $this->object, $this->context, $this->view );
-	}
+        $helper = new \Aimeos\Base\View\Helper\Param\Standard($this->view, [ 'f_catid' => $node->getChild(1)->getId() ]);
+        $this->view->addHelper('param', $helper);
 
+        $tags = [];
+        $expire = null;
 
-	public function testBody()
-	{
-		$catalogManager = \Aimeos\MShop::create( \TestHelper::context(), 'catalog' );
-		$node = $catalogManager->getTree( null, [], \Aimeos\MW\Tree\Manager\Base::LEVEL_LIST );
+        $this->object->setView($this->object->data($this->view, $tags, $expire));
+        $output = $this->object->body();
 
-		$helper = new \Aimeos\Base\View\Helper\Param\Standard( $this->view, array( 'f_catid' => $node->getChild( 1 )->getId() ) );
-		$this->view->addHelper( 'param', $helper );
+        $this->assertStringContainsString('Groups', $output);
+        $this->assertStringContainsString('Neu', $output);
+        $this->assertStringContainsString('level-2', $output);
 
-		$tags = [];
-		$expire = null;
+        $this->assertEquals('2098-01-01 00:00:00', $expire);
+        $this->assertEquals(9, count($tags));
+    }
 
-		$this->object->setView( $this->object->data( $this->view, $tags, $expire ) );
-		$output = $this->object->body();
+    public function testBodyLevelsAlways()
+    {
+        $catalogManager = \Aimeos\MShop::create(\TestHelper::context(), 'catalog');
+        $node = $catalogManager->getTree(null, [], \Aimeos\MW\Tree\Manager\Base::LEVEL_ONE);
 
-		$this->assertStringContainsString( 'Groups', $output );
-		$this->assertStringContainsString( 'Neu', $output );
-		$this->assertStringContainsString( 'level-2', $output );
+        $this->context->config()->set('controller/frontend/catalog/levels-always', 2);
 
-		$this->assertEquals( '2098-01-01 00:00:00', $expire );
-		$this->assertEquals( 9, count( $tags ) );
-	}
+        $helper = new \Aimeos\Base\View\Helper\Param\Standard($this->view, [ 'f_catid' => $node->getId() ]);
+        $this->view->addHelper('param', $helper);
 
+        $tags = [];
+        $expire = null;
 
-	public function testBodyLevelsAlways()
-	{
-		$catalogManager = \Aimeos\MShop::create( \TestHelper::context(), 'catalog' );
-		$node = $catalogManager->getTree( null, [], \Aimeos\MW\Tree\Manager\Base::LEVEL_ONE );
+        $this->object->setView($this->object->data($this->view, $tags, $expire));
+        $output = $this->object->body();
 
-		$this->context->config()->set( 'controller/frontend/catalog/levels-always', 2 );
+        $this->assertStringContainsString('level-2', $output);
+        $this->assertEquals('2098-01-01 00:00:00', $expire);
+        $this->assertEquals(9, count($tags));
+    }
 
-		$helper = new \Aimeos\Base\View\Helper\Param\Standard( $this->view, array( 'f_catid' => $node->getId() ) );
-		$this->view->addHelper( 'param', $helper );
+    public function testBodyLevelsOnly()
+    {
+        $catalogManager = \Aimeos\MShop::create(\TestHelper::context(), 'catalog');
+        $node = $catalogManager->getTree(null, [], \Aimeos\MW\Tree\Manager\Base::LEVEL_TREE);
 
-		$tags = [];
-		$expire = null;
+        $this->context->config()->set('controller/frontend/catalog/levels-only', 1);
 
-		$this->object->setView( $this->object->data( $this->view, $tags, $expire ) );
-		$output = $this->object->body();
+        $helper = new \Aimeos\Base\View\Helper\Param\Standard($this->view, [ 'f_catid' => $node->getChild(0)->getId() ]);
+        $this->view->addHelper('param', $helper);
 
-		$this->assertStringContainsString( 'level-2', $output );
-		$this->assertEquals( '2098-01-01 00:00:00', $expire );
-		$this->assertEquals( 9, count( $tags ) );
-	}
+        $tags = [];
+        $expire = null;
 
+        $this->object->setView($this->object->data($this->view, $tags, $expire));
+        $output = $this->object->body();
 
-	public function testBodyLevelsOnly()
-	{
-		$catalogManager = \Aimeos\MShop::create( \TestHelper::context(), 'catalog' );
-		$node = $catalogManager->getTree( null, [], \Aimeos\MW\Tree\Manager\Base::LEVEL_TREE );
+        $this->assertStringNotContainsString('level-2', $output);
+        $this->assertEquals('2098-01-01 00:00:00', $expire);
+        $this->assertEquals(4, count($tags));
+    }
 
-		$this->context->config()->set( 'controller/frontend/catalog/levels-only', 1 );
+    public function testBodyLevelsDeep()
+    {
+        $tags = [];
+        $expire = null;
 
-		$helper = new \Aimeos\Base\View\Helper\Param\Standard( $this->view, array( 'f_catid' => $node->getChild( 0 )->getId() ) );
-		$this->view->addHelper( 'param', $helper );
+        $this->object->setView($this->object->data($this->view, $tags, $expire));
+        $output = $this->object->body();
 
-		$tags = [];
-		$expire = null;
-
-		$this->object->setView( $this->object->data( $this->view, $tags, $expire ) );
-		$output = $this->object->body();
-
-		$this->assertStringNotContainsString( 'level-2', $output );
-		$this->assertEquals( '2098-01-01 00:00:00', $expire );
-		$this->assertEquals( 4, count( $tags ) );
-	}
-
-
-	public function testBodyLevelsDeep()
-	{
-		$tags = [];
-		$expire = null;
-
-		$this->object->setView( $this->object->data( $this->view, $tags, $expire ) );
-		$output = $this->object->body();
-
-		$this->assertStringContainsString( 'level-2', $output );
-		$this->assertEquals( '2098-01-01 00:00:00', $expire );
-		$this->assertEquals( 9, count( $tags ) );
-	}
+        $this->assertStringContainsString('level-2', $output);
+        $this->assertEquals('2098-01-01 00:00:00', $expire);
+        $this->assertEquals(9, count($tags));
+    }
 }

@@ -1,111 +1,105 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Metaways Infosystems GmbH, 2012
  * @copyright Aimeos (aimeos.org), 2015-2026
  */
 
-
 namespace Aimeos\Client\Html\Catalog\Stage;
-
 
 class StandardTest extends \PHPUnit\Framework\TestCase
 {
-	private $object;
-	private $context;
-	private $view;
+    private $object;
+    private $context;
+    private $view;
 
+    protected function setUp(): void
+    {
+        \Aimeos\Controller\Frontend::cache(true);
+        \Aimeos\MShop::cache(true);
 
-	protected function setUp() : void
-	{
-		\Aimeos\Controller\Frontend::cache( true );
-		\Aimeos\MShop::cache( true );
+        $this->view = \TestHelper::view();
+        $this->context = \TestHelper::context();
 
-		$this->view = \TestHelper::view();
-		$this->context = \TestHelper::context();
+        $this->object = new \Aimeos\Client\Html\Catalog\Stage\Standard($this->context);
+        $this->object->setView($this->view);
+    }
 
-		$this->object = new \Aimeos\Client\Html\Catalog\Stage\Standard( $this->context );
-		$this->object->setView( $this->view );
-	}
+    protected function tearDown(): void
+    {
+        \Aimeos\Controller\Frontend::cache(false);
+        \Aimeos\MShop::cache(false);
 
+        unset($this->object, $this->context, $this->view);
+    }
 
-	protected function tearDown() : void
-	{
-		\Aimeos\Controller\Frontend::cache( false );
-		\Aimeos\MShop::cache( false );
+    public function testHeader()
+    {
+        $helper = new \Aimeos\Base\View\Helper\Param\Standard($this->view, [ 'f_catid' => $this->getCatalogItem()->getId() ]);
+        $this->view->addHelper('param', $helper);
 
-		unset( $this->object, $this->context, $this->view );
-	}
+        $tags = [];
+        $expire = null;
 
+        $this->object->setView($this->object->data($this->view, $tags, $expire));
+        $output = $this->object->header();
 
-	public function testHeader()
-	{
-		$helper = new \Aimeos\Base\View\Helper\Param\Standard( $this->view, array( 'f_catid' => $this->getCatalogItem()->getId() ) );
-		$this->view->addHelper( 'param', $helper );
+        $this->assertNotNull($output);
+        $this->assertEquals('2098-01-01 00:00:00', $expire);
+        $this->assertEquals(3, count($tags));
+    }
 
-		$tags = [];
-		$expire = null;
+    public function testBody()
+    {
+        $tags = [];
+        $expire = null;
 
-		$this->object->setView( $this->object->data( $this->view, $tags, $expire ) );
-		$output = $this->object->header();
+        $this->object->setView($this->object->data($this->view, $tags, $expire));
+        $output = $this->object->body();
 
-		$this->assertNotNull( $output );
-		$this->assertEquals( '2098-01-01 00:00:00', $expire );
-		$this->assertEquals( 3, count( $tags ) );
-	}
+        $this->assertStringContainsString('<div class="section aimeos catalog-stage', $output);
+        $this->assertStringContainsString('<div class="catalog-stage-breadcrumb', $output);
+        $this->assertMatchesRegularExpression('#Back#smU', $output);
 
+        $this->assertEquals(null, $expire);
+        $this->assertEquals(0, count($tags));
+    }
 
-	public function testBody()
-	{
-		$tags = [];
-		$expire = null;
+    public function testBodyCatId()
+    {
+        $helper = new \Aimeos\Base\View\Helper\Param\Standard($this->view, [ 'f_catid' => $this->getCatalogItem()->getId() ]);
+        $this->view->addHelper('param', $helper);
 
-		$this->object->setView( $this->object->data( $this->view, $tags, $expire ) );
-		$output = $this->object->body();
+        $tags = [];
+        $expire = null;
 
-		$this->assertStringContainsString( '<div class="section aimeos catalog-stage', $output );
-		$this->assertStringContainsString( '<div class="catalog-stage-breadcrumb', $output );
-		$this->assertMatchesRegularExpression( '#Back#smU', $output );
+        $this->object->setView($this->object->data($this->view, $tags, $expire));
+        $output = $this->object->body();
 
-		$this->assertEquals( null, $expire );
-		$this->assertEquals( 0, count( $tags ) );
-	}
+        $this->assertStringContainsString('<div class="section aimeos catalog-stage home categories coffee"', $output);
+        $this->assertStringContainsString('<div class="catalog-stage-image', $output);
+        $this->assertStringContainsString('/path/to/folder/cafe/stage.jpg', $output);
 
+        $this->assertStringContainsString('<div class="catalog-stage-breadcrumb', $output);
+        $this->assertMatchesRegularExpression('#Root.*.Categories.*.Kaffee.*#smU', $output);
 
-	public function testBodyCatId()
-	{
-		$helper = new \Aimeos\Base\View\Helper\Param\Standard( $this->view, array( 'f_catid' => $this->getCatalogItem()->getId() ) );
-		$this->view->addHelper( 'param', $helper );
+        $this->assertEquals('2098-01-01 00:00:00', $expire);
+        $this->assertEquals(3, count($tags));
+    }
 
-		$tags = [];
-		$expire = null;
+    protected function getCatalogItem()
+    {
+        $catalogManager = \Aimeos\MShop::create($this->context, 'catalog');
+        $search = $catalogManager->filter();
+        $search->setConditions($search->compare('==', 'catalog.code', 'cafe'));
 
-		$this->object->setView( $this->object->data( $this->view, $tags, $expire ) );
-		$output = $this->object->body();
+        if (($item = $catalogManager->search($search)->first()) === null) {
+            throw new \RuntimeException('No catalog item with code "cafe" found');
+        }
 
-		$this->assertStringContainsString( '<div class="section aimeos catalog-stage home categories coffee"', $output );
-		$this->assertStringContainsString( '<div class="catalog-stage-image', $output );
-		$this->assertStringContainsString( '/path/to/folder/cafe/stage.jpg', $output );
-
-		$this->assertStringContainsString( '<div class="catalog-stage-breadcrumb', $output );
-		$this->assertMatchesRegularExpression( '#Root.*.Categories.*.Kaffee.*#smU', $output );
-
-		$this->assertEquals( '2098-01-01 00:00:00', $expire );
-		$this->assertEquals( 3, count( $tags ) );
-	}
-
-
-	protected function getCatalogItem()
-	{
-		$catalogManager = \Aimeos\MShop::create( $this->context, 'catalog' );
-		$search = $catalogManager->filter();
-		$search->setConditions( $search->compare( '==', 'catalog.code', 'cafe' ) );
-
-		if( ( $item = $catalogManager->search( $search )->first() ) === null ) {
-			throw new \RuntimeException( 'No catalog item with code "cafe" found' );
-		}
-
-		return $item;
-	}
+        return $item;
+    }
 }

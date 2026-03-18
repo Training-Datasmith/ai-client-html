@@ -5,7 +5,6 @@
  * @copyright Aimeos (aimeos.org), 2022-2026
  */
 
-
 /** client/html/account/basket/url/target
  * Destination of the URL where the controller specified in the URL is known
  *
@@ -86,7 +85,6 @@
  * @see client/html/account/basket/url/config
  */
 
-
 /** client/html/account/basket/summary/address
  * Relative path to the HTML template of the account basket address partial.
  *
@@ -146,59 +144,58 @@
 
 $enc = $this->encoder();
 
-
 ?>
-<?php if( !$this->get( 'basketItems', map() )->isEmpty() ) : ?>
+<?php if (!$this->get('basketItems', map())->isEmpty()) : ?>
 
-	<div class="section aimeos account-basket" data-jsonurl="<?= $enc->attr( $this->link( 'client/jsonapi/url' ) ) ?>">
+	<div class="section aimeos account-basket" data-jsonurl="<?= $enc->attr($this->link('client/jsonapi/url')) ?>">
 		<div class="container-xxl">
 
-			<h2 class="header"><?= $enc->html( $this->translate( 'client', 'Saved baskets' ), $enc::TRUST ) ?></h2>
+			<h2 class="header"><?= $enc->html($this->translate('client', 'Saved baskets'), $enc::TRUST) ?></h2>
 
 			<div class="basket-list">
 
-				<?php foreach( $this->get( 'basketItems', [] ) as $basketItem ) : ?>
-					<?php if( $basket = $basketItem->getItem() ) : ?>
+				<?php foreach ($this->get('basketItems', []) as $basketItem) : ?>
+					<?php if ($basket = $basketItem->getItem()) : ?>
 
 						<div class="basket-item row">
 
 							<div class="col-12 col-md-5">
 								<h2 class="basket-basic">
 									<span class="name">
-										<?= $enc->html( $this->translate( 'client', 'Name' ), $enc::TRUST ) ?>
+										<?= $enc->html($this->translate('client', 'Name'), $enc::TRUST) ?>
 									</span>
 									<span class="value">
-										<?= $enc->html( $basketItem->getName() ) ?>
+										<?= $enc->html($basketItem->getName()) ?>
 									</span>
 								</h2>
 							</div>
 
 							<div class="col-6 col-md-5">
-								<a class="btn btn-primary delete" href="<?= $enc->attr( $this->link( 'client/html/account/basket/url', ['bas_action' => 'delete', 'bas_id' => $basketItem->getId()] ) ) ?>">
-									<?= $enc->html( $this->translate( 'client', 'Delete' ) ) ?>
+								<a class="btn btn-primary delete" href="<?= $enc->attr($this->link('client/html/account/basket/url', ['bas_action' => 'delete', 'bas_id' => $basketItem->getId()])) ?>">
+									<?= $enc->html($this->translate('client', 'Delete')) ?>
 								</a>
 							</div>
 
 							<div class="action col-6 col-md-2">
-								<a class="btn btn-secondary show" href="#"><?= $enc->html( $this->translate( 'client', 'Show' ) ) ?></a>
-								<a class="btn btn-secondary close hidden" href="#"><?= $enc->html( $this->translate( 'client', 'Close' ) ) ?></a>
+								<a class="btn btn-secondary show" href="#"><?= $enc->html($this->translate('client', 'Show')) ?></a>
+								<a class="btn btn-secondary close hidden" href="#"><?= $enc->html($this->translate('client', 'Close')) ?></a>
 							</div>
 
 							<div class="account-basket-detail common-summary col-12" style="display: none">
 
-								<h2 class="header"><?= $enc->html( $this->translate( 'client', 'Basket details' ), $enc::TRUST ) ?></h2>
+								<h2 class="header"><?= $enc->html($this->translate('client', 'Basket details'), $enc::TRUST) ?></h2>
 
 								<div class="common-summary-address row">
 									<div class="item payment col-sm-6">
 										<div class="header">
-											<h3><?= $enc->html( $this->translate( 'client', 'Billing address' ), $enc::TRUST ) ?></h3>
+											<h3><?= $enc->html($this->translate('client', 'Billing address'), $enc::TRUST) ?></h3>
 										</div>
 
 										<div class="content">
-											<?php if( !empty( $basket->getAddress( 'payment' ) ) ) : ?>
+											<?php if (!empty($basket->getAddress('payment'))) : ?>
 												<?= $this->partial(
-													$this->config( 'client/html/account/basket/summary/address', 'common/summary/address' ),
-													['addresses' => $basket->getAddress( 'payment' )]
+												    $this->config('client/html/account/basket/summary/address', 'common/summary/address'),
+												    ['addresses' => $basket->getAddress('payment')]
 												) ?>
 											<?php endif ?>
 										</div>
@@ -206,17 +203,17 @@ $enc = $this->encoder();
 
 									--><div class="item delivery col-sm-6">
 										<div class="header">
-											<h3><?= $enc->html( $this->translate( 'client', 'Delivery address' ), $enc::TRUST ) ?></h3>
+											<h3><?= $enc->html($this->translate('client', 'Delivery address'), $enc::TRUST) ?></h3>
 										</div>
 
 										<div class="content">
-											<?php if( !empty( $basket->getAddress( 'delivery' ) ) ) : ?>
+											<?php if (!empty($basket->getAddress('delivery'))) : ?>
 												<?= $this->partial(
-													$this->config( 'client/html/account/basket/summary/address', 'common/summary/address' ),
-													['addresses' => $basket->getAddress( 'delivery' )]
+												    $this->config('client/html/account/basket/summary/address', 'common/summary/address'),
+												    ['addresses' => $basket->getAddress('delivery')]
 												) ?>
 											<?php else : ?>
-												<?= $enc->html( $this->translate( 'client', 'like billing address' ), $enc::TRUST ) ?>
+												<?= $enc->html($this->translate('client', 'like billing address'), $enc::TRUST) ?>
 											<?php endif ?>
 										</div>
 									</div>
@@ -226,14 +223,14 @@ $enc = $this->encoder();
 								<div class="common-summary-service row">
 									<div class="item delivery col-sm-6">
 										<div class="header">
-											<h3><?= $enc->html( $this->translate( 'client', 'delivery' ), $enc::TRUST ) ?></h3>
+											<h3><?= $enc->html($this->translate('client', 'delivery'), $enc::TRUST) ?></h3>
 										</div>
 
 										<div class="content">
-											<?php if( !empty( $basket->getService( 'delivery' ) ) ) : ?>
+											<?php if (!empty($basket->getService('delivery'))) : ?>
 												<?= $this->partial(
-													$this->config( 'client/html/account/basket/summary/service', 'common/summary/service' ),
-													array( 'service' => $basket->getService( 'delivery' ), 'type' => 'delivery' )
+												    $this->config('client/html/account/basket/summary/service', 'common/summary/service'),
+												    [ 'service' => $basket->getService('delivery'), 'type' => 'delivery' ]
 												) ?>
 											<?php endif ?>
 										</div>
@@ -241,14 +238,14 @@ $enc = $this->encoder();
 
 									--><div class="item payment col-sm-6">
 										<div class="header">
-											<h3><?= $enc->html( $this->translate( 'client', 'payment' ), $enc::TRUST ) ?></h3>
+											<h3><?= $enc->html($this->translate('client', 'payment'), $enc::TRUST) ?></h3>
 										</div>
 
 										<div class="content">
-											<?php if( !empty( $basket->getService( 'payment' ) ) ) : ?>
+											<?php if (!empty($basket->getService('payment'))) : ?>
 												<?= $this->partial(
-													$this->config( 'client/html/account/basket/summary/service', 'common/summary/service' ),
-													array( 'service' => $basket->getService( 'payment' ), 'type' => 'payment' )
+												    $this->config('client/html/account/basket/summary/service', 'common/summary/service'),
+												    [ 'service' => $basket->getService('payment'), 'type' => 'payment' ]
 												) ?>
 											<?php endif ?>
 										</div>
@@ -260,14 +257,14 @@ $enc = $this->encoder();
 								<div class="common-summary-additional row">
 									<div class="item coupon col-sm-4">
 										<div class="header">
-											<h3><?= $enc->html( $this->translate( 'client', 'Coupon codes' ), $enc::TRUST ) ?></h3>
+											<h3><?= $enc->html($this->translate('client', 'Coupon codes'), $enc::TRUST) ?></h3>
 										</div>
 
 										<div class="content">
-											<?php if( !( $coupons = $basket->getCoupons() )->isEmpty() ) : ?>
+											<?php if (!($coupons = $basket->getCoupons())->isEmpty()) : ?>
 												<ul class="attr-list">
-													<?php foreach( $coupons as $code => $products ) : ?>
-														<li class="attr-item"><?= $enc->html( $code ) ?></li>
+													<?php foreach ($coupons as $code => $products) : ?>
+														<li class="attr-item"><?= $enc->html($code) ?></li>
 													<?php endforeach ?>
 												</ul>
 											<?php endif ?>
@@ -276,21 +273,21 @@ $enc = $this->encoder();
 
 									--><div class="item customerref col-sm-4">
 										<div class="header">
-											<h3><?= $enc->html( $this->translate( 'client', 'Your reference number' ), $enc::TRUST ) ?></h3>
+											<h3><?= $enc->html($this->translate('client', 'Your reference number'), $enc::TRUST) ?></h3>
 										</div>
 
 										<div class="content">
-											<?= $enc->html( $basket->getCustomerReference() ) ?>
+											<?= $enc->html($basket->getCustomerReference()) ?>
 										</div>
 									</div><!--
 
 									--><div class="item comment col-sm-4">
 										<div class="header">
-											<h3><?= $enc->html( $this->translate( 'client', 'Your comment' ), $enc::TRUST ) ?></h3>
+											<h3><?= $enc->html($this->translate('client', 'Your comment'), $enc::TRUST) ?></h3>
 										</div>
 
 										<div class="content">
-											<?= $enc->html( $basket->getComment() ) ?>
+											<?= $enc->html($basket->getComment()) ?>
 										</div>
 									</div>
 								</div>
@@ -298,55 +295,55 @@ $enc = $this->encoder();
 
 								<div class="common-summary-detail row">
 									<div class="header col-sm-12">
-										<h2><?= $enc->html( $this->translate( 'client', 'Details' ), $enc::TRUST ) ?></h2>
+										<h2><?= $enc->html($this->translate('client', 'Details'), $enc::TRUST) ?></h2>
 									</div>
 
 									<div class="basket col-sm-12">
 										<?= $this->partial(
-											$this->config( 'client/html/account/basket/summary/detail', 'common/summary/detail' ),
-											['summaryBasket' => $basket]
+										    $this->config('client/html/account/basket/summary/detail', 'common/summary/detail'),
+										    ['summaryBasket' => $basket]
 										) ?>
 									</div>
 								</div>
 
 
-								<form method="POST" action="<?= $enc->attr( $this->link( 'client/html/basket/standard/url' ) ) ?>">
+								<form method="POST" action="<?= $enc->attr($this->link('client/html/basket/standard/url')) ?>">
 									<?= $this->csrf()->formfield() ?>
 
-									<input type="hidden" value="add" name="<?= $enc->attr( $this->formparam( 'b_action' ) ) ?>">
+									<input type="hidden" value="add" name="<?= $enc->attr($this->formparam('b_action')) ?>">
 
-									<?php foreach( $basket->getProducts() as $pos => $orderProduct ) : ?>
-										<input type="hidden" name="<?= $enc->attr( $this->formparam( ['b_prod', $pos, 'prodid'] ) ) ?>" value="<?= $enc->attr( $orderProduct->getParentProductId() ?: $orderProduct->getProductId() ) ?>">
-										<input type="hidden" name="<?= $enc->attr( $this->formparam( ['b_prod', $pos, 'quantity'] ) ) ?>" value="<?= $enc->attr( $orderProduct->getQuantity() ) ?>">
+									<?php foreach ($basket->getProducts() as $pos => $orderProduct) : ?>
+										<input type="hidden" name="<?= $enc->attr($this->formparam(['b_prod', $pos, 'prodid'])) ?>" value="<?= $enc->attr($orderProduct->getParentProductId() ?: $orderProduct->getProductId()) ?>">
+										<input type="hidden" name="<?= $enc->attr($this->formparam(['b_prod', $pos, 'quantity'])) ?>" value="<?= $enc->attr($orderProduct->getQuantity()) ?>">
 
-										<?php foreach( $orderProduct->getAttributeItems( 'variant' ) as $attrItem ) : ?>
-											<input type="hidden" value="<?= $enc->attr( $attrItem->getAttributeId() ) ?>"
-												name="<?= $enc->attr( $this->formparam( ['b_prod', $pos, 'attrvarid', $attrItem->getCode()] ) ) ?>"
+										<?php foreach ($orderProduct->getAttributeItems('variant') as $attrItem) : ?>
+											<input type="hidden" value="<?= $enc->attr($attrItem->getAttributeId()) ?>"
+												name="<?= $enc->attr($this->formparam(['b_prod', $pos, 'attrvarid', $attrItem->getCode()])) ?>"
 											>
 										<?php endforeach ?>
 
-										<?php foreach( $orderProduct->getAttributeItems( 'custom' ) as $attrItem ) : ?>
-											<input type="hidden" value="<?= $enc->attr( $attrItem->getValue() ) ?>"
-												name="<?= $enc->attr( $this->formparam( ['b_prod', $pos, 'attrcustid', $attrItem->getAttributeId()] ) ) ?>"
+										<?php foreach ($orderProduct->getAttributeItems('custom') as $attrItem) : ?>
+											<input type="hidden" value="<?= $enc->attr($attrItem->getValue()) ?>"
+												name="<?= $enc->attr($this->formparam(['b_prod', $pos, 'attrcustid', $attrItem->getAttributeId()])) ?>"
 											>
 										<?php endforeach ?>
 
-										<?php foreach( $orderProduct->getAttributeItems( 'config' ) as $attrItem ) : ?>
-											<input type="hidden" value="<?= $enc->attr( $attrItem->getAttributeId() ) ?>"
-												name="<?= $enc->attr( $this->formparam( ['b_prod', $pos, 'attrconfid', 'id', ''] ) ) ?>"
+										<?php foreach ($orderProduct->getAttributeItems('config') as $attrItem) : ?>
+											<input type="hidden" value="<?= $enc->attr($attrItem->getAttributeId()) ?>"
+												name="<?= $enc->attr($this->formparam(['b_prod', $pos, 'attrconfid', 'id', ''])) ?>"
 											>
-											<input type="hidden" value="<?= $enc->attr( $attrItem->getQuantity() ) ?>"
-												name="<?= $enc->attr( $this->formparam( ['b_prod', $pos, 'attrconfid', 'qty', ''] ) ) ?>"
+											<input type="hidden" value="<?= $enc->attr($attrItem->getQuantity()) ?>"
+												name="<?= $enc->attr($this->formparam(['b_prod', $pos, 'attrconfid', 'qty', ''])) ?>"
 											>
 										<?php endforeach ?>
 									<?php endforeach ?>
 
 									<div class="button-group">
-										<a class="btn btn-secondary close" href="<?= $enc->attr( $this->link( 'client/html/account/basket/url', [], ['account-basket'] ) ) ?>">
-											<?= $enc->html( $this->translate( 'client', 'Close' ), $enc::TRUST ) ?>
+										<a class="btn btn-secondary close" href="<?= $enc->attr($this->link('client/html/account/basket/url', [], ['account-basket'])) ?>">
+											<?= $enc->html($this->translate('client', 'Close'), $enc::TRUST) ?>
 										</a>
 										<button class="btn btn-primary btn-action">
-											<?= $enc->html( $this->translate( 'client', 'Add to basket' ), $enc::TRUST ) ?>
+											<?= $enc->html($this->translate('client', 'Add to basket'), $enc::TRUST) ?>
 										</button>
 									</div>
 								</form>

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2015-2026
@@ -7,9 +9,7 @@
  * @subpackage Html
  */
 
-
 namespace Aimeos\Client\Html\Common\Client\Factory;
-
 
 /**
  * Base class for html clients
@@ -17,8 +17,6 @@ namespace Aimeos\Client\Html\Common\Client\Factory;
  * @package Client
  * @subpackage Html
  */
-abstract class Base
-	extends \Aimeos\Client\Html\Base
-	implements \Aimeos\Client\Html\Common\Client\Factory\Iface
+abstract class Base extends \Aimeos\Client\Html\Base implements \Aimeos\Client\Html\Common\Client\Factory\Iface
 {
 }

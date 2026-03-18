@@ -8,7 +8,6 @@
 
 $enc = $this->encoder();
 
-
 /** client/html/locale/select/language/url/config
  * Associative list of configuration options used for generating the URL
  *
@@ -25,22 +24,21 @@ $enc = $this->encoder();
  * @param string Associative list of configuration options
  * @since 2014.09
  */
-$config = $this->config( 'client/html/locale/select/language/url/config', [] );
-
+$config = $this->config('client/html/locale/select/language/url/config', []);
 
 ?>
 <div class="locale-select-language">
-	<h2 class="header"><?= $this->translate( 'client', 'Select language' ) ?></h2>
+	<h2 class="header"><?= $this->translate('client', 'Select language') ?></h2>
 
 	<ul class="select-menu">
-		<li class="select-dropdown select-current"><a href="#"><?= $enc->attr( $this->get( 'selectLanguageId', 'en' ) ) ?></a>
+		<li class="select-dropdown select-current"><a href="#"><?= $enc->attr($this->get('selectLanguageId', 'en')) ?></a>
 			<ul class="select-dropdown">
 
-				<?php foreach( $this->get( 'selectMap', [] ) as $lang => $list ) : ?>
-					<li class="select-item <?= ( $lang === $this->get( 'selectLanguageId', 'en' ) ? 'active' : '' ) ?>">
-						<a href="<?= $enc->attr( $this->url( $this->request()->getTarget(), $this->param( 'controller' ), $this->param( 'action' ), array_merge( $this->get( 'selectParams', [] ), $list[$this->get( 'selectCurrencyId', 'EUR' )] ?? current( $list ) ), [], $config ) ) ?>"
-							title="<?= $enc->attr( $lang ) ?>">
-							<?= $enc->html( $this->translate( 'language', $lang ), $enc::TRUST ) ?>
+				<?php foreach ($this->get('selectMap', []) as $lang => $list) : ?>
+					<li class="select-item <?= ($lang === $this->get('selectLanguageId', 'en') ? 'active' : '') ?>">
+						<a href="<?= $enc->attr($this->url($this->request()->getTarget(), $this->param('controller'), $this->param('action'), array_merge($this->get('selectParams', []), $list[$this->get('selectCurrencyId', 'EUR')] ?? current($list)), [], $config)) ?>"
+							title="<?= $enc->attr($lang) ?>">
+							<?= $enc->html($this->translate('language', $lang), $enc::TRUST) ?>
 						</a>
 					</li>
 				<?php endforeach ?>

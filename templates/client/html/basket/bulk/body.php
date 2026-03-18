@@ -17,48 +17,47 @@ $enc = $this->encoder();
  * @param int Number of lines shown
  * @since 2020.07
  */
-$rows = (int) $this->config( 'client/html/basket/bulk/rows', 1 );
-
+$rows = (int) $this->config('client/html/basket/bulk/rows', 1);
 
 ?>
-<div class="section aimeos basket-bulk" data-jsonurl="<?= $enc->attr( $this->link( 'client/jsonapi/url' ) ) ?>">
+<div class="section aimeos basket-bulk" data-jsonurl="<?= $enc->attr($this->link('client/jsonapi/url')) ?>">
 	<div class="container-xxl">
 
-		<h2><?= $enc->html( $this->translate( 'client', 'Bulk order' ), $enc::TRUST ) ?></h2>
+		<h2><?= $enc->html($this->translate('client', 'Bulk order'), $enc::TRUST) ?></h2>
 
-		<form method="POST" action="<?= $enc->attr( $this->link( 'client/html/basket/standard/url' ) ) ?>">
+		<form method="POST" action="<?= $enc->attr($this->link('client/html/basket/standard/url')) ?>">
 			<!-- basket.bulk.csrf -->
 			<?= $this->csrf()->formfield() ?>
 			<!-- basket.bulk.csrf -->
 
-			<input type="hidden" value="add" name="<?= $enc->attr( $this->formparam( 'b_action' ) ) ?>">
+			<input type="hidden" value="add" name="<?= $enc->attr($this->formparam('b_action')) ?>">
 
 			<div class="bulk-main">
 				<div class="row g-0 headline">
-					<div class="col-sm-6 product-item"><?= $enc->html( $this->translate( 'client', 'Article' ) ) ?></div>
+					<div class="col-sm-6 product-item"><?= $enc->html($this->translate('client', 'Article')) ?></div>
 					<div class="col-sm-6">
 						<div class="row">
-							<div class="col-4 quantity"><?= $enc->html( $this->translate( 'client', 'Quantity' ) ) ?></div>
-							<div class="col-4 price"><?= $enc->html( $this->translate( 'client', 'Price' ) ) ?></div>
+							<div class="col-4 quantity"><?= $enc->html($this->translate('client', 'Quantity')) ?></div>
+							<div class="col-4 price"><?= $enc->html($this->translate('client', 'Price')) ?></div>
 							<div class="col-4 buttons">
-								<a class="minibutton add" href="#" title="<?= $enc->attr( $this->translate( 'client', 'Add' ) ) ?>"></a>
+								<a class="minibutton add" href="#" title="<?= $enc->attr($this->translate('client', 'Add')) ?>"></a>
 							</div>
 						</div>
 					</div>
 				</div>
 				<div class="bulk-content">
-					<?php for( $idx = 0; $idx < $rows; $idx++ ) : ?>
+					<?php for ($idx = 0; $idx < $rows; $idx++) : ?>
 						<div class="row g-0 details">
 							<div class="col-sm-6 product-item">
 								<input type="hidden" class="attrvarid"
-									name="<?= $enc->attr( $this->formparam( ['b_prod', $idx, 'attrvarid', '_type_'] ) ) ?>"
+									name="<?= $enc->attr($this->formparam(['b_prod', $idx, 'attrvarid', '_type_'])) ?>"
 								>
 								<input type="hidden" class="productid"
-									name="<?= $enc->attr( $this->formparam( ['b_prod', $idx, 'prodid'] ) ) ?>"
+									name="<?= $enc->attr($this->formparam(['b_prod', $idx, 'prodid'])) ?>"
 								>
 								<input type="text" class="value search"
-									placeholder="<?= $enc->attr( $this->translate( 'client', 'SKU or article name' ) ) ?>"
-									title="<?= $enc->attr( $this->translate( 'client', 'SKU or article name' ) ) ?>"
+									placeholder="<?= $enc->attr($this->translate('client', 'SKU or article name')) ?>"
+									title="<?= $enc->attr($this->translate('client', 'SKU or article name')) ?>"
 								>
 								<div class="vattributes"></div>
 							</div>
@@ -66,14 +65,14 @@ $rows = (int) $this->config( 'client/html/basket/bulk/rows', 1 );
 								<div class="row">
 									<div class="col-4 quantity">
 										<input type="number" class="value"
-											name="<?= $enc->attr( $this->formparam( ['b_prod', $idx, 'quantity'] ) ) ?>"
+											name="<?= $enc->attr($this->formparam(['b_prod', $idx, 'quantity'])) ?>"
 											min="1" max="2147483647" step="1" required="required" value="1" autocomplete="off"
-											title="<?= $enc->attr( $this->translate( 'client', 'Quantity' ) ) ?>"
+											title="<?= $enc->attr($this->translate('client', 'Quantity')) ?>"
 										>
 									</div>
 									<div class="col-4 price"></div>
 									<div class="col-4 buttons">
-										<a class="minibutton delete" href="#" title="<?= $enc->attr( $this->translate( 'client', 'Remove' ) ) ?>"></a>
+										<a class="minibutton delete" href="#" title="<?= $enc->attr($this->translate('client', 'Remove')) ?>"></a>
 									</div>
 								</div>
 							</div>
@@ -83,14 +82,14 @@ $rows = (int) $this->config( 'client/html/basket/bulk/rows', 1 );
 					<div class="row g-0 details prototype">
 						<div class="col-sm-6 product-item">
 							<input type="hidden" class="attrvarid" disabled="disabled"
-								name="<?= $enc->attr( $this->formparam( ['b_prod', '_idx_', 'attrvarid', '_type_'] ) ) ?>"
+								name="<?= $enc->attr($this->formparam(['b_prod', '_idx_', 'attrvarid', '_type_'])) ?>"
 							>
 							<input type="hidden" class="productid" disabled="disabled"
-								name="<?= $enc->attr( $this->formparam( ['b_prod', '_idx_', 'prodid'] ) ) ?>"
+								name="<?= $enc->attr($this->formparam(['b_prod', '_idx_', 'prodid'])) ?>"
 							>
 							<input type="text" class="value search" disabled="disabled"
-								placeholder="<?= $enc->attr( $this->translate( 'client', 'SKU or article name' ) ) ?>"
-								title="<?= $enc->attr( $this->translate( 'client', 'SKU or article name' ) ) ?>"
+								placeholder="<?= $enc->attr($this->translate('client', 'SKU or article name')) ?>"
+								title="<?= $enc->attr($this->translate('client', 'SKU or article name')) ?>"
 							>
 							<div class="vattributes"></div>
 						</div>
@@ -98,14 +97,14 @@ $rows = (int) $this->config( 'client/html/basket/bulk/rows', 1 );
 							<div class="row">
 								<div class="col-4 quantity">
 									<input type="number" class="value" disabled="disabled"
-										name="<?= $enc->attr( $this->formparam( ['b_prod', '_idx_', 'quantity'] ) ) ?>"
+										name="<?= $enc->attr($this->formparam(['b_prod', '_idx_', 'quantity'])) ?>"
 										min="1" max="2147483647" step="1" required="required" value="1" autocomplete="off"
-										title="<?= $enc->attr( $this->translate( 'client', 'Quantity' ) ) ?>"
+										title="<?= $enc->attr($this->translate('client', 'Quantity')) ?>"
 									>
 								</div>
 								<div class="col-4 price"></div>
 								<div class="col-4 buttons">
-									<a class="minibutton delete" href="#" title="<?= $enc->attr( $this->translate( 'client', 'Remove' ) ) ?>"></a>
+									<a class="minibutton delete" href="#" title="<?= $enc->attr($this->translate('client', 'Remove')) ?>"></a>
 								</div>
 							</div>
 						</div>
@@ -115,7 +114,7 @@ $rows = (int) $this->config( 'client/html/basket/bulk/rows', 1 );
 
 			<div class="button-group">
 				<button class="btn btn-primary btn-lg btn-action" type="submit" value="">
-					<?= $enc->html( $this->translate( 'client', 'Add to basket' ), $enc::TRUST ) ?>
+					<?= $enc->html($this->translate('client', 'Add to basket'), $enc::TRUST) ?>
 				</button>
 			</div>
 

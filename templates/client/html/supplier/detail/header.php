@@ -87,7 +87,6 @@ $enc = $this->encoder();
  * @see client/html/supplier/detail/url/config
  */
 
-
 /** client/html/supplier/detail/metatags
  * Adds the title, meta and link tags to the HTML header
  *
@@ -103,34 +102,33 @@ $enc = $this->encoder();
  * @see client/html/supplier/lists/metatags
  */
 
-
 ?>
-<?php if( (bool) $this->config( 'client/html/supplier/detail/metatags', true ) === true ) : ?>
-	<?php if( isset( $this->detailSupplierItem ) ) : ?>
-		<title><?= $enc->html( $this->detailSupplierItem->getName() ) ?> | <?= $enc->html( $this->get( 'contextSiteLabel', 'Aimeos' ) ) ?></title>
+<?php if ((bool) $this->config('client/html/supplier/detail/metatags', true) === true) : ?>
+	<?php if (isset($this->detailSupplierItem)) : ?>
+		<title><?= $enc->html($this->detailSupplierItem->getName()) ?> | <?= $enc->html($this->get('contextSiteLabel', 'Aimeos')) ?></title>
 
-		<?php foreach( $this->detailSupplierItem->getRefItems( 'text', 'meta-keyword', 'default' ) as $textItem ) : ?>
-			<meta name="keywords" content="<?= $enc->attr( strip_tags( $textItem->getContent() ) ) ?>">
+		<?php foreach ($this->detailSupplierItem->getRefItems('text', 'meta-keyword', 'default') as $textItem) : ?>
+			<meta name="keywords" content="<?= $enc->attr(strip_tags($textItem->getContent())) ?>">
 		<?php endforeach ?>
 
-		<?php foreach( $this->detailSupplierItem->getRefItems( 'text', 'meta-description', 'default' ) as $textItem ) : ?>
-			<meta name="description" content="<?= $enc->attr( strip_tags( $textItem->getContent() ) ) ?>">
+		<?php foreach ($this->detailSupplierItem->getRefItems('text', 'meta-description', 'default') as $textItem) : ?>
+			<meta name="description" content="<?= $enc->attr(strip_tags($textItem->getContent())) ?>">
 		<?php endforeach ?>
 
-		<?php $params = ['s_name' => $this->detailSupplierItem->getName( 'url' ), 'f_supid' => $this->detailSupplierItem->getId()] ?>
-		<link rel="canonical" href="<?= $enc->attr( $this->link( 'client/html/supplier/detail/url', $params, ['absoluteUri' => true] ) ) ?>">
+		<?php $params = ['s_name' => $this->detailSupplierItem->getName('url'), 'f_supid' => $this->detailSupplierItem->getId()] ?>
+		<link rel="canonical" href="<?= $enc->attr($this->link('client/html/supplier/detail/url', $params, ['absoluteUri' => true])) ?>">
 
 		<meta property="og:type" content="website">
-		<meta property="og:title" content="<?= $enc->html( $this->detailSupplierItem->getName() ) ?>">
-		<meta property="og:url" content="<?= $enc->attr( $this->link( 'client/html/supplier/detail/url', $params, ['absoluteUri' => true] ) ) ?>">
+		<meta property="og:title" content="<?= $enc->html($this->detailSupplierItem->getName()) ?>">
+		<meta property="og:url" content="<?= $enc->attr($this->link('client/html/supplier/detail/url', $params, ['absoluteUri' => true])) ?>">
 
-		<?php foreach( $this->detailSupplierItem->getRefItems( 'media', 'default', 'default' ) as $mediaItem ) : ?>
-			<meta property="og:image" content="<?= $enc->attr( $this->content( $mediaItem->getPreview( true ), $mediaItem->getFileSystem() ) ) ?>">
+		<?php foreach ($this->detailSupplierItem->getRefItems('media', 'default', 'default') as $mediaItem) : ?>
+			<meta property="og:image" content="<?= $enc->attr($this->content($mediaItem->getPreview(true), $mediaItem->getFileSystem())) ?>">
 			<meta name="twitter:card" content="summary_large_image">
 		<?php endforeach ?>
 
-		<?php foreach( $this->detailSupplierItem->getRefItems( 'text', 'short', 'default' ) as $textItem ) : ?>
-			<meta property="og:description" content="<?= $enc->attr( $textItem->getContent() ) ?>">
+		<?php foreach ($this->detailSupplierItem->getRefItems('text', 'short', 'default') as $textItem) : ?>
+			<meta property="og:description" content="<?= $enc->attr($textItem->getContent()) ?>">
 		<?php endforeach ?>
 
 	<?php endif ?>
@@ -139,5 +137,5 @@ $enc = $this->encoder();
 
 <?php endif ?>
 
-<link rel="stylesheet" href="<?= $enc->attr( $this->content( $this->get( 'contextSiteTheme', 'default' ) . '/supplier-detail.css', 'fs-theme', true ) ) ?>">
-<script defer src="<?= $enc->attr( $this->content( $this->get( 'contextSiteTheme', 'default' ) . '/supplier-detail.js', 'fs-theme', true ) ) ?>"></script>
+<link rel="stylesheet" href="<?= $enc->attr($this->content($this->get('contextSiteTheme', 'default') . '/supplier-detail.css', 'fs-theme', true)) ?>">
+<script defer src="<?= $enc->attr($this->content($this->get('contextSiteTheme', 'default') . '/supplier-detail.js', 'fs-theme', true)) ?>"></script>

@@ -51,40 +51,39 @@ $pos = 0;
 
 $lazy = false;
 
-
 ?>
-<?php if( isset( $this->homeTree ) && !(
-	$this->homeTree->getRefItems( 'media', 'stage', 'default' )->isEmpty()
-	&& $this->homeTree->getChildren()->getRefItems( 'media', 'stage', 'default' )->collapse( 1 )->isEmpty()
-) ) : ?>
+<?php if (isset($this->homeTree) && !(
+    $this->homeTree->getRefItems('media', 'stage', 'default')->isEmpty()
+    && $this->homeTree->getChildren()->getRefItems('media', 'stage', 'default')->collapse(1)->isEmpty()
+)) : ?>
 
 	<div class="section aimeos catalog-home swiffy-slider slider-item-nogap slider-nav-animation slider-nav-autoplay slider-nav-autopause"
-		data-slider-nav-autoplay-interval="4000" data-jsonurl="<?= $enc->attr( $this->link( 'client/jsonapi/url' ) ) ?>">
+		data-slider-nav-autoplay-interval="4000" data-jsonurl="<?= $enc->attr($this->link('client/jsonapi/url')) ?>">
 
-		<div class="home-gallery <?= $enc->attr( $this->homeTree->getCode() ) ?> slider-container">
+		<div class="home-gallery <?= $enc->attr($this->homeTree->getCode()) ?> slider-container">
 
-			<?php if( !( $mediaItems = $this->homeTree->getRefItems( 'media', 'stage', 'default' ) )->isEmpty() ) : ?>
-				<?php $name = $this->homeTree->getName( 'url' ) ?>
+			<?php if (!($mediaItems = $this->homeTree->getRefItems('media', 'stage', 'default'))->isEmpty()) : ?>
+				<?php $name = $this->homeTree->getName('url') ?>
 				<?php $params = ['path' => $name, 'f_name' => $name, 'f_catid' => $this->homeTree->getId()] ?>
-				<?php $url = $this->link( 'client/html/catalog/tree/url', $params ) ?>
+				<?php $url = $this->link('client/html/catalog/tree/url', $params) ?>
 
-				<?php foreach( $mediaItems as $mediaItem ) : ?>
+				<?php foreach ($mediaItems as $mediaItem) : ?>
 
-					<div class="home-item home-image <?= $enc->attr( $this->homeTree->getCode() ) ?>">
+					<div class="home-item home-image <?= $enc->attr($this->homeTree->getCode()) ?>">
 						<div class="home-stage catalog-stage-image">
-							<a class="stage-item" href="<?= $enc->attr( $url ) ?>">
+							<a class="stage-item" href="<?= $enc->attr($url) ?>">
 								<img class="stage-image" loading="<?= $lazy ? 'lazy' : '' ?>"
-									src="<?= $enc->attr( $this->content( $mediaItem->getPreview( true ), $mediaItem->getFileSystem() ) ) ?>"
-									srcset="<?= $enc->attr( $this->imageset( $mediaItem->getPreviews( true ), $mediaItem->getFileSystem() ) ) ?>"
-									alt="<?= $enc->attr( $mediaItem->getProperties( 'name' )->first() ) ?>"
+									src="<?= $enc->attr($this->content($mediaItem->getPreview(true), $mediaItem->getFileSystem())) ?>"
+									srcset="<?= $enc->attr($this->imageset($mediaItem->getPreviews(true), $mediaItem->getFileSystem())) ?>"
+									alt="<?= $enc->attr($mediaItem->getProperties('name')->first()) ?>"
 								>
 								<div class="stage-text">
 									<div class="stage-short">
-										<?php foreach( $this->homeTree->getRefItems( 'text', 'short', 'default' ) as $textItem ) : ?>
+										<?php foreach ($this->homeTree->getRefItems('text', 'short', 'default') as $textItem) : ?>
 											<?= $textItem->getContent() ?>
 										<?php endforeach ?>
 									</div>
-									<div class="btn"><?= $enc->html( $this->translate( 'client', 'Take a look' ) ) ?></div>
+									<div class="btn"><?= $enc->html($this->translate('client', 'Take a look')) ?></div>
 								</div>
 							</a>
 						</div>
@@ -95,27 +94,27 @@ $lazy = false;
 
 			<?php endif ?>
 
-			<?php foreach( $this->homeTree->getChildren() as $child ) : ?>
-				<?php if( !( $mediaItems = $child->getRefItems( 'media', 'stage', 'default' ) )->isEmpty() ) : ?>
+			<?php foreach ($this->homeTree->getChildren() as $child) : ?>
+				<?php if (!($mediaItems = $child->getRefItems('media', 'stage', 'default'))->isEmpty()) : ?>
 
-					<?php foreach( $mediaItems as $mediaItem ) : ?>
+					<?php foreach ($mediaItems as $mediaItem) : ?>
 
-						<div class="home-item cat-image <?= $enc->attr( $child->getCode() ) ?>">
+						<div class="home-item cat-image <?= $enc->attr($child->getCode()) ?>">
 							<div class="home-stage catalog-stage-image">
-								<?php $name = $child->getName( 'url' ) ?>
-								<a class="stage-item row" href="<?= $enc->attr( $this->link( 'client/html/catalog/tree/url', ['f_catid' => $child->getId(), 'f_name' => $name, 'path' => $name] ) ) ?>">
+								<?php $name = $child->getName('url') ?>
+								<a class="stage-item row" href="<?= $enc->attr($this->link('client/html/catalog/tree/url', ['f_catid' => $child->getId(), 'f_name' => $name, 'path' => $name])) ?>">
 									<img class="stage-image" loading="<?= $lazy ? 'lazy' : '' ?>"
-										src="<?= $enc->attr( $this->content( $mediaItem->getPreview( true ), $mediaItem->getFileSystem() ) ) ?>"
-										srcset="<?= $enc->attr( $this->imageset( $mediaItem->getPreviews( true ), $mediaItem->getFileSystem() ) ) ?>"
-										alt="<?= $enc->attr( $mediaItem->getProperties( 'name' )->first() ) ?>"
+										src="<?= $enc->attr($this->content($mediaItem->getPreview(true), $mediaItem->getFileSystem())) ?>"
+										srcset="<?= $enc->attr($this->imageset($mediaItem->getPreviews(true), $mediaItem->getFileSystem())) ?>"
+										alt="<?= $enc->attr($mediaItem->getProperties('name')->first()) ?>"
 									>
 									<div class="stage-text">
 										<div class="stage-short">
-											<?php foreach( $child->getRefItems( 'text', 'short', 'default' ) as $textItem ) : ?>
+											<?php foreach ($child->getRefItems('text', 'short', 'default') as $textItem) : ?>
 												<?= $textItem->getContent() ?>
 											<?php endforeach ?>
 										</div>
-										<div class="btn"><?= $enc->html( $this->translate( 'client', 'Take a look' ) ) ?></div>
+										<div class="btn"><?= $enc->html($this->translate('client', 'Take a look')) ?></div>
 									</div>
 								</a>
 							</div>

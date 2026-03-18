@@ -5,9 +5,7 @@
  * @copyright Aimeos (aimeos.org), 2015-2026
  */
 
-
- $enc = $this->encoder();
-
+$enc = $this->encoder();
 
 /** client/html/checkout/standard/summary/option/terms/url/target
  * Destination of the URL where the controller specified in the URL is known
@@ -89,7 +87,6 @@
  * @see client/html/checkout/standard/summary/option/terms/url/config
  */
 
-
 /** client/html/checkout/standard/summary/option/terms/privacy/url/target
  * Destination of the URL where the controller specified in the URL is known
  *
@@ -169,7 +166,6 @@
  * @see client/html/checkout/standard/summary/option/terms/privacy/url/action
  * @see client/html/checkout/standard/summary/option/terms/privacy/url/config
  */
-
 
 /** client/html/checkout/standard/summary/option/terms/cancel/url/target
  * Destination of the URL where the controller specified in the URL is known
@@ -251,42 +247,41 @@
  * @see client/html/checkout/standard/summary/option/terms/cancel/url/config
  */
 
-
 ?>
-<?php if( !$this->standardBasket->getCustomerId() ) : ?>
+<?php if (!$this->standardBasket->getCustomerId()) : ?>
 	<div class="checkout-standard-summary-option-account col-sm-12">
-		<h3><?= $enc->html( $this->translate( 'client', 'Customer account' ), $enc::TRUST ) ?></h3>
+		<h3><?= $enc->html($this->translate('client', 'Customer account'), $enc::TRUST) ?></h3>
 
-		<div class="single <?= !$this->value( $this->get( 'errors', [] ), 'option/account' ) ?: 'error' ?>">
+		<div class="single <?= !$this->value($this->get('errors', []), 'option/account') ?: 'error' ?>">
 			<input id="option-account" type="checkbox" value="1"
-				title="<?= $enc->attr( $this->translate( 'client', 'Customer account' ), $enc::TRUST ) ?>"
-				name="<?= $enc->attr( $this->formparam( array( 'cs_option_account' ) ) ) ?>"
-				<?= ( $this->param( 'cs_option_account', 1 ) == 1 ? 'checked="checked"' : '' ) ?>
+				title="<?= $enc->attr($this->translate('client', 'Customer account'), $enc::TRUST) ?>"
+				name="<?= $enc->attr($this->formparam([ 'cs_option_account' ])) ?>"
+				<?= ($this->param('cs_option_account', 1) == 1 ? 'checked="checked"' : '') ?>
 			>
 			<label for="option-account">
-				<?= $enc->html( $this->translate( 'client', 'Create a customer account for me' ), $enc::TRUST ) ?>
+				<?= $enc->html($this->translate('client', 'Create a customer account for me'), $enc::TRUST) ?>
 			</label>
 		</div>
 	</div>
 <?php endif ?>
 
 <div class="checkout-standard-summary-option-terms col-sm-12">
-	<h3><?= $enc->html( $this->translate( 'client', 'Terms and conditions' ), $enc::TRUST ) ?></h3>
+	<h3><?= $enc->html($this->translate('client', 'Terms and conditions'), $enc::TRUST) ?></h3>
 
-	<div class="single <?= !$this->value( $this->get( 'errors', [] ), 'option/terms' ) ?: 'error' ?>">
-		<input type="hidden" name="<?= $enc->attr( $this->formparam( array( 'cs_option_terms' ) ) ) ?>" value="1">
+	<div class="single <?= !$this->value($this->get('errors', []), 'option/terms') ?: 'error' ?>">
+		<input type="hidden" name="<?= $enc->attr($this->formparam([ 'cs_option_terms' ])) ?>" value="1">
 		<input id="option-terms-accept" type="checkbox" value="1"
-			title="<?= $enc->attr( $this->translate( 'client', 'Terms and conditions' ), $enc::TRUST ) ?>"
-			name="<?= $enc->attr( $this->formparam( array( 'cs_option_terms_value' ) ) ) ?>"
-			<?= ( $this->param( 'cs_option_terms_value', null ) == 1 ? 'checked="checked"' : '' ) ?>
+			title="<?= $enc->attr($this->translate('client', 'Terms and conditions'), $enc::TRUST) ?>"
+			name="<?= $enc->attr($this->formparam([ 'cs_option_terms_value' ])) ?>"
+			<?= ($this->param('cs_option_terms_value', null) == 1 ? 'checked="checked"' : '') ?>
 		>
 		<label for="option-terms-accept">
-			<?= $enc->html( sprintf( $this->translate( 'client',
-				'I accept the <a href="%1$s" target="_blank" title="terms and conditions (opens in new tab)">terms and conditions</a>, <a href="%2$s" target="_blank" title="privacy policy (opens in new tab)">privacy policy</a> and <a href="%3$s" target="_blank" title="cancellation policy (opens in new tab)">cancellation policy</a>' ),
-				$enc->attr( $this->link( 'client/html/checkout/standard/summary/option/terms/url', ['path' => 'terms'] ) ),
-				$enc->attr( $this->link( 'client/html/checkout/standard/summary/option/terms/privacy/url', ['path' => 'privacy'] ) ),
-				$enc->attr( $this->link( 'client/html/checkout/standard/summary/option/terms/cancel/url', ['path' => 'cancel'] ) )
-			), $enc::TRUST ) ?>
+			<?= $enc->html(sprintf($this->translate('client',
+			    'I accept the <a href="%1$s" target="_blank" title="terms and conditions (opens in new tab)">terms and conditions</a>, <a href="%2$s" target="_blank" title="privacy policy (opens in new tab)">privacy policy</a> and <a href="%3$s" target="_blank" title="cancellation policy (opens in new tab)">cancellation policy</a>'),
+			    $enc->attr($this->link('client/html/checkout/standard/summary/option/terms/url', ['path' => 'terms'])),
+			    $enc->attr($this->link('client/html/checkout/standard/summary/option/terms/privacy/url', ['path' => 'privacy'])),
+			    $enc->attr($this->link('client/html/checkout/standard/summary/option/terms/cancel/url', ['path' => 'cancel']))
+			), $enc::TRUST) ?>
 		</label>
 	</div>
 </div>

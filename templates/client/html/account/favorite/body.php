@@ -88,50 +88,49 @@ $enc = $this->encoder();
  * @see client/html/account/favorite/url/config
  */
 
-
 ?>
-<?php if( !$this->get( 'favoriteItems', map() )->isEmpty() ) : ?>
+<?php if (!$this->get('favoriteItems', map())->isEmpty()) : ?>
 
-	<div class="section aimeos account-favorite" data-jsonurl="<?= $enc->attr( $this->link( 'client/jsonapi/url' ) ) ?>">
+	<div class="section aimeos account-favorite" data-jsonurl="<?= $enc->attr($this->link('client/jsonapi/url')) ?>">
 		<div class="container-xxl">
 
-			<h2 class="header"><?= $this->translate( 'client', 'Favorite products' ) ?></h2>
+			<h2 class="header"><?= $this->translate('client', 'Favorite products') ?></h2>
 
 			<div class="favorite-items product-list">
 
-				<?php foreach( $this->get( 'favoriteItems', map() )->reverse() as $listItem ) : ?>
-					<?php if( ( $productItem = $listItem->getRefItem() ) !== null ) : ?>
+				<?php foreach ($this->get('favoriteItems', map())->reverse() as $listItem) : ?>
+					<?php if (($productItem = $listItem->getRefItem()) !== null) : ?>
 
-						<div class="product favorite-item" data-prodid="<?= $enc->attr( $productItem->getId() ) ?>">
-							<?php $params = ['fav_action' => 'delete', 'fav_id' => $listItem->getRefId()] + $this->get( 'favoriteParams', [] ) ?>
-							<form class="delete" method="POST" action="<?= $enc->attr( $this->link( 'client/html/account/favorite/url', $params ) ) ?>">
-								<button class="minibutton delete" title="<?= $this->translate( 'client', 'Delete item' ) ?>"></button>
+						<div class="product favorite-item" data-prodid="<?= $enc->attr($productItem->getId()) ?>">
+							<?php $params = ['fav_action' => 'delete', 'fav_id' => $listItem->getRefId()] + $this->get('favoriteParams', []) ?>
+							<form class="delete" method="POST" action="<?= $enc->attr($this->link('client/html/account/favorite/url', $params)) ?>">
+								<button class="minibutton delete" title="<?= $this->translate('client', 'Delete item') ?>"></button>
 								<?= $this->csrf()->formfield() ?>
 							</form>
 
-							<?php $name = $productItem->getName( 'url' ) ?>
+							<?php $name = $productItem->getName('url') ?>
 							<?php $params = ['path' => $name, 'd_name' => $name, 'd_prodid' => $productItem->getId(), 'd_pos' => ''] ?>
-							<a href="<?= $enc->attr( $this->link( 'client/html/catalog/detail/url', $params ) ) ?>">
-								<?php $mediaItems = $productItem->getRefItems( 'media', 'default', 'default' ) ?>
+							<a href="<?= $enc->attr($this->link('client/html/catalog/detail/url', $params)) ?>">
+								<?php $mediaItems = $productItem->getRefItems('media', 'default', 'default') ?>
 
-								<?php if( $mediaItem = $mediaItems->first() ) : ?>
+								<?php if ($mediaItem = $mediaItems->first()) : ?>
 									<div class="media-item">
 										<img loading="lazy"
-											sizes="<?= $enc->attr( $this->config( 'client/html/common/imageset-sizes', '(min-width: 260px) 240px, 100vw' ) ) ?>"
-											src="<?= $enc->attr( $this->content( $mediaItem->getPreview(), $mediaItem->getFileSystem() ) ) ?>"
-											srcset="<?= $enc->attr( $this->imageset( $mediaItem->getPreviews( true ), $mediaItem->getFileSystem() ) ) ?>"
-											alt="<?= $enc->attr( $mediaItem->getProperties( 'title' )->first() ?: $mediaItem->getLabel() ) ?>"
+											sizes="<?= $enc->attr($this->config('client/html/common/imageset-sizes', '(min-width: 260px) 240px, 100vw')) ?>"
+											src="<?= $enc->attr($this->content($mediaItem->getPreview(), $mediaItem->getFileSystem())) ?>"
+											srcset="<?= $enc->attr($this->imageset($mediaItem->getPreviews(true), $mediaItem->getFileSystem())) ?>"
+											alt="<?= $enc->attr($mediaItem->getProperties('title')->first() ?: $mediaItem->getLabel()) ?>"
 										>
 									</div>
 								<?php else : ?>
 									<div class="media-item"></div>
 								<?php endif ?>
 
-								<h2 class="name"><?= $enc->html( $productItem->getName(), $enc::TRUST ) ?></h2>
+								<h2 class="name"><?= $enc->html($productItem->getName(), $enc::TRUST) ?></h2>
 								<div class="price-list">
 									<?= $this->partial(
-										$this->config( 'client/html/common/partials/price', 'common/partials/price' ),
-										array( 'prices' => $productItem->getRefItems( 'price', null, 'default' ) )
+									    $this->config('client/html/common/partials/price', 'common/partials/price'),
+									    [ 'prices' => $productItem->getRefItems('price', null, 'default') ]
 									) ?>
 								</div>
 							</a>
@@ -142,7 +141,7 @@ $enc = $this->encoder();
 
 			</div>
 
-			<?php if( $this->get( 'favoritePageLast', 1 ) > 1 ) : ?>
+			<?php if ($this->get('favoritePageLast', 1) > 1) : ?>
 
 				<nav class="pagination">
 					<div class="sort">
@@ -150,32 +149,32 @@ $enc = $this->encoder();
 					</div>
 					<div class="browser">
 
-						<?php $params = array( 'fav_page' => $this->favoritePageFirst ) + $this->get( 'favoriteParams', [] ) ?>
-						<a class="first" href="<?= $enc->attr( $this->link( 'client/html/account/favorite/url', $params ) ) ?>">
-							<?= $enc->html( $this->translate( 'client', '◀◀' ), $enc::TRUST ) ?>
+						<?php $params = [ 'fav_page' => $this->favoritePageFirst ] + $this->get('favoriteParams', []) ?>
+						<a class="first" href="<?= $enc->attr($this->link('client/html/account/favorite/url', $params)) ?>">
+							<?= $enc->html($this->translate('client', '◀◀'), $enc::TRUST) ?>
 						</a>
 
-						<?php $params = array( 'fav_page' => $this->favoritePagePrev ) + $this->get( 'favoriteParams', [] ) ?>
-						<a class="prev" href="<?= $enc->attr( $this->link( 'client/html/account/favorite/url', $params ) ) ?>" rel="prev">
-							<?= $enc->html( $this->translate( 'client', '◀' ), $enc::TRUST ) ?>
+						<?php $params = [ 'fav_page' => $this->favoritePagePrev ] + $this->get('favoriteParams', []) ?>
+						<a class="prev" href="<?= $enc->attr($this->link('client/html/account/favorite/url', $params)) ?>" rel="prev">
+							<?= $enc->html($this->translate('client', '◀'), $enc::TRUST) ?>
 						</a>
 
 						<span>
-							<?= $enc->html( sprintf(
-								$this->translate( 'client', 'Page %1$d of %2$d' ),
-								$this->get( 'favoritePageCurr', 1 ),
-								$this->get( 'favoritePageLast', 1 )
-							) ) ?>
+							<?= $enc->html(sprintf(
+							    $this->translate('client', 'Page %1$d of %2$d'),
+							    $this->get('favoritePageCurr', 1),
+							    $this->get('favoritePageLast', 1)
+							)) ?>
 						</span>
 
-						<?php $params = array( 'fav_page' => $this->favoritePageNext ) + $this->get( 'favoriteParams', [] ) ?>
-						<a class="next" href="<?= $enc->attr( $this->link( 'client/html/account/favorite/url', $params ) ) ?>" rel="next">
-							<?= $enc->html( $this->translate( 'client', '▶' ), $enc::TRUST ) ?>
+						<?php $params = [ 'fav_page' => $this->favoritePageNext ] + $this->get('favoriteParams', []) ?>
+						<a class="next" href="<?= $enc->attr($this->link('client/html/account/favorite/url', $params)) ?>" rel="next">
+							<?= $enc->html($this->translate('client', '▶'), $enc::TRUST) ?>
 						</a>
 
-						<?php $params = array( 'fav_page' => $this->favoritePageLast ) + $this->get( 'favoriteParams', [] ) ?>
-						<a class="last" href="<?= $enc->attr( $this->link( 'client/html/account/favorite/url', $params ) ) ?>">
-							<?= $enc->html( $this->translate( 'client', '▶▶' ), $enc::TRUST ) ?>
+						<?php $params = [ 'fav_page' => $this->favoritePageLast ] + $this->get('favoriteParams', []) ?>
+						<a class="last" href="<?= $enc->attr($this->link('client/html/account/favorite/url', $params)) ?>">
+							<?= $enc->html($this->translate('client', '▶▶'), $enc::TRUST) ?>
 						</a>
 
 					</div>
