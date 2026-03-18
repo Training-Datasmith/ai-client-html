@@ -19,7 +19,7 @@ namespace Aimeos\Client;
  */
 class Html
 {
-	private static $objects = [];
+	private static array $objects = [];
 
 
 	/**
@@ -42,7 +42,7 @@ class Html
 			$name = $context->config()->get( 'client/html/' . $path . '/name', 'Standard' );
 		}
 
-		$interface = '\\Aimeos\\Client\Html\\Iface';
+		$interface = \Aimeos\Client\Html\Iface::class;
 		$classname = '\\Aimeos\\Client\\Html\\' . str_replace( '/', '\\', ucwords( $path, '/' ) ) . '\\' . $name;
 
 		if( class_exists( $classname ) === false ) {
@@ -63,7 +63,7 @@ class Html
 	 * @param string $classname Full name of the class for which the object should be returned
 	 * @param \Aimeos\Client\Html\Iface|null $client ExtJS client object
 	 */
-	public static function inject( string $classname, ?\Aimeos\Client\Html\Iface $client = null )
+	public static function inject( string $classname, ?\Aimeos\Client\Html\Iface $client = null ): void
 	{
 		self::$objects['\\' . ltrim( $classname, '\\' )] = $client;
 	}
@@ -123,9 +123,8 @@ class Html
 		}
 
 		$classprefix = '\\Aimeos\\Client\\Html\\Common\\Decorator\\';
-		$client = self::addDecorators( $context, $client, $decorators, $classprefix );
 
-		return $client;
+		return self::addDecorators( $context, $client, $decorators, $classprefix );
 	}
 
 

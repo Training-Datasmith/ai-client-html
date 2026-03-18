@@ -97,7 +97,7 @@ class Standard
 		}
 
 		$template = $config->get( 'client/html/catalog/home/template-body', 'catalog/home/body' );
-		$view = $this->view = $this->view ?? $this->object()->data( $this->view(), $this->tags, $this->expire );
+		$view = ($this->view ??= $this->object()->data( $this->view(), $this->tags, $this->expire ));
 		$html = $view->render( $template );
 
 		return $this->cache( 'body', $uid, [], $confkey, $html, $this->tags, $this->expire );
@@ -120,7 +120,7 @@ class Standard
 		}
 
 		$template = $config->get( 'client/html/catalog/home/template-header', 'catalog/home/header' );
-		$view = $this->view = $this->view ?? $this->object()->data( $this->view(), $this->tags, $this->expire );
+		$view = ($this->view ??= $this->object()->data( $this->view(), $this->tags, $this->expire ));
 		$html = $view->render( $template );
 
 		return $this->cache( 'header', $uid, [], $confkey, $html, $this->tags, $this->expire );
@@ -205,7 +205,7 @@ class Standard
 		 * @see client/html/catalog/product/basket-add
 		 */
 		if( $config->get( 'client/html/catalog/home/basket-add', false ) ) {
-			$domains = array_merge_recursive( $domains, ['attribute' => ['variant', 'custom', 'config']] );
+			return array_merge_recursive( $domains, ['attribute' => ['variant', 'custom', 'config']] );
 		}
 
 		return $domains;

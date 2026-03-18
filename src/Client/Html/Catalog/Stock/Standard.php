@@ -66,7 +66,6 @@ class Standard
 	 */
 	public function data( \Aimeos\Base\View\Iface $view, array &$tags = [], ?string &$expire = null ) : \Aimeos\Base\View\Iface
 	{
-		$stockItemsByProducts = [];
 		$context = $this->context();
 		$prodIds = (array) $view->param( 'st_pid', [] );
 

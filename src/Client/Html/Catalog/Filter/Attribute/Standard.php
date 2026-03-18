@@ -155,9 +155,7 @@ class Standard
 		arsort( $active );
 		unset( $params['f_attrid'], $params['f_oneid'], $params['f_optid'] );
 
-		$attributes->uasort( function( $a, $b ) {
-			return $a->getPosition() <=> $b->getPosition();
-		} );
+		$attributes->uasort( fn($a, $b) => $a->getPosition() <=> $b->getPosition() );
 
 		$attrMap = $attributes->groupBy( 'attribute.type' );
 		$attrTypes = $this->attributeTypes( $attrMap->keys() );
@@ -165,9 +163,7 @@ class Standard
 		$view->attributeResetParams = $params;
 		$view->attributeMap = $attrMap->order( $attrTypes->getCode() );
 		$view->detailAttributeTypes = $attrTypes->col( null, 'attribute.type.code' );
-		$view->attributeMapActive = map( $view->attributeMap )->uksort( function( $a, $b ) use ( $active ) {
-			return ( $active[$b] ?? null ) <=> ( $active[$a] ?? null );
-		} );
+		$view->attributeMapActive = map( $view->attributeMap )->uksort( fn($a, $b) => ( $active[$b] ?? null ) <=> ( $active[$a] ?? null ) );
 
 		return parent::data( $view, $tags, $expire );
 	}
@@ -248,9 +244,7 @@ class Standard
 		{
 			if( $list = $attrMap[$typeItem->getCode()] ?? null )
 			{
-				uasort( $list, function( $a, $b ) {
-					return $a->getPosition() <=> $b->getPosition();
-				} );
+				uasort( $list, fn($a, $b) => $a->getPosition() <=> $b->getPosition() );
 
 				$map[$typeItem->getCode()] = $list;
 			}

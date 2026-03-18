@@ -95,9 +95,7 @@ class Standard
 		 */
 		$confkey = 'client/html/catalog/lists';
 
-		$args = map( $view->param() )->except( ['f_catid', 'f_name', 'f_supid', 's_name'] )->filter( function( $val, $key ) {
-			return !strncmp( $key, 'f_', 2 ) || !strncmp( $key, 'l_', 2 );
-		} );
+		$args = map( $view->param() )->except( ['f_catid', 'f_name', 'f_supid', 's_name'] )->filter( fn($val, $key) => !strncmp( $key, 'f_', 2 ) || !strncmp( $key, 'l_', 2 ) );
 
 		if( $args->isEmpty() && ( $html = $this->cached( 'body', $uid, $prefixes, $confkey ) ) !== null ) {
 			return $this->modify( $html, $uid );
@@ -138,7 +136,7 @@ class Standard
 		 */
 		$template = $this->context()->config()->get( 'client/html/catalog/lists/template-body', 'catalog/lists/body' );
 
-		$view = $this->view = $this->view ?? $this->object()->data( $view, $this->tags, $this->expire );
+		$view = ($this->view ??= $this->object()->data( $view, $this->tags, $this->expire ));
 		$html = $this->modify( $view->render( $template ), $uid );
 
 		if( $args->isEmpty() ) {
@@ -161,9 +159,7 @@ class Standard
 		$confkey = 'client/html/catalog/lists';
 		$prefixes = ['f_catid', 'f_supid', 'f_sort', 'l_page', 'l_type'];
 
-		$args = map( $view->param() )->except( ['f_catid', 'f_name', 'f_supid', 's_name'] )->filter( function( $val, $key ) {
-			return !strncmp( $key, 'f_', 2 ) || !strncmp( $key, 'l_', 2 );
-		} );
+		$args = map( $view->param() )->except( ['f_catid', 'f_name', 'f_supid', 's_name'] )->filter( fn($val, $key) => !strncmp( $key, 'f_', 2 ) || !strncmp( $key, 'l_', 2 ) );
 
 		if( $args->isEmpty() && ( $html = $this->cached( 'header', $uid, $prefixes, $confkey ) ) !== null ) {
 			return $this->modify( $html, $uid );
@@ -205,7 +201,7 @@ class Standard
 		 */
 		$template = $this->context()->config()->get( 'client/html/catalog/lists/template-header', 'catalog/lists/header' );
 
-		$view = $this->view = $this->view ?? $this->object()->data( $view, $this->tags, $this->expire );
+		$view = ($this->view ??= $this->object()->data( $view, $this->tags, $this->expire ));
 		$html = $this->modify( $view->render( $template ), $uid );
 
 		if( $args->isEmpty() ) {
@@ -222,7 +218,7 @@ class Standard
 	 * A view must be available and this method doesn't generate any output
 	 * besides setting view variables if necessary.
 	 */
-	public function init()
+	public function init(): void
 	{
 		$view = $this->view();
 		$context = $this->context();
@@ -539,7 +535,7 @@ class Standard
 		$domains = $config->get( 'client/html/catalog/lists/domains', $domains );
 
 		if( $config->get( 'client/html/catalog/lists/basket-add', false ) ) {
-			$domains = array_merge_recursive( $domains, ['product' => ['default'], 'attribute' => ['variant', 'custom', 'config']] );
+			return array_merge_recursive( $domains, ['product' => ['default'], 'attribute' => ['variant', 'custom', 'config']] );
 		}
 
 		return $domains;

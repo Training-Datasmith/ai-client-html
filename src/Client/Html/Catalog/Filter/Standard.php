@@ -180,15 +180,13 @@ class Standard
 		 */
 		$confkey = 'client/html/catalog/filter';
 
-		$args = map( $view->param() )->except( array_merge( $prefixes, ['f_sort'] ) )->filter( function( $val, $key ) {
-			return !strncmp( $key, 'f_', 2 );
-		} );
+		$args = map( $view->param() )->except( array_merge( $prefixes, ['f_sort'] ) )->filter( fn($val, $key) => !strncmp( $key, 'f_', 2 ) );
 
 		if( $args->empty() && ( $html = $this->cached( 'body', $uid, $prefixes, $confkey ) ) !== null ) {
 			return $this->modify( $html, $uid );
 		}
 
-		$view = $this->view = $this->view ?? $this->object()->data( $view, $this->tags, $this->expire );
+		$view = ($this->view ??= $this->object()->data( $view, $this->tags, $this->expire ));
 
 		$html = '';
 		foreach( $this->getSubClients() as $subclient ) {
@@ -238,9 +236,7 @@ class Standard
 		$confkey = 'client/html/catalog/filter';
 		$prefixes = ['f_name', 'f_catid', 'f_supid', 's_name'];
 
-		$args = map( $view->param() )->except( array_merge( $prefixes, ['f_sort'] ) )->filter( function( $val, $key ) {
-			return !strncmp( $key, 'f_', 2 );
-		} );
+		$args = map( $view->param() )->except( array_merge( $prefixes, ['f_sort'] ) )->filter( fn($val, $key) => !strncmp( $key, 'f_', 2 ) );
 
 		if( $html = $this->cached( 'header', $uid, $prefixes, $confkey ) ) {
 			return $this->modify( $html, $uid );
@@ -273,7 +269,7 @@ class Standard
 		 */
 
 		$template = $this->context()->config()->get( 'client/html/catalog/filter/template-header', 'catalog/filter/header' );
-		$view = $this->view = $this->view ?? $this->object()->data( $view, $this->tags, $this->expire );
+		$view = ($this->view ??= $this->object()->data( $view, $this->tags, $this->expire ));
 		$html = $view->set( 'header', $html )->render( $template );
 
 		if( $args->empty() ) {

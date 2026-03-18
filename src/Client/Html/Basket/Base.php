@@ -76,7 +76,7 @@ abstract class Base
 		{
 			$session = $context->session();
 
-			$cached = $session->get( 'aimeos/basket/cache', [] ) + array( $key => true );
+			$cached = $session->get( 'aimeos/basket/cache', [] ) + [ $key => true ];
 			$session->set( 'aimeos/basket/cache', $cached );
 			$session->set( $key, $value );
 		}

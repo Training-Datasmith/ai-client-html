@@ -71,7 +71,7 @@ class Standard
 
 			$html = $view->render( $view->config( $tplconf, $default ) );
 
-			$cached = $session->get( 'aimeos/catalog/session/pinned/cache', [] ) + array( $key => true );
+			$cached = $session->get( 'aimeos/catalog/session/pinned/cache', [] ) + [ $key => true ];
 			$session->set( 'aimeos/catalog/session/pinned/cache', $cached );
 			$session->set( $key, $html );
 		}
@@ -88,7 +88,7 @@ class Standard
 	 * A view must be available and this method doesn't generate any output
 	 * besides setting view variables if necessary.
 	 */
-	public function init()
+	public function init(): void
 	{
 		$refresh = false;
 		$view = $this->view();

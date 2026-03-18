@@ -121,7 +121,7 @@ class Standard
 		 */
 		$template = $this->context()->config()->get( 'client/html/supplier/detail/template-body', 'supplier/detail/body' );
 
-		$view = $this->view = $this->view ?? $this->object()->data( $this->view(), $this->tags, $this->expire );
+		$view = ($this->view ??= $this->object()->data( $this->view(), $this->tags, $this->expire ));
 		$html = $this->modify( $view->render( $template ), $uid );
 
 		return $this->cache( 'body', $uid, $prefixes, $confkey, $html, $this->tags, $this->expire );
@@ -165,7 +165,7 @@ class Standard
 		 */
 		$template = $this->context()->config()->get( 'client/html/supplier/detail/template-header', 'supplier/detail/header' );
 
-		$view = $this->view = $this->view ?? $this->object()->data( $this->view(), $this->tags, $this->expire );
+		$view = ($this->view ??= $this->object()->data( $this->view(), $this->tags, $this->expire ));
 		$html = $view->render( $template );
 
 		return $this->cache( 'header', $uid, $prefixes, $confkey, $html, $this->tags, $this->expire );

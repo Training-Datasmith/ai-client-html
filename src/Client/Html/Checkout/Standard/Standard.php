@@ -361,14 +361,14 @@ class Standard
 
 
 		if( $lastStep !== null ) {
-			$param = array( 'c_step' => $lastStep );
+			$param = [ 'c_step' => $lastStep ];
 			$view->standardUrlBack = $view->link( 'client/html/checkout/standard/url', $param );
 		} else {
 			$view->standardUrlBack = $view->link( 'client/html/basket/standard/url' );
 		}
 
 		if( !isset( $view->standardUrlNext ) && ( $nextStep = array_shift( $steps ) ) !== null ) {
-			$param = array( 'c_step' => $nextStep );
+			$param = [ 'c_step' => $nextStep ];
 			$view->standardUrlNext = $view->link( 'client/html/checkout/standard/url', $param );
 		}
 		// don't overwrite $view->standardUrlNext so process step URL is used

@@ -98,7 +98,7 @@ class Standard
 		$config = $this->context()->config();
 		$template = $config->get( 'client/html/catalog/product/template-body', 'catalog/product/body' );
 
-		$view = $this->view = $this->view ?? $this->object()->data( $this->view(), $this->tags, $this->expire );
+		$view = ($this->view ??= $this->object()->data( $this->view(), $this->tags, $this->expire ));
 		$html = $view->render( $template );
 
 		return $this->cache( 'body', $uid, [], $confkey, $html, $this->tags, $this->expire );
@@ -122,7 +122,7 @@ class Standard
 		$config = $this->context()->config();
 		$template = $config->get( 'client/html/catalog/product/template-header', 'catalog/product/header' );
 
-		$view = $this->view = $this->view ?? $this->object()->data( $this->view(), $this->tags, $this->expire );
+		$view = ($this->view ??= $this->object()->data( $this->view(), $this->tags, $this->expire ));
 		$html = $view->render( $template );
 
 		return $this->cache( 'header', $uid, [], $confkey, $html, $this->tags, $this->expire );
@@ -173,9 +173,7 @@ class Standard
 
 		// Sort products by the order given in the configuration "client/html/catalog/product/product-codes".
 		$productCodesOrder = array_flip( $productCodes );
-		$products->usort( function( $a, $b ) use ( $productCodesOrder ) {
-			return $productCodesOrder[$a->getCode()] - $productCodesOrder[$b->getCode()];
-		} );
+		$products->usort( fn($a, $b) => $productCodesOrder[$a->getCode()] - $productCodesOrder[$b->getCode()] );
 
 		$productItems = $products->copy();
 
@@ -235,7 +233,7 @@ class Standard
 		$domains = $config->get( 'client/html/catalog/product/domains', $domains );
 
 		if( $config->get( 'client/html/catalog/product/basket-add', false ) ) {
-			$domains = array_merge_recursive( $domains, ['product' => ['default'], 'attribute' => ['variant', 'custom', 'config']] );
+			return array_merge_recursive( $domains, ['product' => ['default'], 'attribute' => ['variant', 'custom', 'config']] );
 		}
 
 		return $domains;

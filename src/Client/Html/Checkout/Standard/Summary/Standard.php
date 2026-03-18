@@ -86,7 +86,7 @@ class Standard
 
 				$view->summaryErrorCodes = $errors;
 				$view->standardStepActive = 'summary';
-				$view->errors = array_merge( $view->get( 'errors', [] ), array( $error ) );
+				$view->errors = array_merge( $view->get( 'errors', [] ), [ $error ] );
 			}
 
 

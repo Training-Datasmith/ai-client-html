@@ -62,7 +62,7 @@ class Standard
 	 * A view must be available and this method doesn't generate any output
 	 * besides setting view variables if necessary.
 	 */
-	public function init()
+	public function init(): void
 	{
 		$view = $this->view();
 		$context = $this->context();
@@ -221,7 +221,7 @@ class Standard
 		$customer = $cntl->uses( ['product' => ['favorite']] + $domains )->get();
 
 		$products = $customer->getRefItems( 'product', null, 'favorite' );
-		$products = \Aimeos\MShop::create( $context, 'rule' )->apply( $products, 'catalog' );
+		\Aimeos\MShop::create( $context, 'rule' )->apply( $products, 'catalog' );
 
 		$listItems = $customer->getListItems( 'product', 'favorite' );
 		$total = count( $listItems );

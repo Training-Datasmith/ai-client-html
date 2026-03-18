@@ -142,7 +142,7 @@ class Standard
 		 */
 		$template = $this->context()->config()->get( 'client/html/basket/mini/template-body', 'basket/mini/body' );
 
-		$view = $this->view = $this->view ?? $this->object()->data( $this->view() );
+		$view = ($this->view ??= $this->object()->data( $this->view() ));
 		$html = $this->modify( $view->render( $template ), $uid );
 
 		return (string) $this->setBasketCached( $key, $html );
@@ -189,7 +189,7 @@ class Standard
 		 */
 		$template = $this->context()->config()->get( 'client/html/basket/mini/template-header', 'basket/mini/header' );
 
-		$view = $this->view = $this->view ?? $this->object()->data( $this->view() );
+		$view = ($this->view ??= $this->object()->data( $this->view() ));
 		$html = $this->modify( $view->render( $template ), $uid );
 
 		return $this->setBasketCached( $key, $html );

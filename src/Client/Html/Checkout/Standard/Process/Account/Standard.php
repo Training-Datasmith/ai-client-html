@@ -39,7 +39,7 @@ class Standard
 	 * A view must be available and this method doesn't generate any output
 	 * besides setting view variables.
 	 */
-	public function init()
+	public function init(): void
 	{
 		$context = $this->context();
 
@@ -78,7 +78,7 @@ class Standard
 
 		try {
 			$customer = $cntl->find( $addr->getEmail() );
-		} catch( \Exception $e ) {
+		} catch( \Exception ) {
 			$customer = $new ? $cntl->add( $addr->toArray() )->store()->get() : null;
 		}
 

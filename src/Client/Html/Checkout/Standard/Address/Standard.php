@@ -192,7 +192,7 @@ class Standard
 	 * A view must be available and this method doesn't generate any output
 	 * besides setting view variables.
 	 */
-	public function init()
+	public function init(): void
 	{
 		$view = $this->view();
 		$context = $this->context();
@@ -290,9 +290,7 @@ class Standard
 		 * @since 2023.04
 		 */
 		$countries = map( $context->config()->get( 'common/countries', [] ) );
-		$map = $countries->flip()->map( function( $v, $key ) use ( $context ) {
-			return $context->translate( 'country', $key );
-		} );
+		$map = $countries->flip()->map( fn($v, $key) => $context->translate( 'country', $key ) );
 
 		// Don't destroy custom order of countries, only sort if order is strictly alphabetical
 		if( $countries->is( $countries->clone()->sort(), true ) ) {

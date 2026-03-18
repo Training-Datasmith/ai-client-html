@@ -120,7 +120,7 @@ class Standard
 		 */
 		$template = $config->get( 'client/html/catalog/stage/template-body', 'catalog/stage/body' );
 
-		$view = $this->view = $this->view ?? $this->object()->data( $this->view(), $this->tags, $this->expire );
+		$view = ($this->view ??= $this->object()->data( $this->view(), $this->tags, $this->expire ));
 		$html = $view->render( $template );
 
 		return $this->cache( 'body', $uid, $prefixes, $confkey, $html, $this->tags, $this->expire );
@@ -165,7 +165,7 @@ class Standard
 		 */
 		$template = $config->get( 'client/html/catalog/stage/template-header', 'catalog/stage/header' );
 
-		$view = $this->view = $this->view ?? $this->object()->data( $this->view(), $this->tags, $this->expire );
+		$view = ($this->view ??= $this->object()->data( $this->view(), $this->tags, $this->expire ));
 		$html = $view->render( $template );
 
 		return $this->cache( 'header', $uid, $prefixes, $confkey, $html, $this->tags, $this->expire );
@@ -222,9 +222,7 @@ class Standard
 
 			$stageCatPath = $controller->uses( $domains )->getPath( $catid );
 
-			$mediaItems = $stageCatPath->getRefItems( 'media', 'stage', 'default' )->find( function( \Aimeos\Map $entry ) {
-				return !$entry->isEmpty();
-			}, true );
+			$mediaItems = $stageCatPath->getRefItems( 'media', 'stage', 'default' )->find( fn(\Aimeos\Map $entry) => !$entry->isEmpty(), true );
 
 			$this->addMetaItems( $stageCatPath, $expire, $tags );
 

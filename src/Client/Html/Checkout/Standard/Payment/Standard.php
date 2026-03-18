@@ -52,7 +52,7 @@ class Standard
 	 * A view must be available and this method doesn't generate any output
 	 * besides setting view variables.
 	 */
-	public function init()
+	public function init(): void
 	{
 		$view = $this->view();
 		$context = $this->context();
@@ -152,7 +152,7 @@ class Standard
 				}
 				else
 				{
-					foreach( $attr as $key => $item ) {
+					foreach( $attr as $item ) {
 						$item->value = is_array( $item->getDefault() ) ? key( $item->getDefault() ) : $item->getDefault();
 					}
 				}

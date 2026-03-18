@@ -109,7 +109,7 @@ class Standard
 	 * @param string Last part of the client class name
 	 * @since 2014.03
 	 */
-	private array $subPartNames = array( 'pinned', 'seen' );
+	private array $subPartNames = [ 'pinned', 'seen' ];
 
 
 	/**

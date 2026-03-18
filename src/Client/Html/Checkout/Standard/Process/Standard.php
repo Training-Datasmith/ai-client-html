@@ -247,7 +247,7 @@ class Standard
 	 * @param \Aimeos\MShop\Common\Helper\Form\Iface $form Form helper object including the form data
 	 * @return \Aimeos\Base\View\Iface View object with assigned data
 	 */
-	protected function addFormData( \Aimeos\Base\View\Iface $view, \Aimeos\MShop\Common\Helper\Form\Iface $form )
+	protected function addFormData( \Aimeos\Base\View\Iface $view, \Aimeos\MShop\Common\Helper\Form\Iface $form ): \Aimeos\Base\View\Iface
 	{
 		$url = $form->getUrl();
 
@@ -618,7 +618,7 @@ class Standard
 	 */
 	public function data( \Aimeos\Base\View\Iface $view, array &$tags = [], ?string &$expire = null ) : \Aimeos\Base\View\Iface
 	{
-		$view->standardUrlPayment = $this->getUrlSelf( $view, array( 'c_step' => 'payment' ), [] );
+		$view->standardUrlPayment = $this->getUrlSelf( $view, [ 'c_step' => 'payment' ], [] );
 
 		return parent::data( $view, $tags, $expire );
 	}

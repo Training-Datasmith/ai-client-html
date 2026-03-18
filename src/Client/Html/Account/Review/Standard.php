@@ -102,9 +102,7 @@ class Standard
 			->slice( 0, $size )
 			->search();
 
-		$orderProducts = $orders->getProducts()->flat( 1 )->rekey( function( $item ) {
-			return $item->getType() === 'select' ? $item->getParentProductId() : $item->getProductId();
-		} );
+		$orderProducts = $orders->getProducts()->flat( 1 )->rekey( fn($item) => $item->getType() === 'select' ? $item->getParentProductId() : $item->getProductId() );
 
 		$exclude = \Aimeos\Controller\Frontend::create( $context, 'review' )
 			->for( 'product', $orderProducts->keys()->all() )
@@ -123,7 +121,7 @@ class Standard
 	 * A view must be available and this method doesn't generate any output
 	 * besides setting view variables if necessary.
 	 */
-	public function init()
+	public function init(): void
 	{
 		$view = $this->view();
 

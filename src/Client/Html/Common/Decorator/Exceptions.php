@@ -83,15 +83,7 @@ class Exceptions extends Base implements Iface
 		{
 			$output = $this->client()->header( $uid );
 		}
-		catch( \Aimeos\Client\Html\Exception $e )
-		{
-			// no output in header
-		}
-		catch( \Aimeos\Controller\Frontend\Exception $e )
-		{
-			// no output in header
-		}
-		catch( \Aimeos\MShop\Exception $e )
+		catch( \Aimeos\Client\Html\Exception|\Aimeos\Controller\Frontend\Exception|\Aimeos\MShop\Exception )
 		{
 			// no output in header
 		}
@@ -107,7 +99,7 @@ class Exceptions extends Base implements Iface
 	/**
 	 * Processes the input, e.g. store given values.
 	 */
-	public function init()
+	public function init(): void
 	{
 		$view = $this->view();
 		$context = $this->context();
@@ -118,7 +110,7 @@ class Exceptions extends Base implements Iface
 		}
 		catch( \Aimeos\Client\Html\Exception $e )
 		{
-			$error = array( $context->translate( 'client', $e->getMessage() ) );
+			$error = [ $context->translate( 'client', $e->getMessage() ) ];
 			$view->errors = array_merge( $view->get( 'errors', [] ), $error );
 		}
 		catch( \Aimeos\Controller\Frontend\Exception $e )
@@ -127,7 +119,7 @@ class Exceptions extends Base implements Iface
 				throw $e;
 			}
 
-			$error = array( $context->translate( 'controller/frontend', $e->getMessage() ) );
+			$error = [ $context->translate( 'controller/frontend', $e->getMessage() ) ];
 			$view->errors = array_merge( $view->get( 'errors', [] ), $error );
 		}
 		catch( \Aimeos\MShop\Exception $e )
@@ -136,12 +128,12 @@ class Exceptions extends Base implements Iface
 				throw $e;
 			}
 
-			$error = array( $context->translate( 'mshop', $e->getMessage() ) );
+			$error = [ $context->translate( 'mshop', $e->getMessage() ) ];
 			$view->errors = array_merge( $view->get( 'errors', [] ), $error );
 		}
 		catch( \Exception $e )
 		{
-			$error = array( $context->translate( 'client', 'A non-recoverable error occured' ) );
+			$error = [ $context->translate( 'client', 'A non-recoverable error occured' ) ];
 			$view->errors = array_merge( $view->get( 'errors', [] ), $error );
 			$this->logException( $e );
 		}

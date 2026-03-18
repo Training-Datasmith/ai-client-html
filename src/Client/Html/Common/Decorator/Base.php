@@ -22,20 +22,15 @@ abstract class Base
 	extends \Aimeos\Client\Html\Base
 	implements \Aimeos\Client\Html\Common\Decorator\Iface
 {
-	private \Aimeos\Client\Html\Iface $client;
-
-
 	/**
 	 * Initializes a new client decorator object.
 	 *
 	 * @param \Aimeos\Client\Html\Iface $client Client object
 	 * @param \Aimeos\MShop\ContextIface $context Context object with required objects
 	 */
-	public function __construct( \Aimeos\Client\Html\Iface $client, \Aimeos\MShop\ContextIface $context )
+	public function __construct( private \Aimeos\Client\Html\Iface $client, \Aimeos\MShop\ContextIface $context )
 	{
 		parent::__construct( $context );
-
-		$this->client = $client;
 	}
 
 
@@ -49,7 +44,7 @@ abstract class Base
 	 */
 	public function __call( string $name, array $param )
 	{
-		return @call_user_func_array( array( $this->client, $name ), $param );
+		return @call_user_func_array( [ $this->client, $name ], $param );
 	}
 
 

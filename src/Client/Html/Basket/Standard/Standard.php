@@ -81,7 +81,7 @@ class Standard
 	 * A view must be available and this method doesn't generate any output
 	 * besides setting view variables if necessary.
 	 */
-	public function init()
+	public function init(): void
 	{
 		$view = $this->view();
 		$val = $view->param( 'b_check', 0 );
@@ -111,7 +111,7 @@ class Standard
 		{
 			try {
 				$view->standardCheckout = $this->save( $val );
-			} catch( \Exception $ex ) {
+			} catch( \Exception ) {
 				$view->standardCheckout = false;
 			}
 
@@ -250,7 +250,7 @@ class Standard
 	 * @param array $values Associative list which "id" and "qty" keys
 	 * @return array Pairs of config attribute ID/quantity pairs
 	 */
-	protected function getAttributeMap( array $values )
+	protected function getAttributeMap( array $values ): array
 	{
 		$list = [];
 		$confIds = ( isset( $values['id'] ) ? array_filter( (array) $values['id'] ) : [] );
@@ -335,7 +335,7 @@ class Standard
 
 		$manager = \Aimeos\MShop::create( $context, 'basket' );
 
-		$item = $manager->create()->setId( md5( microtime( true ) . getmypid() . rand() ) )
+		$item = $manager->create()->setId( md5( microtime( true ) . getmypid() . random_int(0, mt_getrandmax()) ) )
 			->setCustomerId( $userId )->setName( $view->param( 'b_name', date( 'Y-m-d H:i:s' ) ) )
 			->setItem( \Aimeos\Controller\Frontend::create( $context, 'basket' )->get() );
 
@@ -358,10 +358,10 @@ class Standard
 
 		if( ( $position = $view->param( 'b_position', '' ) ) !== '' )
 		{
-			$products[] = array(
+			$products[] = [
 				'position' => $position,
 				'quantity' => $view->param( 'b_quantity', 1 )
-			);
+			];
 		}
 
 		foreach( $products as $values )

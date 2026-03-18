@@ -27,7 +27,7 @@ class Standard
 	 * A view must be available and this method doesn't generate any output
 	 * besides setting view variables if necessary.
 	 */
-	public function init()
+	public function init(): void
 	{
 		$view = $this->view();
 
@@ -348,7 +348,7 @@ class Standard
 	 * @param \Aimeos\MShop\Order\Item\Address\Iface $addr Order address item
 	 * @return string Address as string
 	 */
-	protected function getAddressString( \Aimeos\Base\View\Iface $view, \Aimeos\MShop\Order\Item\Address\Iface $addr )
+	protected function getAddressString( \Aimeos\Base\View\Iface $view, \Aimeos\MShop\Order\Item\Address\Iface $addr ): ?string
 	{
 		return preg_replace( "/\n+/m", "\n", trim( sprintf(
 			/// Address format with company (%1$s), salutation (%2$s), title (%3$s), first name (%4$s), last name (%5$s),

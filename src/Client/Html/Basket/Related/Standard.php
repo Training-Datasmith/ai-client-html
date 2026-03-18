@@ -72,9 +72,7 @@ class Standard
 			->search()
 			->getListItems( 'product', 'bought-together' )
 			->flat( 1 )
-			->usort( function( $a, $b ) {
-				return $a->getPosition() <=> $b->getPosition();
-			} )
+			->usort( fn($a, $b) => $a->getPosition() <=> $b->getPosition() )
 			->getRefItem()
 			->filter()
 			->slice( 0, $this->size() )
@@ -127,7 +125,7 @@ class Standard
 		 * @see client/html/catalog/product/basket-add
 		 */
 		if( $config->get( 'client/html/basket/related/basket-add', false ) ) {
-			$domains = array_merge_recursive( $domains, ['product' => ['default'], 'attribute' => ['variant', 'custom', 'config']] );
+			return array_merge_recursive( $domains, ['product' => ['default'], 'attribute' => ['variant', 'custom', 'config']] );
 		}
 
 		return $domains;

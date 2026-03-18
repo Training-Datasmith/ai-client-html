@@ -61,7 +61,7 @@ abstract class Base
 
 		// populate view only once
 		if( count( $parts ) === 2 ) {
-			$view = $this->cachedView = $this->cachedView ?? $this->object()->data( $this->view() );
+			$view = ($this->cachedView ??= $this->object()->data( $this->view() ));
 		} else {
 			$view = $this->view();
 		}
@@ -85,7 +85,7 @@ abstract class Base
 	 */
 	public function data( \Aimeos\Base\View\Iface $view, array &$tags = [], ?string &$expire = null ) : \Aimeos\Base\View\Iface
 	{
-		foreach( $this->getSubClients() as $name => $subclient ) {
+		foreach( $this->getSubClients() as $subclient ) {
 			$view = $subclient->data( $view, $tags, $expire );
 		}
 
@@ -115,7 +115,7 @@ abstract class Base
 	public function header( string $uid = '' ) : ?string
 	{
 		$type = $this->clientType();
-		$view = $this->cachedView = $this->cachedView ?? $this->object()->data( $this->view() );
+		$view = ($this->cachedView ??= $this->object()->data( $this->view() ));
 
 		return $view->render( $view->config( "client/html/{$type}/template-header", $type . '/header' ) );
 	}
@@ -127,7 +127,7 @@ abstract class Base
 	 * A view must be available and this method doesn't generate any output
 	 * besides setting view variables.
 	 */
-	public function init()
+	public function init(): void
 	{
 		$view = $this->view();
 
@@ -263,7 +263,7 @@ abstract class Base
 	 */
 	protected function addClientDecorators( \Aimeos\Client\Html\Iface $client, string $path ) : \Aimeos\Client\Html\Iface
 	{
-		if( !is_string( $path ) || $path === '' ) {
+		if( $path === '' ) {
 			throw new \Aimeos\Client\Html\Exception( sprintf( 'Invalid domain "%1$s"', $path ) );
 		}
 
@@ -276,9 +276,8 @@ abstract class Base
 
 		$classprefix = '\\Aimeos\\Client\\Html\\' . $localClass . '\\Decorator\\';
 		$decorators = $config->get( 'client/html/' . $path . '/decorators/local', [] );
-		$client = $this->addDecorators( $client, $decorators, $classprefix );
 
-		return $client;
+		return $this->addDecorators( $client, $decorators, $classprefix );
 	}
 
 
@@ -375,7 +374,7 @@ abstract class Base
 	 * @param array &$tags List of tags the new tags will be added to
 	 * @param bool $tagAll True of tags for all items should be added, false if only for the main item
 	 */
-	private function addMetaItemSingle( \Aimeos\MShop\Common\Item\Iface $item, array &$expires, array &$tags, bool $tagAll )
+	private function addMetaItemSingle( \Aimeos\MShop\Common\Item\Iface $item, array &$expires, array &$tags, bool $tagAll ): void
 	{
 		$domain = str_replace( '/', '_', $item->getResourceType() ); // maximum compatiblity
 
@@ -401,7 +400,7 @@ abstract class Base
 	 * @param array &$tags List of tags the new tags will be added to
 	 * @param bool $tagAll True of tags for all items should be added, false if only for the main item
 	 */
-	private function addMetaItemRef( \Aimeos\MShop\Common\Item\ListsRef\Iface $item, array &$expires, array &$tags, bool $tagAll )
+	private function addMetaItemRef( \Aimeos\MShop\Common\Item\ListsRef\Iface $item, array &$expires, array &$tags, bool $tagAll ): void
 	{
 		foreach( $item->getListItems() as $listItem )
 		{
@@ -429,7 +428,7 @@ abstract class Base
 	 */
 	protected function clientType() : string
 	{
-		return strtolower( trim( dirname( str_replace( '\\', '/', substr( get_class( $this ), 19 ) ) ), '/' ) );
+		return strtolower( trim( dirname( str_replace( '\\', '/', substr( static::class, 19 ) ) ), '/' ) );
 	}
 
 
@@ -483,9 +482,7 @@ abstract class Base
 	 */
 	protected function getClientParams( array $params, array $prefixes = ['f_', 'l_', 'd_', 'path'] ) : array
 	{
-		return map( $params )->filter( function( $val, $key ) use ( $prefixes ) {
-			return \Aimeos\Base\Str::starts( $key, $prefixes );
-		} )->toArray();
+		return map( $params )->filter( fn($val, $key) => \Aimeos\Base\Str::starts( $key, $prefixes ) )->toArray();
 	}
 
 
@@ -591,16 +588,16 @@ abstract class Base
 
 		$cfg = array_merge( $config->get( 'client/html', [] ), $this->getSubClientNames() );
 
-		$keys = array(
+		$keys = [
 			'body' => $this->getParamHash( $prefixes, $uid . ':' . $confkey . ':body', $cfg ),
 			'header' => $this->getParamHash( $prefixes, $uid . ':' . $confkey . ':header', $cfg ),
-		);
+		];
 
 		if( !isset( $this->cache[$keys[$type]] ) ) {
 			$this->cache = $context->cache()->getMultiple( $keys );
 		}
 
-		return ( isset( $this->cache[$keys[$type]] ) ? $this->cache[$keys[$type]] : null );
+		return ( $this->cache[$keys[$type]] ?? null );
 	}
 
 

@@ -129,7 +129,7 @@ class Standard
 		 */
 		$template = $config->get( 'client/html/catalog/detail/template-body', 'catalog/detail/body' );
 
-		$view = $this->view = $this->view ?? $this->object()->data( $view, $this->tags, $this->expire );
+		$view = ($this->view ??= $this->object()->data( $view, $this->tags, $this->expire ));
 		$html = $this->modify( $view->render( $template ), $uid );
 
 		return $this->cache( 'body', $uid, $prefixes, $confkey, $html, $this->tags, $this->expire );
@@ -183,7 +183,7 @@ class Standard
 		 */
 		$template = $config->get( 'client/html/catalog/detail/template-header', 'catalog/detail/header' );
 
-		$view = $this->view = $this->view ?? $this->object()->data( $this->view(), $this->tags, $this->expire );
+		$view = ($this->view ??= $this->object()->data( $this->view(), $this->tags, $this->expire ));
 		$html = $view->render( $template );
 
 		return $this->cache( 'header', $uid, $prefixes, $confkey, $html, $this->tags, $this->expire );
@@ -210,7 +210,7 @@ class Standard
 	 * A view must be available and this method doesn't generate any output
 	 * besides setting view variables if necessary.
 	 */
-	public function init()
+	public function init(): void
 	{
 		$view = $this->view();
 		$context = $this->context();
@@ -243,7 +243,7 @@ class Standard
 
 		if( in_array( $productItem->getType(), ['bundle', 'select'] ) )
 		{
-			\Aimeos\Map::method( 'attrparent', function( $subProdId ) {
+			\Aimeos\Map::method( 'attrparent', function( $subProdId ): static {
 				foreach( $this->list as $item ) {
 					$item->parent = array_merge( $item->parent ?? [], [$subProdId] );
 				}
@@ -260,9 +260,7 @@ class Standard
 			}
 		}
 
-		$attrItems->uasort( function( $a, $b ) {
-			return $a->getPosition() <=> $b->getPosition();
-		} );
+		$attrItems->uasort( fn($a, $b) => $a->getPosition() <=> $b->getPosition() );
 
 		$attrMap = $attrItems->groupBy( 'attribute.type' );
 		$propMap = $propItems->groupBy( 'product.property.type' );

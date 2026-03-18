@@ -108,7 +108,7 @@ class Standard
 	 * @param string Last part of the client class name
 	 * @since 2014.09
 	 */
-	private array $subPartNames = array( 'language', 'currency' );
+	private array $subPartNames = [ 'language', 'currency' ];
 
 	private array $tags = [];
 	private ?string $expire = null;
@@ -123,7 +123,7 @@ class Standard
 	 */
 	public function body( string $uid = '' ) : string
 	{
-		$view = $this->view = $this->view ?? $this->object()->data( $this->view(), $this->tags, $this->expire );
+		$view = ($this->view ??= $this->object()->data( $this->view(), $this->tags, $this->expire ));
 
 		$html = '';
 		foreach( $this->getSubClients() as $subclient ) {
@@ -163,7 +163,7 @@ class Standard
 	 */
 	public function header( string $uid = '' ) : ?string
 	{
-		$view = $this->view = $this->view ?? $this->object()->data( $this->view(), $this->tags, $this->expire );
+		$view = ($this->view ??= $this->object()->data( $this->view(), $this->tags, $this->expire ));
 
 		/** client/html/locale/select/template-header
 		 * Relative path to the HTML header template of the locale select client.

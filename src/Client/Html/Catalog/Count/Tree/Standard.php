@@ -108,7 +108,7 @@ class Standard
 	 */
 	protected function traverse( \Aimeos\MShop\Catalog\Item\Iface $node, array $counts ) : \Aimeos\MShop\Catalog\Item\Iface
 	{
-		$count = ( isset( $counts[$node->getId()] ) ? $counts[$node->getId()] : 0 );
+		$count = ( $counts[$node->getId()] ?? 0 );
 
 		foreach( $node->getChildren() as $child ) {
 			$count += $this->traverse( $child, $counts )->count;
