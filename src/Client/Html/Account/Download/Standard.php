@@ -145,7 +145,8 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
             $response->withHeader('Expires', '0');
 
             $response->withBody($response->createStream($fs->reads($value)));
-        } elseif (filter_var($value, FILTER_VALIDATE_URL) !== false) {
+        } elseif (filter_var($value, FILTER_VALIDATE_URL) !== false
+            && in_array(parse_url($value, PHP_URL_SCHEME), ['http', 'https'], true)) {
             $response->withHeader('Location', $value);
             $response->withStatus(303);
         } else {
