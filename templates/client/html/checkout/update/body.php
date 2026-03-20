@@ -1,10 +1,8 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2015-2026
  */
-
-echo (string) $this->response()->getBody();
+echo (string) $this->response()->get_body();

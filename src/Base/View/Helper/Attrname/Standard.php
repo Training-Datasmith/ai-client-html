@@ -1,14 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2020-2026
  * @package MW
  * @subpackage View
  */
-
 namespace Aimeos\Base\View\Helper\Attrname;
 
 /**
@@ -25,23 +23,15 @@ class Standard extends \Aimeos\Base\View\Helper\Base implements \Aimeos\Base\Vie
      * @param \Aimeos\MShop\Attribute\Item\Iface $item Attribute item
      * @return string Attribute name with price (optional)
      */
-    public function transform(\Aimeos\MShop\Attribute\Item\Iface $item): string
+    public function transform(\Aimeos\M_Shop\Attribute\Item\Iface $item): string
     {
-        if ($priceItem = $item->getRefItems('price', 'default', 'default')->first()) {
+        if ($price_item = $item->get_ref_items('price', 'default', 'default')->first()) {
             /// Configurable product attribute name (%1$s) with sign (%4$s, +/-), price value (%2$s) and currency (%3$s)
             $str = $this->translate('client', '%1$s (%4$s%2$s%3$s)');
-            $value = $priceItem->getValue() + $priceItem->getCosts();
+            $value = $price_item->get_value() + $price_item->get_costs();
             $view = $this->view();
-
-            return sprintf(
-                $str,
-                $item->getName(),
-                $view->number(abs($value), $priceItem->getPrecision()),
-                $view->translate('currency', $priceItem->getCurrencyId()),
-                ($value < 0 ? '−' : '+')
-            );
+            return sprintf($str, $item->get_name(), $view->number(abs($value), $price_item->get_precision()), $view->translate('currency', $price_item->get_currency_id()), $value < 0 ? '−' : '+');
         }
-
-        return $item->getName();
+        return $item->get_name();
     }
 }

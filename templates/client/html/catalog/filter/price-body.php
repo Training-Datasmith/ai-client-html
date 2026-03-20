@@ -4,41 +4,79 @@
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2020-2026
  */
-
 $enc = $this->encoder();
-
 $multi = $this->config('client/html/catalog/multiroute', false);
-$linkKey = $multi && $this->param('path') || $this->param('f_catid') ? 'client/html/catalog/tree/url' : 'client/html/catalog/lists/url';
-
-?>
-<?php $this->block()->start('catalog/filter/price') ?>
-<?php if ($this->get('priceHigh', 0)) : ?>
-	<div class="section catalog-filter-price" aria-label="<?= $enc->attr($this->translate('client', 'Price filter')) ?>">
-		<div class="header-name"><?= $enc->html($this->translate('client', 'Price'), $enc::TRUST) ?></div>
+$link_key = $multi && $this->param('path') || $this->param('f_catid') ? 'client/html/catalog/tree/url' : 'client/html/catalog/lists/url';
+$this->block()->start('catalog/filter/price');
+if ($this->get('priceHigh', 0)) {
+    ?>
+	<div class="section catalog-filter-price" aria-label="<?php 
+    echo $enc->attr($this->translate('client', 'Price filter'));
+    ?>">
+		<div class="header-name"><?php 
+    echo $enc->html($this->translate('client', 'Price'), $enc::TRUST);
+    ?></div>
 
 		<div class="price-lists">
 			<div class="price-input">
-				<input type="number" class="price-low" <?= $this->param('f_price/0') ? '' : 'data-' ?>name="<?= $this->formparam(['f_price', 0])?>"
-					min="0" max="<?= $enc->attr($this->get('priceHigh', 0)) ?>" step="1"
-					value="<?= $enc->attr($this->param('f_price/0', 0)) ?>"
-					title="<?= $enc->attr($this->translate('client', 'Lowest price')) ?>">
-				<input type="number" class="price-high" <?= $this->param('f_price/1') ? '' : 'data-' ?>name="<?= $this->formparam(['f_price', 1])?>"
-					min="0" max="<?= $enc->attr(max($this->param('f_price/1', 1), $this->get('priceHigh', 1))) ?>" step="1"
-					value="<?= $enc->attr($this->param('f_price/1', $this->get('priceHigh', 1))) ?>"
-					title="<?= $enc->attr($this->translate('client', 'Highest price')) ?>">
+				<input type="number" class="price-low" <?php 
+    echo $this->param('f_price/0') ? '' : 'data-';
+    ?>name="<?php 
+    echo $this->formparam(['f_price', 0]);
+    ?>"
+					min="0" max="<?php 
+    echo $enc->attr($this->get('priceHigh', 0));
+    ?>" step="1"
+					value="<?php 
+    echo $enc->attr($this->param('f_price/0', 0));
+    ?>"
+					title="<?php 
+    echo $enc->attr($this->translate('client', 'Lowest price'));
+    ?>">
+				<input type="number" class="price-high" <?php 
+    echo $this->param('f_price/1') ? '' : 'data-';
+    ?>name="<?php 
+    echo $this->formparam(['f_price', 1]);
+    ?>"
+					min="0" max="<?php 
+    echo $enc->attr(max($this->param('f_price/1', 1), $this->get('priceHigh', 1)));
+    ?>" step="1"
+					value="<?php 
+    echo $enc->attr($this->param('f_price/1', $this->get('priceHigh', 1)));
+    ?>"
+					title="<?php 
+    echo $enc->attr($this->translate('client', 'Highest price'));
+    ?>">
 				<input type="range" class="price-slider"
-					min="0" max="<?= $enc->attr(max($this->param('f_price/1', 1), $this->get('priceHigh', 1))) ?>" step="1"
-					value="<?= $enc->attr($this->param('f_price/1', $this->get('priceHigh', 1))) ?>"
-					title="<?= $enc->attr($this->translate('client', 'Price range')) ?>">
+					min="0" max="<?php 
+    echo $enc->attr(max($this->param('f_price/1', 1), $this->get('priceHigh', 1)));
+    ?>" step="1"
+					value="<?php 
+    echo $enc->attr($this->param('f_price/1', $this->get('priceHigh', 1)));
+    ?>"
+					title="<?php 
+    echo $enc->attr($this->translate('client', 'Price range'));
+    ?>">
 			</div>
-			<button type="submit" class="btn btn-primary"><?= $enc->html($this->translate('client', 'Save')) ?></button>
-			<?php if ($this->param('f_price')) : ?>
-				<a class="btn" href="<?= $enc->attr($this->link($linkKey, $this->get('priceResetParams', []))) ?>">
-					<?= $enc->html($this->translate('client', 'Reset')) ?>
+			<button type="submit" class="btn btn-primary"><?php 
+    echo $enc->html($this->translate('client', 'Save'));
+    ?></button>
+			<?php 
+    if ($this->param('f_price')) {
+        ?>
+				<a class="btn" href="<?php 
+        echo $enc->attr($this->link($link_key, $this->get('priceResetParams', [])));
+        ?>">
+					<?php 
+        echo $enc->html($this->translate('client', 'Reset'));
+        ?>
 				</a>
-			<?php endif ?>
+			<?php 
+    }
+    ?>
 		</div>
 	</div>
-<?php endif ?>
-<?php $this->block()->stop() ?>
-<?= $this->block()->get('catalog/filter/price') ?>
+<?php 
+}
+$this->block()->stop();
+echo $this->block()->get('catalog/filter/price');

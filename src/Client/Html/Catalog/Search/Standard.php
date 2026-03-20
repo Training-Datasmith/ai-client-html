@@ -1,14 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2018-2026
  * @package Client
  * @subpackage Html
  */
-
 namespace Aimeos\Client\Html\Catalog\Search;
 
 /**
@@ -51,7 +49,6 @@ class Standard extends \Aimeos\Client\Html\Catalog\Filter\Standard implements \A
      * @param string Last part of the class name
      * @since 2018.04
      */
-
     /** client/html/catalog/search/subparts
      * List of HTML sub-clients rendered within the catalog search section
      *
@@ -84,9 +81,8 @@ class Standard extends \Aimeos\Client\Html\Catalog\Filter\Standard implements \A
      * @param array List of sub-client names
      * @since 2018.04
      */
-    private string $subPartPath = 'client/html/catalog/search/subparts';
-    private array $subPartNames = ['search'];
-
+    private string $sub_part_path = 'client/html/catalog/search/subparts';
+    private array $sub_part_names = ['search'];
     /**
      * Returns the sub-client given by its name.
      *
@@ -94,21 +90,19 @@ class Standard extends \Aimeos\Client\Html\Catalog\Filter\Standard implements \A
      * @param string|null $name Name of the sub-client (Default if null)
      * @return \Aimeos\Client\Html\Iface Sub-client object
      */
-    public function getSubClient(string $type, ?string $name = null): \Aimeos\Client\Html\Iface
+    public function get_sub_client(string $type, ?string $name = null): \Aimeos\Client\Html\Iface
     {
-        return parent::getSubClient($type, $name);
+        return parent::get_sub_client($type, $name);
     }
-
     /**
      * Returns the names of the subpart clients
      *
      * @return array List of client names
      */
-    protected function getSubClientNames(): array
+    protected function get_sub_client_names(): array
     {
-        return $this->context()->config()->get($this->subPartPath, $this->subPartNames);
+        return $this->context()->config()->get($this->sub_part_path, $this->sub_part_names);
     }
-
     /** client/html/catalog/search/decorators/excludes
      * Excludes decorators added by the "common" option from the catalog filter search html client
      *
@@ -133,7 +127,6 @@ class Standard extends \Aimeos\Client\Html\Catalog\Filter\Standard implements \A
      * @see client/html/catalog/search/decorators/global
      * @see client/html/catalog/search/decorators/local
      */
-
     /** client/html/catalog/search/decorators/global
      * Adds a list of globally available decorators only to the catalog filter search html client
      *
@@ -156,7 +149,6 @@ class Standard extends \Aimeos\Client\Html\Catalog\Filter\Standard implements \A
      * @see client/html/catalog/search/decorators/excludes
      * @see client/html/catalog/search/decorators/local
      */
-
     /** client/html/catalog/search/decorators/local
      * Adds a list of local decorators only to the catalog filter search html client
      *

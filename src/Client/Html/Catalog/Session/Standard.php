@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Metaways Infosystems GmbH, 2013
@@ -9,7 +8,6 @@ declare(strict_types=1);
  * @package Client
  * @subpackage Html
  */
-
 namespace Aimeos\Client\Html\Catalog\Session;
 
 /**
@@ -52,7 +50,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @param string Last part of the class name
      * @since 2014.03
      */
-
     /** client/html/catalog/session/subparts
      * List of HTML sub-clients rendered within the catalog session section
      *
@@ -85,8 +82,7 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @param array List of sub-client names
      * @since 2014.03
      */
-    private string $subPartPath = 'client/html/catalog/session/subparts';
-
+    private string $sub_part_path = 'client/html/catalog/session/subparts';
     /** client/html/catalog/session/pinned/name
      * Name of the pinned part used by the catalog session client implementation
      *
@@ -96,7 +92,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @param string Last part of the client class name
      * @since 2014.09
      */
-
     /** client/html/catalog/session/seen/name
      * Name of the seen part used by the catalog session client implementation
      *
@@ -106,8 +101,7 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @param string Last part of the client class name
      * @since 2014.03
      */
-    private array $subPartNames = [ 'pinned', 'seen' ];
-
+    private array $sub_part_names = ['pinned', 'seen'];
     /**
      * Returns the sub-client given by its name.
      *
@@ -115,21 +109,19 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @param string|null $name Name of the sub-client (Default if null)
      * @return \Aimeos\Client\Html\Iface Sub-client object
      */
-    public function getSubClient(string $type, ?string $name = null): \Aimeos\Client\Html\Iface
+    public function get_sub_client(string $type, ?string $name = null): \Aimeos\Client\Html\Iface
     {
-        return $this->createSubClient('catalog/session/' . $type, $name);
+        return $this->create_sub_client('catalog/session/' . $type, $name);
     }
-
     /**
      * Returns the list of sub-client names configured for the client.
      *
      * @return array List of HTML client names
      */
-    protected function getSubClientNames(): array
+    protected function get_sub_client_names(): array
     {
-        return $this->context()->config()->get($this->subPartPath, $this->subPartNames);
+        return $this->context()->config()->get($this->sub_part_path, $this->sub_part_names);
     }
-
     /** client/html/catalog/session/template-body
      * Relative path to the HTML body template of the catalog session client.
      *
@@ -149,7 +141,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @since 2014.03
      * @see client/html/catalog/session/template-header
      */
-
     /** client/html/catalog/session/template-header
      * Relative path to the HTML header template of the catalog session client.
      *
@@ -170,7 +161,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @since 2014.03
      * @see client/html/catalog/session/template-body
      */
-
     /** client/html/catalog/session/decorators/excludes
      * Excludes decorators added by the "common" option from the catalog session html client
      *
@@ -195,7 +185,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @see client/html/catalog/session/decorators/global
      * @see client/html/catalog/session/decorators/local
      */
-
     /** client/html/catalog/session/decorators/global
      * Adds a list of globally available decorators only to the catalog session html client
      *
@@ -218,7 +207,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @see client/html/catalog/session/decorators/excludes
      * @see client/html/catalog/session/decorators/local
      */
-
     /** client/html/catalog/session/decorators/local
      * Adds a list of local decorators only to the catalog session html client
      *

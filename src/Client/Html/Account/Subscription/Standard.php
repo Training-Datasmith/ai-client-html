@@ -1,14 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2018-2026
  * @package Client
  * @subpackage Html
  */
-
 namespace Aimeos\Client\Html\Account\Subscription;
 
 /**
@@ -51,7 +49,6 @@ class Standard extends \Aimeos\Client\Html\Base implements \Aimeos\Client\Html\I
      * @param string Last part of the class name
      * @since 2018.04
      */
-
     /**
      * Sets the necessary parameter values in the view.
      *
@@ -63,15 +60,10 @@ class Standard extends \Aimeos\Client\Html\Base implements \Aimeos\Client\Html\I
     public function data(\Aimeos\Base\View\Iface $view, array &$tags = [], ?string &$expire = null): \Aimeos\Base\View\Iface
     {
         $cntl = \Aimeos\Controller\Frontend::create($this->context(), 'subscription');
-
-        $view->subscriptionIntervals = $cntl->getIntervals();
-        $view->subscriptionItems = $cntl->uses(['order', 'order/address', 'order/product'])
-            ->sort('-subscription.id')
-            ->search();
-
+        $view->subscription_intervals = $cntl->get_intervals();
+        $view->subscription_items = $cntl->uses(['order', 'order/address', 'order/product'])->sort('-subscription.id')->search();
         return parent::data($view, $tags, $expire);
     }
-
     /**
      * Processes the input, e.g. store given values.
      *
@@ -81,12 +73,10 @@ class Standard extends \Aimeos\Client\Html\Base implements \Aimeos\Client\Html\I
     public function init(): void
     {
         $view = $this->view();
-
         if (($id = $view->param('sub_id')) != null && $view->param('sub_action') === 'cancel') {
             \Aimeos\Controller\Frontend::create($this->context(), 'subscription')->cancel($id);
         }
     }
-
     /** client/html/account/subscription/template-body
      * Relative path to the HTML body template of the account subscription client.
      *
@@ -106,7 +96,6 @@ class Standard extends \Aimeos\Client\Html\Base implements \Aimeos\Client\Html\I
      * @since 2018.04
      * @see client/html/account/subscription/template-header
      */
-
     /** client/html/account/subscription/template-header
      * Relative path to the HTML header template of the account subscription client.
      *
@@ -127,7 +116,6 @@ class Standard extends \Aimeos\Client\Html\Base implements \Aimeos\Client\Html\I
      * @since 2018.04
      * @see client/html/account/subscription/template-body
      */
-
     /** client/html/account/subscription/decorators/excludes
      * Excludes decorators added by the "common" option from the account subscription html client
      *
@@ -152,7 +140,6 @@ class Standard extends \Aimeos\Client\Html\Base implements \Aimeos\Client\Html\I
      * @see client/html/account/subscription/decorators/global
      * @see client/html/account/subscription/decorators/local
      */
-
     /** client/html/account/subscription/decorators/global
      * Adds a list of globally available decorators only to the account subscription html client
      *
@@ -175,7 +162,6 @@ class Standard extends \Aimeos\Client\Html\Base implements \Aimeos\Client\Html\I
      * @see client/html/account/subscription/decorators/excludes
      * @see client/html/account/subscription/decorators/local
      */
-
     /** client/html/account/subscription/decorators/local
      * Adds a list of local decorators only to the account subscription html client
      *

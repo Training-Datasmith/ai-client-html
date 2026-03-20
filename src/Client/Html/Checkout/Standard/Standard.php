@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Metaways Infosystems GmbH, 2013
@@ -9,7 +8,6 @@ declare(strict_types=1);
  * @package Client
  * @subpackage Html
  */
-
 namespace Aimeos\Client\Html\Checkout\Standard;
 
 /**
@@ -51,7 +49,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      *
      * @param string Last part of the class name
      */
-
     /** client/html/checkout/standard/subparts
      * List of HTML sub-clients rendered within the checkout standard section
      *
@@ -83,8 +80,7 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      *
      * @param array List of sub-client names
      */
-    private string $subPartPath = 'client/html/checkout/standard/subparts';
-
+    private string $sub_part_path = 'client/html/checkout/standard/subparts';
     /** client/html/checkout/standard/address/name
      * Name of the address part used by the checkout standard client implementation
      *
@@ -93,7 +89,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      *
      * @param string Last part of the client class name
      */
-
     /** client/html/checkout/standard/delivery/name
      * Name of the delivery part used by the checkout standard client implementation
      *
@@ -102,7 +97,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      *
      * @param string Last part of the client class name
      */
-
     /** client/html/checkout/standard/payment/name
      * Name of the payment part used by the checkout standard client implementation
      *
@@ -111,7 +105,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      *
      * @param string Last part of the client class name
      */
-
     /** client/html/checkout/standard/summary/name
      * Name of the summary part used by the checkout standard client implementation
      *
@@ -120,7 +113,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      *
      * @param string Last part of the client class name
      */
-
     /** client/html/checkout/standard/process/name
      * Name of the process part used by the checkout standard client implementation
      *
@@ -129,8 +121,7 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      *
      * @param string Last part of the client class name
      */
-    private array $subPartNames = ['address', 'delivery', 'payment', 'summary', 'process'];
-
+    private array $sub_part_names = ['address', 'delivery', 'payment', 'summary', 'process'];
     /**
      * Returns the sub-client given by its name.
      *
@@ -138,21 +129,19 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @param string|null $name Name of the sub-client (Default if null)
      * @return \Aimeos\Client\Html\Iface Sub-client object
      */
-    public function getSubClient(string $type, ?string $name = null): \Aimeos\Client\Html\Iface
+    public function get_sub_client(string $type, ?string $name = null): \Aimeos\Client\Html\Iface
     {
-        return $this->createSubClient('checkout/standard/' . $type, $name);
+        return $this->create_sub_client('checkout/standard/' . $type, $name);
     }
-
     /**
      * Returns the list of sub-client names configured for the client.
      *
      * @return array List of HTML client names
      */
-    protected function getSubClientNames(): array
+    protected function get_sub_client_names(): array
     {
-        return $this->context()->config()->get($this->subPartPath, $this->subPartNames);
+        return $this->context()->config()->get($this->sub_part_path, $this->sub_part_names);
     }
-
     /**
      * Sets the necessary parameter values in the view.
      *
@@ -164,10 +153,8 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
     public function data(\Aimeos\Base\View\Iface $view, array &$tags = [], ?string &$expire = null): \Aimeos\Base\View\Iface
     {
         $context = $this->context();
-
-        $basketCntl = \Aimeos\Controller\Frontend::create($context, 'basket');
-        $view->standardBasket = $basketCntl->get();
-
+        $basket_cntl = \Aimeos\Controller\Frontend::create($context, 'basket');
+        $view->standard_basket = $basket_cntl->get();
         /** client/html/checkout/standard/url/step-active
          * Name of the checkout process step to jump to if no previous step requires attention
          *
@@ -189,7 +176,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @see client/html/checkout/subparts
          */
         $default = $view->config('client/html/checkout/standard/url/step-active', 'summary');
-
         /** client/html/checkout/standard/onepage
          * Shows all named checkout subparts at once for a one page checkout
          *
@@ -220,45 +206,33 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @param array List of checkout subparts name
          */
         $onepage = $view->config('client/html/checkout/standard/onepage', []);
-        $onestep = (!empty($onepage) ? array_shift($onepage) : $default); // keep the first one page step
-
-        $steps = (array) $context->config()->get($this->subPartPath, $this->subPartNames);
-        $steps = array_values(array_diff($steps, $onepage)); // remove all remaining steps in $onepage and reindex
-
+        $onestep = !empty($onepage) ? array_shift($onepage) : $default;
+        // keep the first one page step
+        $steps = (array) $context->config()->get($this->sub_part_path, $this->sub_part_names);
+        $steps = array_values(array_diff($steps, $onepage));
+        // remove all remaining steps in $onepage and reindex
         // use first step if default step isn't available
-        $default = (!in_array($default, $steps) ? reset($steps) : $default);
+        $default = !in_array($default, $steps) ? reset($steps) : $default;
         $current = $view->param('c_step', $default);
-
         // use $onestep if the current step isn't available due to one page layout
         if (!in_array($current, $steps)) {
             $current = $onestep;
         }
-
         // use $onestep if the active step isn't available due to one page layout
-        if (isset($view->standardStepActive) && in_array($view->standardStepActive, $onepage)) {
-            $view->standardStepActive = $onestep;
+        if (isset($view->standard_step_active) && in_array($view->standard_step_active, $onepage)) {
+            $view->standard_step_active = $onestep;
         }
-
         $cpos = array_search($current, $steps);
-
-        if (!isset($view->standardStepActive)
-            || (($apos = array_search($view->standardStepActive, $steps)) !== false
-            && $cpos !== false && $cpos < $apos)
-        ) {
-            $view->standardStepActive = $current;
+        if (!isset($view->standard_step_active) || ($apos = array_search($view->standard_step_active, $steps)) !== false && $cpos !== false && $cpos < $apos) {
+            $view->standard_step_active = $current;
         }
-
-        $cpos = (int) array_search($view->standardStepActive, array_values($steps));
-
-        $view->standardStepsBefore = array_slice($steps, 0, $cpos);
-        $view->standardStepsAfter = array_slice($steps, $cpos + 1);
-
-        $view = $this->navigation($view, $steps, $view->standardStepActive);
-        $view->standardSteps = $steps;
-
+        $cpos = (int) array_search($view->standard_step_active, array_values($steps));
+        $view->standard_steps_before = array_slice($steps, 0, $cpos);
+        $view->standard_steps_after = array_slice($steps, $cpos + 1);
+        $view = $this->navigation($view, $steps, $view->standard_step_active);
+        $view->standard_steps = $steps;
         return parent::data($view, $tags, $expire);
     }
-
     /**
      * Adds the "back" and "next" URLs to the view
      *
@@ -267,7 +241,7 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @param string $activeStep Name of the active step
      * @return \Aimeos\Base\View\Iface Enhanced view object
      */
-    protected function navigation(\Aimeos\Base\View\Iface $view, array $steps, string $activeStep): \Aimeos\Base\View\Iface
+    protected function navigation(\Aimeos\Base\View\Iface $view, array $steps, string $active_step): \Aimeos\Base\View\Iface
     {
         /** client/html/checkout/standard/url/target
          * Destination of the URL where the controller specified in the URL is known
@@ -282,7 +256,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @see client/html/checkout/standard/url/config
          * @see client/html/checkout/standard/url/filter
          */
-
         /** client/html/checkout/standard/url/controller
          * Name of the controller whose action should be called
          *
@@ -296,7 +269,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @see client/html/checkout/standard/url/config
          * @see client/html/checkout/standard/url/filter
          */
-
         /** client/html/checkout/standard/url/action
          * Name of the action that should create the output
          *
@@ -310,7 +282,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @see client/html/checkout/standard/url/config
          * @see client/html/checkout/standard/url/filter
          */
-
         /** client/html/checkout/standard/url/config
          * Associative list of configuration options used for generating the URL
          *
@@ -330,7 +301,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @see client/html/checkout/standard/url/action
          * @see client/html/checkout/standard/url/filter
          */
-
         /** client/html/checkout/standard/url/filter
          * Removes parameters for the detail page before generating the URL
          *
@@ -344,28 +314,23 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @see client/html/checkout/standard/url/action
          * @see client/html/checkout/standard/url/config
          */
-
         $step = null;
         do {
-            $lastStep = $step;
-        } while (($step = array_shift($steps)) !== null && $step !== $activeStep);
-
-        if ($lastStep !== null) {
-            $param = [ 'c_step' => $lastStep ];
-            $view->standardUrlBack = $view->link('client/html/checkout/standard/url', $param);
+            $last_step = $step;
+        } while (($step = array_shift($steps)) !== null && $step !== $active_step);
+        if ($last_step !== null) {
+            $param = ['c_step' => $last_step];
+            $view->standard_url_back = $view->link('client/html/checkout/standard/url', $param);
         } else {
-            $view->standardUrlBack = $view->link('client/html/basket/standard/url');
+            $view->standard_url_back = $view->link('client/html/basket/standard/url');
         }
-
-        if (!isset($view->standardUrlNext) && ($nextStep = array_shift($steps)) !== null) {
-            $param = [ 'c_step' => $nextStep ];
-            $view->standardUrlNext = $view->link('client/html/checkout/standard/url', $param);
+        if (!isset($view->standard_url_next) && ($next_step = array_shift($steps)) !== null) {
+            $param = ['c_step' => $next_step];
+            $view->standard_url_next = $view->link('client/html/checkout/standard/url', $param);
         }
         // don't overwrite $view->standardUrlNext so process step URL is used
-
         return $view;
     }
-
     /** client/html/checkout/standard/template-body
      * Relative path to the HTML body template of the checkout standard client.
      *
@@ -384,7 +349,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @param string Relative path to the template creating code for the HTML page body
      * @see client/html/checkout/template-header
      */
-
     /** client/html/checkout/standard/template-header
      * Relative path to the HTML header template of the checkout standard client.
      *
@@ -404,7 +368,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @param string Relative path to the template creating code for the HTML page head
      * @see client/html/checkout/template-body
      */
-
     /** client/html/checkout/standard/decorators/excludes
      * Excludes decorators added by the "common" option from the checkout standard html client
      *
@@ -428,7 +391,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @see client/html/checkout/standard/decorators/global
      * @see client/html/checkout/standard/decorators/local
      */
-
     /** client/html/checkout/standard/decorators/global
      * Adds a list of globally available decorators only to the checkout standard html client
      *
@@ -450,7 +412,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @see client/html/checkout/standard/decorators/excludes
      * @see client/html/checkout/standard/decorators/local
      */
-
     /** client/html/checkout/standard/decorators/local
      * Adds a list of local decorators only to the checkout standard html client
      *

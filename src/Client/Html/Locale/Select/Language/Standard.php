@@ -1,14 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2015-2026
  * @package Client
  * @subpackage Html
  */
-
 namespace Aimeos\Client\Html\Locale\Select\Language;
 
 /**
@@ -28,7 +26,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
     public function body(string $uid = ''): string
     {
         $view = $this->view();
-
         /** client/html/locale/select/language/template-body
          * Relative path to the HTML body template of the locale select language client.
          *
@@ -50,10 +47,8 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          */
         $tplconf = 'client/html/locale/select/language/template-body';
         $default = 'locale/select/language-body';
-
         return $view->render($view->config($tplconf, $default));
     }
-
     /**
      * Processes the input, e.g. store given values.
      *
@@ -64,9 +59,8 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
     {
         $context = $this->context();
         $name = $context->config()->get('client/html/locale/select/language/param-name', 'locale');
-
-        if ($languageId = $this->view()->param($name)) {
-            $context->session()->set('aimeos/locale/languageid', $languageId);
+        if ($language_id = $this->view()->param($name)) {
+            $context->session()->set('aimeos/locale/languageid', $language_id);
         }
     }
 }

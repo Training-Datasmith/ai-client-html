@@ -1,14 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2016-2026
  * @package Client
  * @subpackage Html
  */
-
 namespace Aimeos\Client\Html\Account\Download;
 
 /**
@@ -51,7 +49,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @param string Last part of the class name
      * @since 2014.03
      */
-
     /**
      * Returns the HTML code for insertion into the body.
      *
@@ -62,7 +59,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
     {
         return '';
     }
-
     /**
      * Returns the HTML string for insertion into the header.
      *
@@ -73,7 +69,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
     {
         return null;
     }
-
     /**
      * Processes the input, e.g. store given values.
      *
@@ -83,11 +78,9 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
     public function init()
     {
         $context = $this->context();
-
         try {
             $view = $this->view();
             $id = $view->param('dl_id');
-
             /** client/html/account/download/error/url/target
              * Destination of the URL to redirect the customer if the file download isn't allowed
              *
@@ -99,99 +92,76 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
              * @since 2019.04
              */
             $target = $context->config()->get('client/html/account/download/error/url/target');
-
-            if ($this->checkAccess($id) === false) {
-                return $view->response()->withStatus(401)->withHeader('Location', $view->url($target));
+            if ($this->check_access($id) === false) {
+                return $view->response()->with_status(401)->with_header('Location', $view->url($target));
             }
-
-            if ($this->checkDownload($id) === false) {
-                return $view->response()->withStatus(403)->withHeader('Location', $view->url($target));
+            if ($this->check_download($id) === false) {
+                return $view->response()->with_status(403)->with_header('Location', $view->url($target));
             }
-
-            $this->addDownload(\Aimeos\MShop::create($context, 'order/product/attribute')->get($id));
-
+            $this->add_download(\Aimeos\M_Shop::create($context, 'order/product/attribute')->get($id));
             parent::init();
         } catch (\Exception $e) {
-            $this->logException($e);
+            $this->log_exception($e);
         }
     }
-
     /**
      * Adds the necessary headers and the download content to the reponse object
      *
      * @param \Aimeos\MShop\Order\Item\Product\Attribute\Iface $item Order product attribute item with file reference
      */
-    protected function addDownload(\Aimeos\MShop\Order\Item\Product\Attribute\Iface $item)
+    protected function add_download(\Aimeos\M_Shop\Order\Item\Product\Attribute\Iface $item)
     {
         $fs = $this->context()->fs('fs-secure');
         $response = $this->view()->response();
-        $value = (string) $item->getValue();
-
+        $value = (string) $item->get_value();
         if ($fs->has($value)) {
-            $name = $item->getName();
-
-            if (pathinfo($name, PATHINFO_EXTENSION) == null
-                    && ($ext = pathinfo($value, PATHINFO_EXTENSION)) != null
-            ) {
+            $name = $item->get_name();
+            if (pathinfo($name, PATHINFO_EXTENSION) == null && ($ext = pathinfo($value, PATHINFO_EXTENSION)) != null) {
                 $name .= '.' . $ext;
             }
-
-            $response->withHeader('Content-Description', 'File Transfer');
-            $response->withHeader('Content-Type', 'application/octet-stream');
-            $response->withHeader('Content-Disposition', 'attachment; filename="' . str_replace(["\r", "\n", '"'], '', $name) . '"');
-            $response->withHeader('Content-Length', (string) $fs->size($value));
-            $response->withHeader('Cache-Control', 'must-revalidate');
-            $response->withHeader('Pragma', 'private');
-            $response->withHeader('Expires', '0');
-
-            $response->withBody($response->createStream($fs->reads($value)));
-        } elseif (filter_var($value, FILTER_VALIDATE_URL) !== false
-            && in_array(parse_url($value, PHP_URL_SCHEME), ['http', 'https'], true)) {
-            $response->withHeader('Location', $value);
-            $response->withStatus(303);
+            $response->with_header('Content-Description', 'File Transfer');
+            $response->with_header('Content-Type', 'application/octet-stream');
+            $response->with_header('Content-Disposition', 'attachment; filename="' . str_replace(["\r", "\n", '"'], '', $name) . '"');
+            $response->with_header('Content-Length', (string) $fs->size($value));
+            $response->with_header('Cache-Control', 'must-revalidate');
+            $response->with_header('Pragma', 'private');
+            $response->with_header('Expires', '0');
+            $response->with_body($response->create_stream($fs->reads($value)));
+        } elseif (filter_var($value, FILTER_VALIDATE_URL) !== false && in_array(parse_url($value, PHP_URL_SCHEME), ['http', 'https'], true)) {
+            $response->with_header('Location', $value);
+            $response->with_status(303);
         } else {
-            $response->withStatus(404);
+            $response->with_status(404);
         }
     }
-
     /**
      * Checks if the customer is allowed to download the file
      *
      * @param string|null $id Unique order base product attribute ID referencing the download file
      * @return bool True if download is allowed, false if not
      */
-    protected function checkAccess(?string $id = null): bool
+    protected function check_access(?string $id = null): bool
     {
         $context = $this->context();
-
-        if ($id && ($customerId = (string) $context->user())) {
-            $manager = \Aimeos\MShop::create($context, 'order');
-
+        if ($id && $customer_id = (string) $context->user()) {
+            $manager = \Aimeos\M_Shop::create($context, 'order');
             $filter = $manager->filter();
-            $filter->add($filter->and([
-                $filter->compare('>=', 'order.statuspayment', \Aimeos\MShop\Order\Item\Base::PAY_RECEIVED),
-                $filter->compare('==', 'order.customerid', $customerId),
-                $filter->compare('==', 'order.product.attribute.id', $id),
-            ]))->slice(0, 1);
-
-            if (!$manager->search($filter)->isEmpty()) {
+            $filter->add($filter->and([$filter->compare('>=', 'order.statuspayment', \Aimeos\M_Shop\Order\Item\Base::PAY_RECEIVED), $filter->compare('==', 'order.customerid', $customer_id), $filter->compare('==', 'order.product.attribute.id', $id)]))->slice(0, 1);
+            if (!$manager->search($filter)->is_empty()) {
                 return true;
             }
         }
-
         return false;
     }
-
     /**
      * Updates the download counter for the downloaded file
      *
      * @param string|null $id Unique order base product attribute ID referencing the download file
      * @return bool True if download is allowed, false if not
      */
-    protected function checkDownload(?string $id = null): bool
+    protected function check_download(?string $id = null): bool
     {
         $context = $this->context();
-
         /** client/html/account/download/maxcount
          * Maximum number of file downloads allowed for an ordered product
          *
@@ -206,27 +176,20 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @since 2016.02
          */
         $maxcnt = $context->config()->get('client/html/account/download/maxcount');
-
         $cntl = \Aimeos\Controller\Frontend::create($context, 'customer');
         $item = $cntl->uses(['order' => ['download']])->get();
-
-        if (($listItem = $item->getListItem('order', 'download', $id)) === null) {
-            $listItem = $cntl->createListItem()->setType('download')->setRefId($id);
+        if (($list_item = $item->get_list_item('order', 'download', $id)) === null) {
+            $list_item = $cntl->create_list_item()->set_type('download')->set_ref_id($id);
         }
-
-        $config = $listItem->getConfig();
-        $count = (int) $listItem->getConfigValue('count', 0);
-
+        $config = $list_item->get_config();
+        $count = (int) $list_item->get_config_value('count', 0);
         if ($maxcnt === null || $count < $maxcnt) {
             $config['count'] = ++$count;
-            $cntl->addListItem('order', $listItem->setConfig($config))->store();
-
+            $cntl->add_list_item('order', $list_item->set_config($config))->store();
             return true;
         }
-
         return false;
     }
-
     /** client/html/account/download/decorators/excludes
      * Excludes decorators added by the "common" option from the account download html client
      *
@@ -250,7 +213,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @see client/html/account/download/decorators/global
      * @see client/html/account/download/decorators/local
      */
-
     /** client/html/account/download/decorators/global
      * Adds a list of globally available decorators only to the account download html client
      *
@@ -272,7 +234,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @see client/html/account/download/decorators/excludes
      * @see client/html/account/download/decorators/local
      */
-
     /** client/html/account/download/decorators/local
      * Adds a list of local decorators only to the account download html client
      *

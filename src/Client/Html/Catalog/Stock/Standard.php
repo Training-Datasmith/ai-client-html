@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Metaways Infosystems GmbH, 2013
@@ -9,7 +8,6 @@ declare(strict_types=1);
  * @package Client
  * @subpackage Html
  */
-
 namespace Aimeos\Client\Html\Catalog\Stock;
 
 /**
@@ -52,7 +50,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @param string Last part of the class name
      * @since 2014.03
      */
-
     /**
      * Sets the necessary parameter values in the view.
      *
@@ -64,8 +61,7 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
     public function data(\Aimeos\Base\View\Iface $view, array &$tags = [], ?string &$expire = null): \Aimeos\Base\View\Iface
     {
         $context = $this->context();
-        $prodIds = (array) $view->param('st_pid', []);
-
+        $prod_ids = (array) $view->param('st_pid', []);
         /** client/html/catalog/stock/sort
          * Sortation key if stock levels for different types exist
          *
@@ -86,17 +82,11 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @see client/html/catalog/stock/level/low
          */
         $sort = $context->config()->get('client/html/catalog/stock/sort', 'stock.type');
-        $type = $context->locale()->getSiteItem()->getConfigValue('stocktype');
-
-        $view->stockProductIds = $prodIds;
-        $view->stockItemsByProducts = \Aimeos\Controller\Frontend::create($context, 'stock')
-            ->product($prodIds)->type($type)->sort($sort)
-            ->search()
-            ->groupBy('stock.productid');
-
+        $type = $context->locale()->get_site_item()->get_config_value('stocktype');
+        $view->stock_product_ids = $prod_ids;
+        $view->stock_items_by_products = \Aimeos\Controller\Frontend::create($context, 'stock')->product($prod_ids)->type($type)->sort($sort)->search()->group_by('stock.productid');
         return parent::data($view, $tags, $expire);
     }
-
     /** client/html/catalog/stock/template-body
      * Relative path to the HTML body template of the catalog stock client.
      *
@@ -116,7 +106,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @since 2014.03
      * @see client/html/catalog/stock/template-header
      */
-
     /** client/html/catalog/stock/template-header
      * Relative path to the HTML header template of the catalog stock client.
      *
@@ -137,7 +126,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @since 2014.03
      * @see client/html/catalog/stock/template-body
      */
-
     /** client/html/catalog/stock/decorators/excludes
      * Excludes decorators added by the "common" option from the catalog stock html client
      *
@@ -161,7 +149,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @see client/html/catalog/stock/decorators/global
      * @see client/html/catalog/stock/decorators/local
      */
-
     /** client/html/catalog/stock/decorators/global
      * Adds a list of globally available decorators only to the catalog stock html client
      *
@@ -183,7 +170,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @see client/html/catalog/stock/decorators/excludes
      * @see client/html/catalog/stock/decorators/local
      */
-
     /** client/html/catalog/stock/decorators/local
      * Adds a list of local decorators only to the catalog stock html client
      *

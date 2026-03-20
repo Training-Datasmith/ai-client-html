@@ -1,14 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2020-2026
  * @package Client
  * @subpackage Html
  */
-
 namespace Aimeos\Client\Html\Catalog\Home;
 
 /**
@@ -51,11 +49,9 @@ class Standard extends \Aimeos\Client\Html\Catalog\Base implements \Aimeos\Clien
      * @param string Last part of the class name
      * @since 2019.06
      */
-
     private array $tags = [];
     private ?string $expire = null;
     private ?\Aimeos\Base\View\Iface $view = null;
-
     /**
      * Returns the HTML code for insertion into the body.
      *
@@ -77,7 +73,6 @@ class Standard extends \Aimeos\Client\Html\Catalog\Base implements \Aimeos\Clien
          * @see client/html/catalog/stage/cache
          * @see client/html/catalog/list/cache
          */
-
         /** client/html/catalog/home
          * All parameters defined for the catalog home component and its subparts
          *
@@ -88,18 +83,14 @@ class Standard extends \Aimeos\Client\Html\Catalog\Base implements \Aimeos\Clien
          */
         $confkey = 'client/html/catalog/home';
         $config = $this->context()->config();
-
         if ($html = $this->cached('body', $uid, [], $confkey)) {
             return $this->modify($html, $uid);
         }
-
         $template = $config->get('client/html/catalog/home/template-body', 'catalog/home/body');
-        $view = ($this->view ??= $this->object()->data($this->view(), $this->tags, $this->expire));
+        $view = $this->view ??= $this->object()->data($this->view(), $this->tags, $this->expire);
         $html = $view->render($template);
-
         return $this->cache('body', $uid, [], $confkey, $html, $this->tags, $this->expire);
     }
-
     /**
      * Returns the HTML string for insertion into the header.
      *
@@ -110,18 +101,14 @@ class Standard extends \Aimeos\Client\Html\Catalog\Base implements \Aimeos\Clien
     {
         $confkey = 'client/html/catalog/home';
         $config = $this->context()->config();
-
         if ($html = $this->cached('header', $uid, [], $confkey)) {
             return $this->modify($html, $uid);
         }
-
         $template = $config->get('client/html/catalog/home/template-header', 'catalog/home/header');
-        $view = ($this->view ??= $this->object()->data($this->view(), $this->tags, $this->expire));
+        $view = $this->view ??= $this->object()->data($this->view(), $this->tags, $this->expire);
         $html = $view->render($template);
-
         return $this->cache('header', $uid, [], $confkey, $html, $this->tags, $this->expire);
     }
-
     /**
      * Sets the necessary parameter values in the view.
      *
@@ -132,21 +119,14 @@ class Standard extends \Aimeos\Client\Html\Catalog\Base implements \Aimeos\Clien
      */
     public function data(\Aimeos\Base\View\Iface $view, array &$tags = [], ?string &$expire = null): \Aimeos\Base\View\Iface
     {
-        $tree = \Aimeos\Controller\Frontend::create($this->context(), 'catalog')->uses($this->domains())
-            ->getTree(\Aimeos\Controller\Frontend\Catalog\Iface::LIST);
-
-        $products = \Aimeos\Controller\Frontend::create($this->context(), 'product')->uses($this->domains())
-            ->category($tree->getChildren()->getId()->all(), 'promotion')->search();
-
-        $this->addMetaItemCatalog($tree, $expire, $tags);
-        $this->addMetaItems($products, $expire, $tags, ['product']);
-
-        $view->homeTree = $tree;
-        $view->homeStockUrl = $this->stockUrl($products);
-
+        $tree = \Aimeos\Controller\Frontend::create($this->context(), 'catalog')->uses($this->domains())->get_tree(\Aimeos\Controller\Frontend\Catalog\Iface::LIST);
+        $products = \Aimeos\Controller\Frontend::create($this->context(), 'product')->uses($this->domains())->category($tree->get_children()->get_id()->all(), 'promotion')->search();
+        $this->add_meta_item_catalog($tree, $expire, $tags);
+        $this->add_meta_items($products, $expire, $tags, ['product']);
+        $view->home_tree = $tree;
+        $view->home_stock_url = $this->stock_url($products);
         return parent::data($view, $tags, $expire);
     }
-
     /**
      * Returns the data domains fetched along with the products
      *
@@ -156,7 +136,6 @@ class Standard extends \Aimeos\Client\Html\Catalog\Base implements \Aimeos\Clien
     {
         $context = $this->context();
         $config = $context->config();
-
         /** client/html/catalog/home/domains
          * A list of domain names whose items should be available in the catalog home view template
          *
@@ -182,7 +161,6 @@ class Standard extends \Aimeos\Client\Html\Catalog\Base implements \Aimeos\Clien
         $domains = ['catalog', 'media', 'media/property', 'price', 'supplier', 'text', 'product' => ['promotion']];
         $domains = $config->get('client/html/catalog/domains', $domains);
         $domains = $config->get('client/html/catalog/home/domains', $domains);
-
         /** client/html/catalog/home/basket-add
          * Display the "add to basket" button for each product item in the catalog home component
          *
@@ -201,29 +179,25 @@ class Standard extends \Aimeos\Client\Html\Catalog\Base implements \Aimeos\Clien
         if ($config->get('client/html/catalog/home/basket-add', false)) {
             return array_merge_recursive($domains, ['attribute' => ['variant', 'custom', 'config']]);
         }
-
         return $domains;
     }
-
     /**
      * Returns the list of stock URLs for the given products
      *
      * @param \Aimeos\Map $products List of products
      * @return \Aimeos\Map List of stock URLs
      */
-    protected function stockUrl(\Aimeos\Map $products): \Aimeos\Map
+    protected function stock_url(\Aimeos\Map $products): \Aimeos\Map
     {
         $articles = map();
         $config = $this->context()->config();
-
         if ($config->get('client/html/catalog/home/basket-add', false)) {
             foreach ($products as $product) {
-                if ($product->getType() === 'select') {
-                    $articles->union($product->getRefItems('product', 'default', 'default'));
+                if ($product->get_type() === 'select') {
+                    $articles->union($product->get_ref_items('product', 'default', 'default'));
                 }
             }
         }
-
         /** client/html/catalog/home/stock/enable
          * Enables or disables displaying product stock levels in product list views
          *
@@ -244,14 +218,11 @@ class Standard extends \Aimeos\Client\Html\Catalog\Base implements \Aimeos\Clien
          * @see client/html/catalog/stock/url/config
          */
         $enabled = $config->get('client/html/catalog/home/stock/enable', true);
-
-        if (!$enabled || $products->isEmpty()) {
+        if (!$enabled || $products->is_empty()) {
             return map();
         }
-
-        return $this->getStockUrl($this->view(), $products->union($articles));
+        return $this->get_stock_url($this->view(), $products->union($articles));
     }
-
     /** client/html/catalog/home/template-body
      * Relative path to the HTML body template of the catalog home client.
      *
@@ -271,7 +242,6 @@ class Standard extends \Aimeos\Client\Html\Catalog\Base implements \Aimeos\Clien
      * @since 2020.10
      * @see client/html/catalog/home/template-header
      */
-
     /** client/html/catalog/home/template-header
      * Relative path to the HTML header template of the catalog home client.
      *
@@ -292,7 +262,6 @@ class Standard extends \Aimeos\Client\Html\Catalog\Base implements \Aimeos\Clien
      * @since 2020.10
      * @see client/html/catalog/home/template-body
      */
-
     /** client/html/catalog/home/decorators/excludes
      * Excludes decorators added by the "common" option from the catalog home html client
      *
@@ -317,7 +286,6 @@ class Standard extends \Aimeos\Client\Html\Catalog\Base implements \Aimeos\Clien
      * @see client/html/catalog/home/decorators/global
      * @see client/html/catalog/home/decorators/local
      */
-
     /** client/html/catalog/home/decorators/global
      * Adds a list of globally available decorators only to the catalog home html client
      *
@@ -340,7 +308,6 @@ class Standard extends \Aimeos\Client\Html\Catalog\Base implements \Aimeos\Clien
      * @see client/html/catalog/home/decorators/excludes
      * @see client/html/catalog/home/decorators/local
      */
-
     /** client/html/catalog/home/decorators/local
      * Adds a list of local decorators only to the catalog home html client
      *

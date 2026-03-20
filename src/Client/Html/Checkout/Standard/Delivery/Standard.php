@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Metaways Infosystems GmbH, 2013
@@ -9,12 +8,10 @@ declare(strict_types=1);
  * @package Client
  * @subpackage Html
  */
-
 namespace Aimeos\Client\Html\Checkout\Standard\Delivery;
 
 // Strings for translation
 sprintf('delivery');
-
 /**
  * Default implementation of checkout delivery HTML client.
  *
@@ -34,14 +31,11 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
         $view = $this->view();
         $step = $view->get('standardStepActive');
         $onepage = $view->config('client/html/checkout/standard/onepage', []);
-
         if ($step != 'delivery' && !(in_array('delivery', $onepage) && in_array($step, $onepage))) {
             return '';
         }
-
         return parent::body($uid);
     }
-
     /**
      * Processes the input, e.g. store given values.
      *
@@ -52,38 +46,31 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
     {
         $view = $this->view();
         $context = $this->context();
-
         try {
-            $basketCtrl = \Aimeos\Controller\Frontend::create($context, 'basket');
-            $servCtrl = \Aimeos\Controller\Frontend::create($context, 'service')->uses(['media', 'price', 'text']);
-
+            $basket_ctrl = \Aimeos\Controller\Frontend::create($context, 'basket');
+            $serv_ctrl = \Aimeos\Controller\Frontend::create($context, 'service')->uses(['media', 'price', 'text']);
             // only start if there's something to do
-            if (($serviceIds = $view->param('c_deliveryoption', null)) !== null) {
-                $basketCtrl->deleteService('delivery');
-
-                foreach ((array) $serviceIds as $idx => $id) {
+            if (($service_ids = $view->param('c_deliveryoption', null)) !== null) {
+                $basket_ctrl->delete_service('delivery');
+                foreach ((array) $service_ids as $idx => $id) {
                     try {
-                        $basketCtrl->addService($servCtrl->get($id), $view->param('c_delivery/' . $id, []), $idx);
+                        $basket_ctrl->add_service($serv_ctrl->get($id), $view->param('c_delivery/' . $id, []), $idx);
                     } catch (\Aimeos\Controller\Frontend\Basket\Exception $e) {
-                        $view->deliveryError = $e->getErrors();
-                        $view->errors = array_merge($view->get('errors', []), $e->getErrors());
-
+                        $view->delivery_error = $e->get_errors();
+                        $view->errors = array_merge($view->get('errors', []), $e->get_errors());
                         throw $e;
                     }
                 }
             }
-
             parent::init();
-
-            if (!isset($view->standardStepActive) && !$this->call('isAvailable', $basketCtrl->get())) {
-                $view->standardStepActive = 'delivery';
+            if (!isset($view->standard_step_active) && !$this->call('isAvailable', $basket_ctrl->get())) {
+                $view->standard_step_active = 'delivery';
             }
         } catch (\Exception $e) {
-            $view->standardStepActive = 'delivery';
+            $view->standard_step_active = 'delivery';
             throw $e;
         }
     }
-
     /**
      * Sets the necessary parameter values in the view.
      *
@@ -96,7 +83,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
     {
         $context = $this->context();
         $domains = ['media', 'price', 'text'];
-
         /** client/html/checkout/standard/delivery/domains
          * List of domain names whose items should be available in the checkout payment templates
          *
@@ -111,53 +97,43 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @see client/html/checkout/standard/payment/domains
          */
         $domains = $context->config()->get('client/html/checkout/standard/delivery/domains', $domains);
-
-        $basketCntl = \Aimeos\Controller\Frontend::create($context, 'basket');
-        $serviceCntl = \Aimeos\Controller\Frontend::create($context, 'service');
-
+        $basket_cntl = \Aimeos\Controller\Frontend::create($context, 'basket');
+        $service_cntl = \Aimeos\Controller\Frontend::create($context, 'service');
         $services = [];
-        $basket = $basketCntl->get();
-        $providers = $serviceCntl->uses($domains)->type('delivery')->getProviders();
-        $orderServices = map($basket->getService('delivery'))->col(null, 'order.service.serviceid');
-
+        $basket = $basket_cntl->get();
+        $providers = $service_cntl->uses($domains)->type('delivery')->get_providers();
+        $order_services = map($basket->get_service('delivery'))->col(null, 'order.service.serviceid');
         foreach ($providers as $id => $provider) {
-            if ($provider->isAvailable($basket) === true) {
-                $attr = $provider->getConfigFE($basket);
-
-                if ($oservice = $orderServices->get($id)) {
+            if ($provider->is_available($basket) === true) {
+                $attr = $provider->get_config_fe($basket);
+                if ($oservice = $order_services->get($id)) {
                     foreach ($attr as $key => $item) {
-                        $value = is_array($item->getDefault()) ? key($item->getDefault()) : $item->getDefault();
-                        $value = $oservice->getAttribute($key, 'delivery') ?: $value;
-                        $item->value = $oservice->getAttribute($key . '/hidden', 'delivery') ?: $value;
+                        $value = is_array($item->get_default()) ? key($item->get_default()) : $item->get_default();
+                        $value = $oservice->get_attribute($key, 'delivery') ?: $value;
+                        $item->value = $oservice->get_attribute($key . '/hidden', 'delivery') ?: $value;
                     }
                 } else {
                     foreach ($attr as $item) {
-                        $item->value = is_array($item->getDefault()) ? key($item->getDefault()) : $item->getDefault();
+                        $item->value = is_array($item->get_default()) ? key($item->get_default()) : $item->get_default();
                     }
                 }
-
-                $services[$id] = $provider->getServiceItem()->set('attributes', $attr)
-                    ->set('price', $provider->calcPrice($basket));
+                $services[$id] = $provider->get_service_item()->set('attributes', $attr)->set('price', $provider->calc_price($basket));
             }
         }
-
-        $view->deliveryServices = $services;
-        $view->deliveryOption = $view->param('c_deliveryoption', $orderServices->firstKey() ?: key($services));
-
+        $view->delivery_services = $services;
+        $view->delivery_option = $view->param('c_deliveryoption', $order_services->first_key() ?: key($services));
         return parent::data($view, $tags, $expire);
     }
-
     /**
      * Tests if an item is available and the step can be skipped
      *
      * @param \Aimeos\MShop\Order\Item\Iface $basket Basket object
      * @return bool TRUE if step can be skipped, FALSE if not
      */
-    protected function isAvailable(\Aimeos\MShop\Order\Item\Iface $basket): bool
+    protected function is_available(\Aimeos\M_Shop\Order\Item\Iface $basket): bool
     {
-        return !empty($basket->getService('delivery'));
+        return !empty($basket->get_service('delivery'));
     }
-
     /** client/html/checkout/standard/delivery/template-body
      * Relative path to the HTML body template of the checkout standard delivery client.
      *

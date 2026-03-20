@@ -1,14 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2015-2026
  * @package Client
  * @subpackage Html
  */
-
 namespace Aimeos\Client\Html\Checkout\Standard\Process\Account;
 
 /**
@@ -29,7 +27,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
     {
         return '';
     }
-
     /**
      * Processes the input, e.g. provides the account form.
      *
@@ -39,23 +36,19 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
     public function init(): void
     {
         $context = $this->context();
-
         try {
-            $type = \Aimeos\MShop\Order\Item\Address\Base::TYPE_PAYMENT;
-            $addresses = \Aimeos\Controller\Frontend::create($context, 'basket')->get()->getAddress($type);
-
+            $type = \Aimeos\M_Shop\Order\Item\Address\Base::TYPE_PAYMENT;
+            $addresses = \Aimeos\Controller\Frontend::create($context, 'basket')->get()->get_address($type);
             if ($context->user() === null && ($address = current($addresses)) !== false) {
                 $create = (bool) $this->view()->param('cs_option_account');
-                $context->setUser($this->getCustomer($address, $create));
+                $context->set_user($this->get_customer($address, $create));
             }
         } catch (\Exception $e) {
-            $msg = sprintf('Unable to create an account: %1$s', $e->getMessage());
+            $msg = sprintf('Unable to create an account: %1$s', $e->get_message());
             $context->logger()->notice($msg, 'client/html');
         }
-
         parent::init();
     }
-
     /**
      * Creates a new account (if necessary) and returns its customer ID
      *
@@ -63,17 +56,15 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @param bool $new True to create the customer if it doesn't exist, false if not
      * @return \Aimeos\MShop\Customer\Item\Iface|null Unique customer ID or null if no customer is available
      */
-    protected function getCustomer(\Aimeos\MShop\Common\Item\Address\Iface $addr, bool $new): ?\Aimeos\MShop\Customer\Item\Iface
+    protected function get_customer(\Aimeos\M_Shop\Common\Item\Address\Iface $addr, bool $new): ?\Aimeos\M_Shop\Customer\Item\Iface
     {
         $context = $this->context();
         $cntl = \Aimeos\Controller\Frontend::create($context, 'customer');
-
         try {
-            $customer = $cntl->find($addr->getEmail());
+            $customer = $cntl->find($addr->get_email());
         } catch (\Exception) {
-            $customer = $new ? $cntl->add($addr->toArray())->store()->get() : null;
+            $customer = $new ? $cntl->add($addr->to_array())->store()->get() : null;
         }
-
         return $customer;
     }
 }

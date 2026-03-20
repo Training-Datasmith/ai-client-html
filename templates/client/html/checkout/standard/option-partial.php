@@ -4,9 +4,7 @@
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2015-2026
  */
-
 $enc = $this->encoder();
-
 /** client/html/checkout/standard/summary/option/terms/url/target
  * Destination of the URL where the controller specified in the URL is known
  *
@@ -21,7 +19,6 @@ $enc = $this->encoder();
  * @see client/html/checkout/standard/summary/option/terms/url/config
  * @see client/html/checkout/standard/summary/option/terms/url/filter
  */
-
 /** client/html/checkout/standard/summary/option/terms/url/controller
  * Name of the controller whose action should be called
  *
@@ -36,7 +33,6 @@ $enc = $this->encoder();
  * @see client/html/checkout/standard/summary/option/terms/url/config
  * @see client/html/checkout/standard/summary/option/terms/url/filter
  */
-
 /** client/html/checkout/standard/summary/option/terms/url/action
  * Name of the action that should create the output
  *
@@ -51,7 +47,6 @@ $enc = $this->encoder();
  * @see client/html/checkout/standard/summary/option/terms/url/config
  * @see client/html/checkout/standard/summary/option/terms/url/filter
  */
-
 /** client/html/checkout/standard/summary/option/terms/url/config
  * Associative list of configuration options used for generating the URL
  *
@@ -72,7 +67,6 @@ $enc = $this->encoder();
  * @see client/html/checkout/standard/summary/option/terms/url/action
  * @see client/html/checkout/standard/summary/option/terms/url/filter
  */
-
 /** client/html/checkout/standard/summary/option/terms/url/filter
  * Removes parameters for the detail page before generating the URL
  *
@@ -86,7 +80,6 @@ $enc = $this->encoder();
  * @see client/html/checkout/standard/summary/option/terms/url/action
  * @see client/html/checkout/standard/summary/option/terms/url/config
  */
-
 /** client/html/checkout/standard/summary/option/terms/privacy/url/target
  * Destination of the URL where the controller specified in the URL is known
  *
@@ -101,7 +94,6 @@ $enc = $this->encoder();
  * @see client/html/checkout/standard/summary/option/terms/privacy/url/config
  * @see client/html/checkout/standard/summary/option/terms/privacy/url/filter
  */
-
 /** client/html/checkout/standard/summary/option/terms/privacy/url/controller
  * Name of the controller whose action should be called
  *
@@ -116,7 +108,6 @@ $enc = $this->encoder();
  * @see client/html/checkout/standard/summary/option/terms/privacy/url/config
  * @see client/html/checkout/standard/summary/option/terms/privacy/url/filter
  */
-
 /** client/html/checkout/standard/summary/option/terms/privacy/url/action
  * Name of the action that should create the output
  *
@@ -131,7 +122,6 @@ $enc = $this->encoder();
  * @see client/html/checkout/standard/summary/option/terms/privacy/url/config
  * @see client/html/checkout/standard/summary/option/terms/privacy/url/filter
  */
-
 /** client/html/checkout/standard/summary/option/terms/privacy/url/config
  * Associative list of configuration options used for generating the URL
  *
@@ -152,7 +142,6 @@ $enc = $this->encoder();
  * @see client/html/checkout/standard/summary/option/terms/privacy/url/action
  * @see client/html/checkout/standard/summary/option/terms/privacy/url/filter
  */
-
 /** client/html/checkout/standard/summary/option/terms/privacy/url/filter
  * Removes parameters for the detail page before generating the URL
  *
@@ -166,7 +155,6 @@ $enc = $this->encoder();
  * @see client/html/checkout/standard/summary/option/terms/privacy/url/action
  * @see client/html/checkout/standard/summary/option/terms/privacy/url/config
  */
-
 /** client/html/checkout/standard/summary/option/terms/cancel/url/target
  * Destination of the URL where the controller specified in the URL is known
  *
@@ -181,7 +169,6 @@ $enc = $this->encoder();
  * @see client/html/checkout/standard/summary/option/terms/cancel/url/config
  * @see client/html/checkout/standard/summary/option/terms/cancel/url/filter
  */
-
 /** client/html/checkout/standard/summary/option/terms/cancel/url/controller
  * Name of the controller whose action should be called
  *
@@ -196,7 +183,6 @@ $enc = $this->encoder();
  * @see client/html/checkout/standard/summary/option/terms/cancel/url/config
  * @see client/html/checkout/standard/summary/option/terms/cancel/url/filter
  */
-
 /** client/html/checkout/standard/summary/option/terms/cancel/url/action
  * Name of the action that should create the output
  *
@@ -211,7 +197,6 @@ $enc = $this->encoder();
  * @see client/html/checkout/standard/summary/option/terms/cancel/url/config
  * @see client/html/checkout/standard/summary/option/terms/cancel/url/filter
  */
-
 /** client/html/checkout/standard/summary/option/terms/cancel/url/config
  * Associative list of configuration options used for generating the URL
  *
@@ -232,7 +217,6 @@ $enc = $this->encoder();
  * @see client/html/checkout/standard/summary/option/terms/cancel/url/action
  * @see client/html/checkout/standard/summary/option/terms/cancel/url/filter
  */
-
 /** client/html/checkout/standard/summary/option/terms/cancel/url/filter
  * Removes parameters for the detail page before generating the URL
  *
@@ -246,42 +230,64 @@ $enc = $this->encoder();
  * @see client/html/checkout/standard/summary/option/terms/cancel/url/action
  * @see client/html/checkout/standard/summary/option/terms/cancel/url/config
  */
-
-?>
-<?php if (!$this->standardBasket->getCustomerId()) : ?>
+if (!$this->standard_basket->get_customer_id()) {
+    ?>
 	<div class="checkout-standard-summary-option-account col-sm-12">
-		<h3><?= $enc->html($this->translate('client', 'Customer account'), $enc::TRUST) ?></h3>
+		<h3><?php 
+    echo $enc->html($this->translate('client', 'Customer account'), $enc::TRUST);
+    ?></h3>
 
-		<div class="single <?= !$this->value($this->get('errors', []), 'option/account') ?: 'error' ?>">
+		<div class="single <?php 
+    echo !$this->value($this->get('errors', []), 'option/account') ?: 'error';
+    ?>">
 			<input id="option-account" type="checkbox" value="1"
-				title="<?= $enc->attr($this->translate('client', 'Customer account'), $enc::TRUST) ?>"
-				name="<?= $enc->attr($this->formparam([ 'cs_option_account' ])) ?>"
-				<?= ($this->param('cs_option_account', 1) == 1 ? 'checked="checked"' : '') ?>
+				title="<?php 
+    echo $enc->attr($this->translate('client', 'Customer account'), $enc::TRUST);
+    ?>"
+				name="<?php 
+    echo $enc->attr($this->formparam(['cs_option_account']));
+    ?>"
+				<?php 
+    echo $this->param('cs_option_account', 1) == 1 ? 'checked="checked"' : '';
+    ?>
 			>
 			<label for="option-account">
-				<?= $enc->html($this->translate('client', 'Create a customer account for me'), $enc::TRUST) ?>
+				<?php 
+    echo $enc->html($this->translate('client', 'Create a customer account for me'), $enc::TRUST);
+    ?>
 			</label>
 		</div>
 	</div>
-<?php endif ?>
+<?php 
+}
+?>
 
 <div class="checkout-standard-summary-option-terms col-sm-12">
-	<h3><?= $enc->html($this->translate('client', 'Terms and conditions'), $enc::TRUST) ?></h3>
+	<h3><?php 
+echo $enc->html($this->translate('client', 'Terms and conditions'), $enc::TRUST);
+?></h3>
 
-	<div class="single <?= !$this->value($this->get('errors', []), 'option/terms') ?: 'error' ?>">
-		<input type="hidden" name="<?= $enc->attr($this->formparam([ 'cs_option_terms' ])) ?>" value="1">
+	<div class="single <?php 
+echo !$this->value($this->get('errors', []), 'option/terms') ?: 'error';
+?>">
+		<input type="hidden" name="<?php 
+echo $enc->attr($this->formparam(['cs_option_terms']));
+?>" value="1">
 		<input id="option-terms-accept" type="checkbox" value="1"
-			title="<?= $enc->attr($this->translate('client', 'Terms and conditions'), $enc::TRUST) ?>"
-			name="<?= $enc->attr($this->formparam([ 'cs_option_terms_value' ])) ?>"
-			<?= ($this->param('cs_option_terms_value', null) == 1 ? 'checked="checked"' : '') ?>
+			title="<?php 
+echo $enc->attr($this->translate('client', 'Terms and conditions'), $enc::TRUST);
+?>"
+			name="<?php 
+echo $enc->attr($this->formparam(['cs_option_terms_value']));
+?>"
+			<?php 
+echo $this->param('cs_option_terms_value', null) == 1 ? 'checked="checked"' : '';
+?>
 		>
 		<label for="option-terms-accept">
-			<?= $enc->html(sprintf($this->translate('client',
-			    'I accept the <a href="%1$s" target="_blank" title="terms and conditions (opens in new tab)">terms and conditions</a>, <a href="%2$s" target="_blank" title="privacy policy (opens in new tab)">privacy policy</a> and <a href="%3$s" target="_blank" title="cancellation policy (opens in new tab)">cancellation policy</a>'),
-			    $enc->attr($this->link('client/html/checkout/standard/summary/option/terms/url', ['path' => 'terms'])),
-			    $enc->attr($this->link('client/html/checkout/standard/summary/option/terms/privacy/url', ['path' => 'privacy'])),
-			    $enc->attr($this->link('client/html/checkout/standard/summary/option/terms/cancel/url', ['path' => 'cancel']))
-			), $enc::TRUST) ?>
+			<?php 
+echo $enc->html(sprintf($this->translate('client', 'I accept the <a href="%1$s" target="_blank" title="terms and conditions (opens in new tab)">terms and conditions</a>, <a href="%2$s" target="_blank" title="privacy policy (opens in new tab)">privacy policy</a> and <a href="%3$s" target="_blank" title="cancellation policy (opens in new tab)">cancellation policy</a>'), $enc->attr($this->link('client/html/checkout/standard/summary/option/terms/url', ['path' => 'terms'])), $enc->attr($this->link('client/html/checkout/standard/summary/option/terms/privacy/url', ['path' => 'privacy'])), $enc->attr($this->link('client/html/checkout/standard/summary/option/terms/cancel/url', ['path' => 'cancel']))), $enc::TRUST);
+?>
 		</label>
 	</div>
 </div>

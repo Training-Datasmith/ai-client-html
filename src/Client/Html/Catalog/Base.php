@@ -1,14 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2015-2026
  * @package Client
  * @subpackage Html
  */
-
 namespace Aimeos\Client\Html\Catalog;
 
 /**
@@ -26,7 +24,7 @@ abstract class Base extends \Aimeos\Client\Html\Common\Client\Factory\Base
      * @param \Aimeos\MShop\Product\Item\Iface[] List of products with their IDs as keys
      * @return \Aimeos\Map URLs to retrieve the stock levels for the given products
      */
-    protected function getStockUrl(\Aimeos\Base\View\Iface $view, \Aimeos\Map $products): \Aimeos\Map
+    protected function get_stock_url(\Aimeos\Base\View\Iface $view, \Aimeos\Map $products): \Aimeos\Map
     {
         /** client/html/catalog/stock/url/target
          * Destination of the URL where the controller specified in the URL is known
@@ -43,7 +41,6 @@ abstract class Base extends \Aimeos\Client\Html\Common\Client\Factory\Base
          * @see client/html/catalog/stock/url/filter
          * @see client/html/catalog/stock/url/max-items
          */
-
         /** client/html/catalog/stock/url/controller
          * Name of the controller whose action should be called
          *
@@ -59,7 +56,6 @@ abstract class Base extends \Aimeos\Client\Html\Common\Client\Factory\Base
          * @see client/html/catalog/stock/url/filter
          * @see client/html/catalog/stock/url/max-items
          */
-
         /** client/html/catalog/stock/url/action
          * Name of the action that should create the output
          *
@@ -75,7 +71,6 @@ abstract class Base extends \Aimeos\Client\Html\Common\Client\Factory\Base
          * @see client/html/catalog/stock/url/filter
          * @see client/html/catalog/stock/url/max-items
          */
-
         /** client/html/catalog/stock/url/config
          * Associative list of configuration options used for generating the URL
          *
@@ -97,7 +92,6 @@ abstract class Base extends \Aimeos\Client\Html\Common\Client\Factory\Base
          * @see client/html/catalog/stock/url/filter
          * @see client/html/catalog/stock/url/max-items
          */
-
         /** client/html/catalog/stock/url/filter
          * Removes parameters for the detail page before generating the URL
          *
@@ -112,7 +106,6 @@ abstract class Base extends \Aimeos\Client\Html\Common\Client\Factory\Base
          * @see client/html/catalog/stock/url/config
          * @see client/html/catalog/stock/url/max-items
          */
-
         /** client/html/catalog/stock/url/max-items
          * Maximum number of product stock levels per request
          *
@@ -129,14 +122,11 @@ abstract class Base extends \Aimeos\Client\Html\Common\Client\Factory\Base
          * @see client/html/catalog/stock/url/config
          */
         $max = $view->config('client/html/catalog/stock/url/max-items', 100);
-
         $urls = [];
-        $ids = $products->getId()->sort();
-
-        while (!($list = $ids->splice(-$max))->isEmpty()) {
-            $urls[] = $view->link('client/html/catalog/stock/url', ['st_pid' => $list->toArray()]);
+        $ids = $products->get_id()->sort();
+        while (!($list = $ids->splice(-$max))->is_empty()) {
+            $urls[] = $view->link('client/html/catalog/stock/url', ['st_pid' => $list->to_array()]);
         }
-
         return map($urls)->reverse();
     }
 }

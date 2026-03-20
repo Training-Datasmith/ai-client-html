@@ -1,14 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2015-2026
  * @package Client
  * @subpackage Html
  */
-
 namespace Aimeos\Client\Html\Catalog\Count;
 
 /**
@@ -51,7 +49,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @param string Last part of the class name
      * @since 2014.03
      */
-
     /** client/html/catalog/count/subparts
      * List of HTML sub-clients rendered within the catalog count section
      *
@@ -84,8 +81,7 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @param array List of sub-client names
      * @since 2014.03
      */
-    private string $subPartPath = 'client/html/catalog/count/subparts';
-
+    private string $sub_part_path = 'client/html/catalog/count/subparts';
     /** client/html/catalog/count/tree/name
      * Name of the tree part used by the catalog count client implementation
      *
@@ -95,7 +91,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @param string Last part of the client class name
      * @since 2014.03
      */
-
     /** client/html/catalog/count/supplier/name
      * Name of the supplier part used by the catalog count client implementation
      *
@@ -105,7 +100,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @param string Last part of the client class name
      * @since 2018.07
      */
-
     /** client/html/catalog/count/attribute/name
      * Name of the attribute part used by the catalog count client implementation
      *
@@ -115,8 +109,7 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @param string Last part of the client class name
      * @since 2014.03
      */
-    private array $subPartNames = ['tree', 'supplier', 'attribute'];
-
+    private array $sub_part_names = ['tree', 'supplier', 'attribute'];
     /**
      * Returns the sub-client given by its name.
      *
@@ -124,27 +117,24 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @param string|null $name Name of the sub-client (Default if null)
      * @return \Aimeos\Client\Html\Iface Sub-client object
      */
-    public function getSubClient(string $type, ?string $name = null): \Aimeos\Client\Html\Iface
+    public function get_sub_client(string $type, ?string $name = null): \Aimeos\Client\Html\Iface
     {
-        return $this->createSubClient('catalog/count/' . $type, $name);
+        return $this->create_sub_client('catalog/count/' . $type, $name);
     }
-
     /**
      * Returns the list of sub-client names configured for the client.
      *
      * @return array List of HTML client names
      */
-    protected function getSubClientNames(): array
+    protected function get_sub_client_names(): array
     {
         if (!empty($count = $this->view()->param('count'))) {
-            $parts = array_intersect((array) $count, $this->subPartNames);
+            $parts = array_intersect((array) $count, $this->sub_part_names);
         } else {
-            $parts = $this->subPartNames;
+            $parts = $this->sub_part_names;
         }
-
-        return $this->context()->config()->get($this->subPartPath, $parts);
+        return $this->context()->config()->get($this->sub_part_path, $parts);
     }
-
     /** client/html/catalog/count/template-body
      * Relative path to the HTML body template of the catalog count client.
      *
@@ -164,7 +154,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @since 2014.03
      * @see client/html/catalog/count/template-header
      */
-
     /** client/html/catalog/count/template-header
      * Relative path to the HTML header template of the catalog count client.
      *
@@ -185,7 +174,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @since 2014.03
      * @see client/html/catalog/count/template-body
      */
-
     /** client/html/catalog/count/decorators/excludes
      * Excludes decorators added by the "common" option from the catalog count html client
      *
@@ -210,7 +198,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @see client/html/catalog/count/decorators/global
      * @see client/html/catalog/count/decorators/local
      */
-
     /** client/html/catalog/count/decorators/global
      * Adds a list of globally available decorators only to the catalog count html client
      *
@@ -233,7 +220,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @see client/html/catalog/count/decorators/excludes
      * @see client/html/catalog/count/decorators/local
      */
-
     /** client/html/catalog/count/decorators/local
      * Adds a list of local decorators only to the catalog count html client
      *

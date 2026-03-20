@@ -1,19 +1,16 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2015-2026
  * @package Client
  * @subpackage Html
  */
-
 namespace Aimeos\Client\Html\Checkout\Standard\Process;
 
 // Strings for translation
 sprintf('process');
-
 /**
  * Default implementation of checkout process HTML client.
  *
@@ -54,8 +51,7 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @param array List of sub-client names
      * @since 2014.03
      */
-    private string $subPartPath = 'client/html/checkout/standard/process/subparts';
-
+    private string $sub_part_path = 'client/html/checkout/standard/process/subparts';
     /** client/html/checkout/standard/process/account/name
      * Name of the account part used by the checkout standard process client implementation
      *
@@ -65,7 +61,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @param string Last part of the client class name
      * @since 2017.04
      */
-
     /** client/html/checkout/standard/process/address/name
      * Name of the address part used by the checkout standard process client implementation
      *
@@ -75,8 +70,7 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @param string Last part of the client class name
      * @since 2017.04
      */
-    private array $subPartNames = ['account', 'address'];
-
+    private array $sub_part_names = ['account', 'address'];
     /**
      * Returns the HTML code for insertion into the body.
      *
@@ -88,10 +82,8 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
         if ($this->view()->get('standardStepActive') !== 'process') {
             return '';
         }
-
         return parent::body($uid);
     }
-
     /**
      * Returns the sub-client given by its name.
      *
@@ -99,7 +91,7 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @param string|null $name Name of the sub-client (Default if null)
      * @return \Aimeos\Client\Html\Iface Sub-client object
      */
-    public function getSubClient(string $type, ?string $name = null): \Aimeos\Client\Html\Iface
+    public function get_sub_client(string $type, ?string $name = null): \Aimeos\Client\Html\Iface
     {
         /** client/html/checkout/standard/process/decorators/excludes
          * Excludes decorators added by the "common" option from the checkout standard process html client
@@ -125,7 +117,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @see client/html/checkout/standard/process/decorators/global
          * @see client/html/checkout/standard/process/decorators/local
          */
-
         /** client/html/checkout/standard/process/decorators/global
          * Adds a list of globally available decorators only to the checkout standard process html client
          *
@@ -148,7 +139,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @see client/html/checkout/standard/process/decorators/excludes
          * @see client/html/checkout/standard/process/decorators/local
          */
-
         /** client/html/checkout/standard/process/decorators/local
          * Adds a list of local decorators only to the checkout standard process html client
          *
@@ -171,10 +161,8 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @see client/html/checkout/standard/process/decorators/excludes
          * @see client/html/checkout/standard/process/decorators/global
          */
-
-        return $this->createSubClient('checkout/standard/process/' . $type, $name);
+        return $this->create_sub_client('checkout/standard/process/' . $type, $name);
     }
-
     /**
      * Processes the input, e.g. store given order.
      *
@@ -185,45 +173,34 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
     {
         $view = $this->view();
         $context = $this->context();
-
-        if ($view->param('c_step') !== 'process'
-            || $view->get('errors', []) !== []
-            || $view->get('standardStepActive') !== null
-        ) {
+        if ($view->param('c_step') !== 'process' || $view->get('errors', []) !== [] || $view->get('standardStepActive') !== null) {
             return true;
         }
-
-        $orderCntl = \Aimeos\Controller\Frontend::create($context, 'order');
-        $basketCntl = \Aimeos\Controller\Frontend::create($context, 'basket');
-
+        $order_cntl = \Aimeos\Controller\Frontend::create($context, 'order');
+        $basket_cntl = \Aimeos\Controller\Frontend::create($context, 'basket');
         if ($view->param('cs_order') !== null) {
             parent::init();
-
-            $basketCntl->get()->setChannel('web');
-            $order = $basketCntl->store();
-
-            $context->session()->set('aimeos/orderid', $order->getId());
+            $basket_cntl->get()->set_channel('web');
+            $order = $basket_cntl->store();
+            $context->session()->set('aimeos/orderid', $order->get_id());
         } elseif (($orderid = $context->session()->get('aimeos/orderid')) !== null) {
             $refs = $context->config()->get('mshop/order/manager/subdomains', []);
-            $order = $orderCntl->uses($refs)->get($orderid, false);
+            $order = $order_cntl->uses($refs)->get($orderid, false);
         } else {
             return;
         }
-
-        if (($form = $this->processPayment($order)) === null) { // no payment service available
-            $services = $order->getService(\Aimeos\MShop\Order\Item\Service\Base::TYPE_PAYMENT);
-            $args = ($service = reset($services)) ? ['code' => $service->getCode()] : [];
-
-            $orderCntl->save($order->setStatusPayment(\Aimeos\MShop\Order\Item\Base::PAY_AUTHORIZED));
-            $view->standardUrlNext = $this->getUrlConfirm($view, $args, ['absoluteUri' => true]);
-            $view->standardMethod = 'POST';
+        if (($form = $this->process_payment($order)) === null) {
+            // no payment service available
+            $services = $order->get_service(\Aimeos\M_Shop\Order\Item\Service\Base::TYPE_PAYMENT);
+            $args = ($service = reset($services)) ? ['code' => $service->get_code()] : [];
+            $order_cntl->save($order->set_status_payment(\Aimeos\M_Shop\Order\Item\Base::PAY_AUTHORIZED));
+            $view->standard_url_next = $this->get_url_confirm($view, $args, ['absoluteUri' => true]);
+            $view->standard_method = 'POST';
         } else {
-            $this->addFormData($view, $form);
+            $this->add_form_data($view, $form);
         }
-
-        $orderCntl->save($order);
+        $order_cntl->save($order);
     }
-
     /**
      * Adds the required data for the payment form to the view
      *
@@ -231,99 +208,72 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @param \Aimeos\MShop\Common\Helper\Form\Iface $form Form helper object including the form data
      * @return \Aimeos\Base\View\Iface View object with assigned data
      */
-    protected function addFormData(\Aimeos\Base\View\Iface $view, \Aimeos\MShop\Common\Helper\Form\Iface $form): \Aimeos\Base\View\Iface
+    protected function add_form_data(\Aimeos\Base\View\Iface $view, \Aimeos\M_Shop\Common\Helper\Form\Iface $form): \Aimeos\Base\View\Iface
     {
-        $url = $form->getUrl();
-
-        if ($form->getMethod() === 'GET') {
-            $urlParams = [];
-
-            foreach ($form->getValues() as $item) {
-                foreach ((array) $item->getDefault() as $key => $value) {
-                    $urlParams[$item->getInternalCode()][$key] = $value;
+        $url = $form->get_url();
+        if ($form->get_method() === 'GET') {
+            $url_params = [];
+            foreach ($form->get_values() as $item) {
+                foreach ((array) $item->get_default() as $key => $value) {
+                    $url_params[$item->get_internal_code()][$key] = $value;
                 }
             }
-
-            if (!empty($urlParams)) {
-                $url .= strpos($url, '?') ? '&' : '?' . map($urlParams)->toUrl();
+            if (!empty($url_params)) {
+                $url .= strpos($url, '?') ? '&' : '?' . map($url_params)->to_url();
             }
         }
-
         $public = $hidden = [];
-
-        foreach ($form->getValues() as $key => $item) {
-            if ($item->isPublic()) {
+        foreach ($form->get_values() as $key => $item) {
+            if ($item->is_public()) {
                 $public[$key] = $item;
             } else {
                 $hidden[$key] = $item;
             }
         }
-
-        $view->standardUrlNext = $url;
-        $view->standardProcessPublic = $public;
-        $view->standardProcessHidden = $hidden;
-        $view->standardProcessParams = $form->getValues();
-        $view->standardUrlExternal = $form->getExternal();
-        $view->standardMethod = $form->getMethod();
-        $view->standardHtml = $form->getHtml();
-
+        $view->standard_url_next = $url;
+        $view->standard_process_public = $public;
+        $view->standard_process_hidden = $hidden;
+        $view->standard_process_params = $form->get_values();
+        $view->standard_url_external = $form->get_external();
+        $view->standard_method = $form->get_method();
+        $view->standard_html = $form->get_html();
         return $view;
     }
-
     /**
      * Returns the form helper object for building the payment form in the frontend
      *
      * @param \Aimeos\MShop\Order\Item\Iface $orderItem Saved order item with basket object
      * @return \Aimeos\MShop\Common\Helper\Form\Iface|null Form object with URL, parameters, etc. or null if no form data is required
      */
-    protected function processPayment(\Aimeos\MShop\Order\Item\Iface $orderItem): ?\Aimeos\MShop\Common\Helper\Form\Iface
+    protected function process_payment(\Aimeos\M_Shop\Order\Item\Iface $order_item): ?\Aimeos\M_Shop\Common\Helper\Form\Iface
     {
-        if ($orderItem->getPrice()->getValue() + $orderItem->getPrice()->getCosts() <= 0
-            && $this->isSubscription($orderItem->getProducts()) === false
-        ) {
+        if ($order_item->get_price()->get_value() + $order_item->get_price()->get_costs() <= 0 && $this->is_subscription($order_item->get_products()) === false) {
             return null;
         }
-
-        $services = $orderItem->getService(\Aimeos\MShop\Order\Item\Service\Base::TYPE_PAYMENT);
-
+        $services = $order_item->get_service(\Aimeos\M_Shop\Order\Item\Service\Base::TYPE_PAYMENT);
         if (($service = reset($services)) === false) {
             return null;
         }
-
         $view = $this->view();
         $conf = ['absoluteUri' => true];
-        $args = ['code' => $service->getCode()];
-        $urls = [
-            'payment.url-self' => $this->getUrlSelf($view, ['c_step' => 'process'], $conf),
-            'payment.url-update' => $this->getUrlUpdate($view, $args + ['orderid' => $orderItem->getId()], $conf),
-            'payment.url-success' => $this->getUrlConfirm($view, $args, $conf),
-        ];
-
-        $params = array_merge(
-            (array) $view->param(),
-            (array) $view->request()->getQueryParams(),
-            (array) $view->request()->getParsedBody(),
-            (array) $view->request()->getAttributes()
-        );
-
-        foreach ($service->getAttributeItems() as $item) {
-            $params[$item->getCode()] = $item->getValue();
+        $args = ['code' => $service->get_code()];
+        $urls = ['payment.url-self' => $this->get_url_self($view, ['c_step' => 'process'], $conf), 'payment.url-update' => $this->get_url_update($view, $args + ['orderid' => $order_item->get_id()], $conf), 'payment.url-success' => $this->get_url_confirm($view, $args, $conf)];
+        $params = array_merge((array) $view->param(), (array) $view->request()->get_query_params(), (array) $view->request()->get_parsed_body(), (array) $view->request()->get_attributes());
+        foreach ($service->get_attribute_items() as $item) {
+            $params[$item->get_code()] = $item->get_value();
         }
-
-        $serviceCntl = \Aimeos\Controller\Frontend::create($this->context(), 'service');
-        return $serviceCntl->process($orderItem, $service->getServiceId(), $urls, $params);
+        $service_cntl = \Aimeos\Controller\Frontend::create($this->context(), 'service');
+        return $service_cntl->process($order_item, $service->get_service_id(), $urls, $params);
     }
-
     /**
      * Returns the list of sub-client names configured for the client.
      *
      * @return array List of HTML client names
      */
-    protected function getSubClientNames(): array
+    protected function get_sub_client_names(): array
     {
-        return $this->context()->config()->get($this->subPartPath, $this->subPartNames);
+        return $this->context()->config()->get($this->sub_part_path, $this->sub_part_names);
     }
-
     /**
      * Returns the URL to the confirm page.
      *
@@ -332,7 +282,7 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @param array $config Default URL configuration
      * @return string URL string
      */
-    protected function getUrlConfirm(\Aimeos\Base\View\Iface $view, array $params, array $config): string
+    protected function get_url_confirm(\Aimeos\Base\View\Iface $view, array $params, array $config): string
     {
         /** client/html/checkout/confirm/url/target
          * Destination of the URL where the controller specified in the URL is known
@@ -348,7 +298,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @see client/html/checkout/confirm/url/config
          */
         $target = $view->config('client/html/checkout/confirm/url/target');
-
         /** client/html/checkout/confirm/url/controller
          * Name of the controller whose action should be called
          *
@@ -363,7 +312,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @see client/html/checkout/confirm/url/config
          */
         $cntl = $view->config('client/html/checkout/confirm/url/controller', 'checkout');
-
         /** client/html/checkout/confirm/url/action
          * Name of the action that should create the output
          *
@@ -378,7 +326,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @see client/html/checkout/confirm/url/config
          */
         $action = $view->config('client/html/checkout/confirm/url/action', 'confirm');
-
         /** client/html/checkout/confirm/url/config
          * Associative list of configuration options used for generating the URL
          *
@@ -400,10 +347,8 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @see client/html/url/config
          */
         $config = $view->config('client/html/checkout/confirm/url/config', $config);
-
         return $view->url($target, $cntl, $action, $params, [], $config);
     }
-
     /**
      * Returns the URL to the current page.
      *
@@ -412,7 +357,7 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @param array $config Default URL configuration
      * @return string URL string
      */
-    protected function getUrlSelf(\Aimeos\Base\View\Iface $view, array $params, array $config): string
+    protected function get_url_self(\Aimeos\Base\View\Iface $view, array $params, array $config): string
     {
         /** client/html/checkout/standard/url/target
          * Destination of the URL where the controller specified in the URL is known
@@ -428,7 +373,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @see client/html/checkout/standard/url/config
          */
         $target = $view->config('client/html/checkout/standard/url/target');
-
         /** client/html/checkout/standard/url/controller
          * Name of the controller whose action should be called
          *
@@ -443,7 +387,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @see client/html/checkout/standard/url/config
          */
         $cntl = $view->config('client/html/checkout/standard/url/controller', 'checkout');
-
         /** client/html/checkout/standard/url/action
          * Name of the action that should create the output
          *
@@ -458,7 +401,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @see client/html/checkout/standard/url/config
          */
         $action = $view->config('client/html/checkout/standard/url/action', 'index');
-
         /** client/html/checkout/standard/url/config
          * Associative list of configuration options used for generating the URL
          *
@@ -480,10 +422,8 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @see client/html/url/config
          */
         $config = $view->config('client/html/checkout/standard/url/config', $config);
-
         return $view->url($target, $cntl, $action, $params, [], $config);
     }
-
     /**
      * Returns the URL to the update page.
      *
@@ -492,7 +432,7 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @param array $config Default URL configuration
      * @return string URL string
      */
-    protected function getUrlUpdate(\Aimeos\Base\View\Iface $view, array $params, array $config): string
+    protected function get_url_update(\Aimeos\Base\View\Iface $view, array $params, array $config): string
     {
         /** client/html/checkout/update/url/target
          * Destination of the URL where the controller specified in the URL is known
@@ -508,7 +448,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @see client/html/checkout/update/url/config
          */
         $target = $view->config('client/html/checkout/update/url/target');
-
         /** client/html/checkout/update/url/controller
          * Name of the controller whose action should be called
          *
@@ -523,7 +462,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @see client/html/checkout/update/url/config
          */
         $cntl = $view->config('client/html/checkout/update/url/controller', 'checkout');
-
         /** client/html/checkout/update/url/action
          * Name of the action that should create the output
          *
@@ -538,7 +476,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @see client/html/checkout/update/url/config
          */
         $action = $view->config('client/html/checkout/update/url/action', 'update');
-
         /** client/html/checkout/update/url/config
          * Associative list of configuration options used for generating the URL
          *
@@ -560,27 +497,23 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @see client/html/url/config
          */
         $config = $view->config('client/html/checkout/update/url/config', $config);
-
         return $view->url($target, $cntl, $action, $params, [], $config);
     }
-
     /**
      * Tests if one of the products is a subscription
      *
      * @param \Aimeos\Map $products Ordered products implementing \Aimeos\MShop\Order\Item\Product\Iface
      * @return bool True if at least one product is a subscription, false if not
      */
-    protected function isSubscription(\Aimeos\Map $products): bool
+    protected function is_subscription(\Aimeos\Map $products): bool
     {
-        foreach ($products as $orderProduct) {
-            if ($orderProduct->getAttributeItem('interval', 'config')) {
+        foreach ($products as $order_product) {
+            if ($order_product->get_attribute_item('interval', 'config')) {
                 return true;
             }
         }
-
         return false;
     }
-
     /**
      * Sets the necessary parameter values in the view.
      *
@@ -591,11 +524,9 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      */
     public function data(\Aimeos\Base\View\Iface $view, array &$tags = [], ?string &$expire = null): \Aimeos\Base\View\Iface
     {
-        $view->standardUrlPayment = $this->getUrlSelf($view, [ 'c_step' => 'payment' ], []);
-
+        $view->standard_url_payment = $this->get_url_self($view, ['c_step' => 'payment'], []);
         return parent::data($view, $tags, $expire);
     }
-
     /** client/html/checkout/standard/process/template-body
      * Relative path to the HTML body template of the checkout standard process client.
      *

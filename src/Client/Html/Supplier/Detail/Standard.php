@@ -1,14 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2020-2026
  * @package Client
  * @subpackage Html
  */
-
 namespace Aimeos\Client\Html\Supplier\Detail;
 
 /**
@@ -51,11 +49,9 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @param string Last part of the class name
      * @since 2020.10
      */
-
     private array $tags = [];
     private ?string $expire = null;
     private ?\Aimeos\Base\View\Iface $view = null;
-
     /**
      * Returns the HTML code for insertion into the body.
      *
@@ -65,7 +61,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
     public function body(string $uid = ''): string
     {
         $prefixes = ['f_supid'];
-
         /** client/html/supplier/detail/cache
          * Enables or disables caching only for the supplier detail component
          *
@@ -79,7 +74,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @see client/html/supplier/filter/cache
          * @see client/html/supplier/lists/cache
          */
-
         /** client/html/supplier/detail
          * All parameters defined for the supplier detail component and its subparts
          *
@@ -91,11 +85,9 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @see client/html/supplier#detail
          */
         $confkey = 'client/html/supplier/detail';
-
         if ($html = $this->cached('body', $uid, $prefixes, $confkey)) {
             return $this->modify($html, $uid);
         }
-
         /** client/html/supplier/detail/template-body
          * Relative path to the HTML body template of the supplier detail client.
          *
@@ -116,13 +108,10 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @see client/html/supplier/detail/template-header
          */
         $template = $this->context()->config()->get('client/html/supplier/detail/template-body', 'supplier/detail/body');
-
-        $view = ($this->view ??= $this->object()->data($this->view(), $this->tags, $this->expire));
+        $view = $this->view ??= $this->object()->data($this->view(), $this->tags, $this->expire);
         $html = $this->modify($view->render($template), $uid);
-
         return $this->cache('body', $uid, $prefixes, $confkey, $html, $this->tags, $this->expire);
     }
-
     /**
      * Returns the HTML string for insertion into the header.
      *
@@ -133,11 +122,9 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
     {
         $prefixes = ['f_supid'];
         $confkey = 'client/html/supplier/detail';
-
         if ($html = $this->cached('header', $uid, $prefixes, $confkey)) {
             return $this->modify($html, $uid);
         }
-
         /** client/html/supplier/detail/template-header
          * Relative path to the HTML header template of the supplier detail client.
          *
@@ -159,13 +146,10 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @see client/html/supplier/detail/template-body
          */
         $template = $this->context()->config()->get('client/html/supplier/detail/template-header', 'supplier/detail/header');
-
-        $view = ($this->view ??= $this->object()->data($this->view(), $this->tags, $this->expire));
+        $view = $this->view ??= $this->object()->data($this->view(), $this->tags, $this->expire);
         $html = $view->render($template);
-
         return $this->cache('header', $uid, $prefixes, $confkey, $html, $this->tags, $this->expire);
     }
-
     /**
      * Sets the necessary parameter values in the view.
      *
@@ -177,15 +161,11 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
     public function data(\Aimeos\Base\View\Iface $view, array &$tags = [], ?string &$expire = null): \Aimeos\Base\View\Iface
     {
         $supplier = $this->supplier($view);
-
-        $this->addMetaItems($supplier, $expire, $tags);
-
-        $view->detailSupplierItem = $supplier;
-        $view->detailSupplierAddresses = $this->getAddressStrings($view, $supplier->getAddressItems());
-
+        $this->add_meta_items($supplier, $expire, $tags);
+        $view->detail_supplier_item = $supplier;
+        $view->detail_supplier_addresses = $this->get_address_strings($view, $supplier->get_address_items());
         return parent::data($view, $tags, $expire);
     }
-
     /**
      * Returns the data domains fetched along with the supplier
      *
@@ -194,7 +174,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
     protected function domains(): array
     {
         $domains = ['supplier/address', 'media', 'text'];
-
         /** client/html/supplier/detail/domains
          * A list of domain names whose items should be available in the supplier detail view template
          *
@@ -210,7 +189,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          */
         return $this->context()->config()->get('client/html/supplier/detail/domains', $domains);
     }
-
     /**
      * Returns the addresses as list of strings
      *
@@ -218,19 +196,16 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @param iterable $addresses List of address items implementing \Aimeos\MShop\Common\Item\Address\Iface
      * @return \Aimeos\Map List of address strings
      */
-    protected function getAddressStrings(\Aimeos\Base\View\Iface $view, iterable $addresses): \Aimeos\Map
+    protected function get_address_strings(\Aimeos\Base\View\Iface $view, iterable $addresses): \Aimeos\Map
     {
         $list = [];
-
         foreach ($addresses as $id => $addr) {
             $list[$id] = preg_replace("/\n+/m", "\n", trim(sprintf(
                 /// Address format with company (%1$s), salutation (%2$s), title (%3$s), first name (%4$s), last name (%5$s),
                 /// address part one (%6$s, e.g street), address part two (%7$s, e.g house number), address part three (%8$s, e.g additional information),
                 /// postal/zip code (%9$s), city (%10$s), state (%11$s), country (%12$s), language (%13$s),
                 /// e-mail (%14$s), phone (%15$s), facsimile/telefax (%16$s), web site (%17$s), vatid (%18$s)
-                $view->translate(
-                    'client',
-                    '%1$s
+                $view->translate('client', '%1$s
 %2$s %3$s %4$s %5$s
 %6$s %7$s
 %8$s
@@ -243,43 +218,39 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
 %16$s
 %17$s
 %18$s
-'
-                ),
-                $addr->getCompany(),
-                $view->translate('mshop/code', (string) $addr->getSalutation()),
-                $addr->getTitle(),
-                $addr->getFirstName(),
-                $addr->getLastName(),
-                $addr->getAddress1(),
-                $addr->getAddress2(),
-                $addr->getAddress3(),
-                $addr->getPostal(),
-                $addr->getCity(),
-                $addr->getState(),
-                $view->translate('country', (string) $addr->getCountryId()),
-                $view->translate('language', (string) $addr->getLanguageId()),
-                $addr->getEmail(),
-                $addr->getTelephone(),
-                $addr->getTelefax(),
-                $addr->getWebsite(),
-                $addr->getVatID()
+'),
+                $addr->get_company(),
+                $view->translate('mshop/code', (string) $addr->get_salutation()),
+                $addr->get_title(),
+                $addr->get_first_name(),
+                $addr->get_last_name(),
+                $addr->get_address1(),
+                $addr->get_address2(),
+                $addr->get_address3(),
+                $addr->get_postal(),
+                $addr->get_city(),
+                $addr->get_state(),
+                $view->translate('country', (string) $addr->get_country_id()),
+                $view->translate('language', (string) $addr->get_language_id()),
+                $addr->get_email(),
+                $addr->get_telephone(),
+                $addr->get_telefax(),
+                $addr->get_website(),
+                $addr->get_vat_id()
             )));
         }
-
         return map($list);
     }
-
     /**
      * Returns the supplier item
      *
      * @param \Aimeos\Base\View\Iface $view The view object which generates the HTML output
      * @return \Aimeos\MShop\Supplier\Item\Iface Supplier item
      */
-    protected function supplier(\Aimeos\Base\View\Iface $view): \Aimeos\MShop\Supplier\Item\Iface
+    protected function supplier(\Aimeos\Base\View\Iface $view): \Aimeos\M_Shop\Supplier\Item\Iface
     {
         $context = $this->context();
         $config = $context->config();
-
         /** client/html/supplier/detail/supid-default
          * The default supplier ID used if none is given as parameter
          *
@@ -292,11 +263,9 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @see client/html/catalog/detail/prodid-default
          */
         $id = $view->param('f_supid', $config->get('client/html/supplier/detail/supid-default'));
-
         $cntl = \Aimeos\Controller\Frontend::create($context, 'supplier')->uses($this->domains());
         return $id ? $cntl->get($id) : $cntl->resolve($view->param('s_name'));
     }
-
     /** client/html/supplier/detail/decorators/excludes
      * Excludes decorators added by the "common" option from the supplier detail html client
      *
@@ -321,7 +290,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @see client/html/supplier/detail/decorators/global
      * @see client/html/supplier/detail/decorators/local
      */
-
     /** client/html/supplier/detail/decorators/global
      * Adds a list of globally available decorators only to the supplier detail html client
      *
@@ -344,7 +312,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @see client/html/supplier/detail/decorators/excludes
      * @see client/html/supplier/detail/decorators/local
      */
-
     /** client/html/supplier/detail/decorators/local
      * Adds a list of local decorators only to the supplier detail html client
      *

@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Metaways Infosystems GmbH, 2014
@@ -9,7 +8,6 @@ declare(strict_types=1);
  * @package Client
  * @subpackage Html
  */
-
 namespace Aimeos\Client\Html\Basket;
 
 /**
@@ -23,15 +21,13 @@ abstract class Base extends \Aimeos\Client\Html\Base
     /**
      * Removes all cached basket parts from the cache.
      */
-    protected function clearCached()
+    protected function clear_cached()
     {
         $session = $this->context()->session();
-
         foreach ($session->get('aimeos/basket/cache', []) as $key => $value) {
             $session->set($key, null);
         }
     }
-
     /**
      * Returns the basket cache entry from the cache if available.
      *
@@ -40,11 +36,10 @@ abstract class Base extends \Aimeos\Client\Html\Base
      * @return string|null Value associated to the requested key. If no value for the
      *	key is found in the cache, the given default value is returned
      */
-    protected function getBasketCached(string $key, ?string $default = null): ?string
+    protected function get_basket_cached(string $key, ?string $default = null): ?string
     {
         return $this->context()->session()->get($key, $default);
     }
-
     /**
      * Adds or overwrite a cache entry for the given key and value.
      *
@@ -52,10 +47,9 @@ abstract class Base extends \Aimeos\Client\Html\Base
      * @param string|null $value Value stored in the cache for the path
      * @return string|null Value
      */
-    protected function setBasketCached(string $key, ?string $value = null): ?string
+    protected function set_basket_cached(string $key, ?string $value = null): ?string
     {
         $context = $this->context();
-
         /** client/html/basket/cache/enable
          * Enables or disables caching of the basket content
          *
@@ -71,12 +65,10 @@ abstract class Base extends \Aimeos\Client\Html\Base
          */
         if ($context->config()->get('client/html/basket/cache/enable', true) != false) {
             $session = $context->session();
-
-            $cached = $session->get('aimeos/basket/cache', []) + [ $key => true ];
+            $cached = $session->get('aimeos/basket/cache', []) + [$key => true];
             $session->set('aimeos/basket/cache', $cached);
             $session->set($key, $value);
         }
-
         return $value;
     }
 }

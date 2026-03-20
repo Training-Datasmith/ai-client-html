@@ -5,9 +5,7 @@
  * @copyright Metaways Infosystems GmbH, 2013
  * @copyright Aimeos (aimeos.org), 2015-2026
  */
-
 $enc = $this->encoder();
-
 /** client/html/catalog/stock/level/low
  * The number of products in stock below it's considered a low stock level
  *
@@ -34,15 +32,13 @@ $enc = $this->encoder();
  * @since 2014.03
  * @see client/html/catalog/stock/sort
  */
-$stockLow = $this->config('client/html/catalog/stock/level/low', 5);
-
+$stock_low = $this->config('client/html/catalog/stock/level/low', 5);
 /// Stock string composition with stock type (%1$s, normally left out) and stock level string (%2$s)
-$textStockIn = $this->translate('client', 'Stock: %1$s, %2$s');
+$text_stock_in = $this->translate('client', 'Stock: %1$s, %2$s');
 /// Stock string composition with stock type (%1$s, normally left out), stock level string (%2$s) and back in stock date (%3$s)
-$textStockOut = $this->translate('client', 'Stock: %1$s, %2$s, back on %3$s');
-$dateFormat = $this->translate('client', 'Y-m-d');
-
-$textStock = [
+$text_stock_out = $this->translate('client', 'Stock: %1$s, %2$s, back on %3$s');
+$date_format = $this->translate('client', 'Y-m-d');
+$text_stock = [
     /// code for "product is out of stock"
     'stock-out' => nl2br($enc->html($this->translate('client', 'stock-out'), $enc::TRUST)),
     /// code for "only a few products are available"
@@ -52,65 +48,48 @@ $textStock = [
     /// code for "product is available (without stock limit)"
     'stock-unlimited' => nl2br($enc->html($this->translate('client', 'stock-unlimited'), $enc::TRUST)),
 ];
-
 $result = [];
-
-foreach ($this->get('stockItemsByProducts', []) as $prodId => $list) {
-    $stocks = [ 'stock-unlimited' => '', 'stock-high' => '', 'stock-low' => '', 'stock-out' => '' ];
-
+foreach ($this->get('stockItemsByProducts', []) as $prod_id => $list) {
+    $stocks = ['stock-unlimited' => '', 'stock-high' => '', 'stock-low' => '', 'stock-out' => ''];
     foreach ($list as $item) {
-        $stockType = 'stocktype:' . $item->getType();
-
-        if (!isset($typeText[$stockType])) {
-            $typeText[$stockType] = $this->translate('client/code', $stockType);
+        $stock_type = 'stocktype:' . $item->get_type();
+        if (!isset($type_text[$stock_type])) {
+            $type_text[$stock_type] = $this->translate('client/code', $stock_type);
         }
-
-        $stocklevel = $item->getStockLevel();
-
+        $stocklevel = $item->get_stock_level();
         if ($stocklevel === null) {
             $level = 'stock-unlimited';
             $link = 'http://schema.org/InStock';
         } elseif ($stocklevel <= 0) {
             $level = 'stock-out';
             $link = 'http://schema.org/OutOfStock';
-        } elseif ($stocklevel <= $stockLow) {
+        } elseif ($stocklevel <= $stock_low) {
             $level = 'stock-low';
             $link = 'http://schema.org/LimitedAvailability';
         } else {
             $level = 'stock-high';
             $link = 'http://schema.org/InStock';
         }
-
-        if ($stocklevel <= 0 && ($date = $item->getDateBack()) != '') {
-            $text = sprintf(
-                $textStockOut,
-                $typeText[$stockType],
-                $textStock[$level],
-                date_create($date)->format($dateFormat)
-            );
+        if ($stocklevel <= 0 && ($date = $item->get_date_back()) != '') {
+            $text = sprintf($text_stock_out, $type_text[$stock_type], $text_stock[$level], date_create($date)->format($date_format));
         } else {
-            $text = sprintf(
-                $textStockIn,
-                $typeText[$stockType],
-                $textStock[$level]
-            );
+            $text = sprintf($text_stock_in, $type_text[$stock_type], $text_stock[$level]);
         }
-
         $stocks[$level] .= '
-			<div class="stockitem ' . $level . '" data-prodid="' . $enc->attr($prodId) . '" title="' . $enc->attr($textStock[$level]) . '">
+			<div class="stockitem ' . $level . '" data-prodid="' . $enc->attr($prod_id) . '" title="' . $enc->attr($text_stock[$level]) . '">
 				<meta itemprop="availability" href="' . $link . '">
 				<div class="stocklevel"></div>
 				<span class="stocktext">' . nl2br($enc->html($text, $enc::TRUST)) . '</span>
 			</div>
 		';
     }
-
-    $result[$prodId] = implode('', $stocks);
+    $result[$prod_id] = implode('', $stocks);
 }
-
 ?>
 // <!--
-var aimeosStockHtml = <?= json_encode($result, JSON_FORCE_OBJECT) ?>;
+var aimeosStockHtml = <?php 
+echo json_encode($result, JSON_FORCE_OBJECT);
+?>;
 
 document.querySelectorAll(".aimeos .product .stock-list .articleitem").forEach(function(elem) {
 	var prodid = elem.dataset.prodid;

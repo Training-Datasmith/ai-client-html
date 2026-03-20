@@ -5,13 +5,10 @@
  * @copyright Metaways Infosystems GmbH, 2014
  * @copyright Aimeos (aimeos.org), 2015-2026
  */
-
 /* Available data:
  * - productItem : Product item incl. referenced items
  */
-
 $enc = $this->encoder();
-
 /** client/html/catalog/social/list
  * List of social network names that should be displayed in the catalog views
  *
@@ -40,7 +37,6 @@ $enc = $this->encoder();
  * @see client/html/catalog/social/url/pinterest
  */
 $list = $this->config('client/html/catalog/social/list', ['facebook', 'twitter', 'pinterest', 'whatsapp']);
-
 $urls = [
     /** client/html/catalog/social/url/whatsapp
      * URL for sharing product links over WhatsApp
@@ -61,7 +57,6 @@ $urls = [
      * @see client/html/catalog/social/list
      */
     'whatsapp' => 'https://wa.me/?text=%2$s+%1$s',
-
     /** client/html/catalog/social/url/facebook
      * URL for sharing product links on Facebook
      *
@@ -81,7 +76,6 @@ $urls = [
      * @see client/html/catalog/social/list
      */
     'facebook' => 'https://www.facebook.com/sharer.php?u=%1$s&t=%2$s',
-
     /** client/html/catalog/social/url/twitter
      * URL for sharing product links on Twitter
      *
@@ -101,7 +95,6 @@ $urls = [
      * @see client/html/catalog/social/list
      */
     'twitter' => 'https://twitter.com/share?url=%1$s&text=%2$s',
-
     /** client/html/catalog/social/url/pinterest
      * URL for sharing product links on Pinterest
      *
@@ -122,26 +115,37 @@ $urls = [
      */
     'pinterest' => 'https://pinterest.com/pin/create/button/?url=%1$s&description=%2$s&media=%3$s',
 ];
-
-$name = $this->productItem->getName('url');
-$params = ['path' => $name, 'd_name' => $name, 'd_prodid' => $this->productItem->getId(), 'd_pos' => ''];
-
+$name = $this->product_item->get_name('url');
+$params = ['path' => $name, 'd_name' => $name, 'd_prodid' => $this->product_item->get_id(), 'd_pos' => ''];
 ?>
 <ul class="catalog-social">
-<?php foreach ($list as $entry) : $default = (isset($urls[$entry]) ? $urls[$entry] : null) ?>
-	<?php if (($link = $this->config('client/html/catalog/social/url/' . $entry, $default)) !== null) : ?>
-		<?php $mediaItem = $this->productItem->getRefItems('media', 'default', 'default')->first() ?>
+<?php 
+foreach ($list as $entry) {
+    $default = isset($urls[$entry]) ? $urls[$entry] : null;
+    ?>
+	<?php 
+    if (($link = $this->config('client/html/catalog/social/url/' . $entry, $default)) !== null) {
+        ?>
+		<?php 
+        $media_item = $this->product_item->get_ref_items('media', 'default', 'default')->first();
+        ?>
 		<li>
-			<a class="social-button social-button-<?= $enc->attr($entry) ?>" rel="noopener"
-				href="<?= $enc->attr(sprintf($link,
-				    $enc->url($this->link('client/html/catalog/detail/url', $params, ['absoluteUri' => true])),
-				    urlencode($this->productItem->getName()),
-				    $mediaItem ? $this->content($mediaItem->getPreview(true), $mediaItem->getFileSystem()) : ''
-				)) ?>"
-				title="<?= $enc->attr($entry) ?> <?= $enc->attr($this->translate('client', '(opens in new window)')) ?>"
+			<a class="social-button social-button-<?php 
+        echo $enc->attr($entry);
+        ?>" rel="noopener"
+				href="<?php 
+        echo $enc->attr(sprintf($link, $enc->url($this->link('client/html/catalog/detail/url', $params, ['absoluteUri' => true])), urlencode($this->product_item->get_name()), $media_item ? $this->content($media_item->get_preview(true), $media_item->get_file_system()) : ''));
+        ?>"
+				title="<?php 
+        echo $enc->attr($entry);
+        ?> <?php 
+        echo $enc->attr($this->translate('client', '(opens in new window)'));
+        ?>"
 				target="_blank"
 			></a>
 		</li>
-	<?php endif ?>
-<?php endforeach ?>
+	<?php 
+    }
+}
+?>
 </ul>

@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Metaways Infosystems GmbH, 2013
@@ -9,7 +8,6 @@ declare(strict_types=1);
  * @package Client
  * @subpackage Html
  */
-
 namespace Aimeos\Client\Html\Basket\Mini;
 
 /**
@@ -52,7 +50,6 @@ class Standard extends \Aimeos\Client\Html\Basket\Base implements \Aimeos\Client
      * @param string Last part of the class name
      * @since 2014.03
      */
-
     /** client/html/basket/mini/subparts
      * List of HTML sub-clients rendered within the basket mini section
      *
@@ -85,11 +82,9 @@ class Standard extends \Aimeos\Client\Html\Basket\Base implements \Aimeos\Client
      * @param array List of sub-client names
      * @since 2014.03
      */
-    private string $subPartPath = 'client/html/basket/mini/subparts';
-
+    private string $sub_part_path = 'client/html/basket/mini/subparts';
     private ?\Aimeos\Base\View\Iface $view = null;
-    private array $subPartNames = [];
-
+    private array $sub_part_names = [];
     /**
      * Returns the HTML code for insertion into the body.
      *
@@ -99,8 +94,7 @@ class Standard extends \Aimeos\Client\Html\Basket\Base implements \Aimeos\Client
     public function body(string $uid = ''): string
     {
         $context = $this->context();
-        $site = $context->locale()->getSiteId();
-
+        $site = $context->locale()->get_site_id();
         /** client/html/basket/mini
          * All parameters defined for the small basket component and its subparts
          *
@@ -111,12 +105,10 @@ class Standard extends \Aimeos\Client\Html\Basket\Base implements \Aimeos\Client
          * @see client/html/basket#mini
          */
         $config = $context->config()->get('client/html/basket/mini', []);
-        $key = $this->getParamHash([], $uid . $site . ':basket:mini-body', $config);
-
-        if ($html = $this->getBasketCached($key)) {
+        $key = $this->get_param_hash([], $uid . $site . ':basket:mini-body', $config);
+        if ($html = $this->get_basket_cached($key)) {
             return $this->modify($html, $uid);
         }
-
         /** client/html/basket/mini/template-body
          * Relative path to the HTML body template of the basket mini client.
          *
@@ -137,13 +129,10 @@ class Standard extends \Aimeos\Client\Html\Basket\Base implements \Aimeos\Client
          * @see client/html/basket/mini/template-header
          */
         $template = $this->context()->config()->get('client/html/basket/mini/template-body', 'basket/mini/body');
-
-        $view = ($this->view ??= $this->object()->data($this->view()));
+        $view = $this->view ??= $this->object()->data($this->view());
         $html = $this->modify($view->render($template), $uid);
-
-        return (string) $this->setBasketCached($key, $html);
+        return (string) $this->set_basket_cached($key, $html);
     }
-
     /**
      * Returns the HTML string for insertion into the header.
      *
@@ -153,15 +142,12 @@ class Standard extends \Aimeos\Client\Html\Basket\Base implements \Aimeos\Client
     public function header(string $uid = ''): ?string
     {
         $context = $this->context();
-        $site = $context->locale()->getSiteId();
-
+        $site = $context->locale()->get_site_id();
         $config = $context->config()->get('client/html/basket/mini', []);
-        $key = $this->getParamHash([], $uid . $site . ':basket:mini-header', $config);
-
-        if ($html = $this->getBasketCached($key)) {
+        $key = $this->get_param_hash([], $uid . $site . ':basket:mini-header', $config);
+        if ($html = $this->get_basket_cached($key)) {
             return $this->modify($html, $uid);
         }
-
         /** client/html/basket/mini/template-header
          * Relative path to the HTML header template of the basket mini client.
          *
@@ -183,13 +169,10 @@ class Standard extends \Aimeos\Client\Html\Basket\Base implements \Aimeos\Client
          * @see client/html/basket/mini/template-body
          */
         $template = $this->context()->config()->get('client/html/basket/mini/template-header', 'basket/mini/header');
-
-        $view = ($this->view ??= $this->object()->data($this->view()));
+        $view = $this->view ??= $this->object()->data($this->view());
         $html = $this->modify($view->render($template), $uid);
-
-        return $this->setBasketCached($key, $html);
+        return $this->set_basket_cached($key, $html);
     }
-
     /**
      * Returns the sub-client given by its name.
      *
@@ -197,21 +180,19 @@ class Standard extends \Aimeos\Client\Html\Basket\Base implements \Aimeos\Client
      * @param string|null $name Name of the sub-client (Default if null)
      * @return \Aimeos\Client\Html\Iface Sub-client object
      */
-    public function getSubClient(string $type, ?string $name = null): \Aimeos\Client\Html\Iface
+    public function get_sub_client(string $type, ?string $name = null): \Aimeos\Client\Html\Iface
     {
-        return $this->createSubClient('basket/mini/' . $type, $name);
+        return $this->create_sub_client('basket/mini/' . $type, $name);
     }
-
     /**
      * Returns the list of sub-client names configured for the client.
      *
      * @return array List of HTML client names
      */
-    protected function getSubClientNames(): array
+    protected function get_sub_client_names(): array
     {
-        return $this->context()->config()->get($this->subPartPath, $this->subPartNames);
+        return $this->context()->config()->get($this->sub_part_path, $this->sub_part_names);
     }
-
     /**
      * Sets the necessary parameter values in the view.
      *
@@ -223,11 +204,9 @@ class Standard extends \Aimeos\Client\Html\Basket\Base implements \Aimeos\Client
     public function data(\Aimeos\Base\View\Iface $view, array &$tags = [], ?string &$expire = null): \Aimeos\Base\View\Iface
     {
         $controller = \Aimeos\Controller\Frontend::create($this->context(), 'basket');
-        $view->miniBasket = $controller->get();
-
+        $view->mini_basket = $controller->get();
         return parent::data($view, $tags, $expire);
     }
-
     /** client/html/basket/mini/decorators/excludes
      * Excludes decorators added by the "common" option from the basket mini html client
      *
@@ -252,7 +231,6 @@ class Standard extends \Aimeos\Client\Html\Basket\Base implements \Aimeos\Client
      * @see client/html/basket/mini/decorators/global
      * @see client/html/basket/mini/decorators/local
      */
-
     /** client/html/basket/mini/decorators/global
      * Adds a list of globally available decorators only to the basket mini html client
      *
@@ -275,7 +253,6 @@ class Standard extends \Aimeos\Client\Html\Basket\Base implements \Aimeos\Client
      * @see client/html/basket/mini/decorators/excludes
      * @see client/html/basket/mini/decorators/local
      */
-
     /** client/html/basket/mini/decorators/local
      * Adds a list of local decorators only to the basket mini html client
      *

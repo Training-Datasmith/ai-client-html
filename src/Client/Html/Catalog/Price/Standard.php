@@ -1,14 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2020-2026
  * @package Client
  * @subpackage Html
  */
-
 namespace Aimeos\Client\Html\Catalog\Price;
 
 /**
@@ -51,17 +49,15 @@ class Standard extends \Aimeos\Client\Html\Catalog\Filter\Standard implements \A
      * @param string Last part of the class name
      * @since 2018.04
      */
-
     /**
      * Returns the names of the subpart clients
      *
      * @return array List of client names
      */
-    protected function getSubClientNames(): array
+    protected function get_sub_client_names(): array
     {
         return ['price'];
     }
-
     /** client/html/catalog/price/decorators/excludes
      * Excludes decorators added by the "common" option from the catalog price html client
      *
@@ -85,7 +81,6 @@ class Standard extends \Aimeos\Client\Html\Catalog\Filter\Standard implements \A
      * @see client/html/catalog/price/decorators/global
      * @see client/html/catalog/price/decorators/local
      */
-
     /** client/html/catalog/price/decorators/global
      * Adds a list of globally available decorators only to the catalog price html client
      *
@@ -107,7 +102,6 @@ class Standard extends \Aimeos\Client\Html\Catalog\Filter\Standard implements \A
      * @see client/html/catalog/price/decorators/excludes
      * @see client/html/catalog/price/decorators/local
      */
-
     /** client/html/catalog/price/decorators/local
      * Adds a list of local decorators only to the catalog price html client
      *

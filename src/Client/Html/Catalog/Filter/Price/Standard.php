@@ -1,14 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2020-2026
  * @package Client
  * @subpackage Html
  */
-
 namespace Aimeos\Client\Html\Catalog\Filter\Price;
 
 /**
@@ -30,28 +28,15 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
     public function data(\Aimeos\Base\View\Iface $view, array &$tags = [], ?string &$expire = null): \Aimeos\Base\View\Iface
     {
         $context = $this->context();
-        $cntl = \Aimeos\Controller\Frontend::create($context, 'product')
-            ->text($view->param('f_search'))
-            ->category($this->categories($view), 'default', $this->level())
-            ->radius($view->param('f_point', []), $view->param('f_dist'))
-            ->supplier($this->suppliers($view))
-            ->allOf($this->attributes())
-            ->allOf($view->param('f_attrid', []))
-            ->oneOf($view->param('f_optid', []))
-            ->oneOf($view->param('f_oneid', []));
-
-        $name = $cntl->function('index.price:value', [$context->locale()->getCurrencyId()]);
+        $cntl = \Aimeos\Controller\Frontend::create($context, 'product')->text($view->param('f_search'))->category($this->categories($view), 'default', $this->level())->radius($view->param('f_point', []), $view->param('f_dist'))->supplier($this->suppliers($view))->all_of($this->attributes())->all_of($view->param('f_attrid', []))->one_of($view->param('f_optid', []))->one_of($view->param('f_oneid', []));
+        $name = $cntl->function('index.price:value', [$context->locale()->get_currency_id()]);
         $cntl->compare('!=', $name, null);
-
         $this->call('conditions', $cntl, $view);
-
         // We need a key but there's no one for the currency alone available, only price/currency combinations
-        $view->priceHigh = (int) $cntl->aggregate('product.status', 'agg:' . $name, 'max')->max() + 1;
-        $view->priceResetParams = map($this->getClientParams($view->param()))->remove('f_price')->all();
-
+        $view->price_high = (int) $cntl->aggregate('product.status', 'agg:' . $name, 'max')->max() + 1;
+        $view->price_reset_params = map($this->get_client_params($view->param()))->remove('f_price')->all();
         return parent::data($view, $tags, $expire);
     }
-
     /**
      * Returns the HTML string for insertion into the header.
      *
@@ -62,7 +47,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
     {
         return null;
     }
-
     /**
      * Returns the attribute IDs used for filtering products
      *
@@ -71,11 +55,10 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
     protected function attributes(): array
     {
         $attrids = $this->context()->config()->get('client/html/catalog/lists/attrid-default');
-        $attrids = $attrids != null && is_scalar($attrids) ? explode(',', $attrids) : $attrids; // workaround for TYPO3
-
+        $attrids = $attrids != null && is_scalar($attrids) ? explode(',', $attrids) : $attrids;
+        // workaround for TYPO3
         return (array) $attrids;
     }
-
     /**
      * Returns the category IDs used for filtering products
      *
@@ -85,11 +68,10 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
     protected function categories(\Aimeos\Base\View\Iface $view): array
     {
         $catids = $view->param('f_catid', $this->context()->config()->get('client/html/catalog/lists/catid-default'));
-        $catids = $catids != null && is_scalar($catids) ? explode(',', $catids) : $catids; // workaround for TYPO3
-
+        $catids = $catids != null && is_scalar($catids) ? explode(',', $catids) : $catids;
+        // workaround for TYPO3
         return array_filter((array) $catids);
     }
-
     /**
      * Adds additional conditions for filtering
      *
@@ -102,7 +84,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
             $cntl->compare('>', 'product.instock', 0);
         }
     }
-
     /**
      * Returns the category depth level
      *
@@ -112,7 +93,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
     {
         return $this->context()->config()->get('client/html/catalog/lists/levels', \Aimeos\MW\Tree\Manager\Base::LEVEL_ONE);
     }
-
     /**
      * Returns the supplier IDs used for filtering products
      *
@@ -122,11 +102,10 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
     protected function suppliers(\Aimeos\Base\View\Iface $view): array
     {
         $supids = $view->param('f_supid', $this->context()->config()->get('client/html/catalog/lists/supid-default'));
-        $supids = $supids != null && is_scalar($supids) ? explode(',', $supids) : $supids; // workaround for TYPO3
-
+        $supids = $supids != null && is_scalar($supids) ? explode(',', $supids) : $supids;
+        // workaround for TYPO3
         return (array) $supids;
     }
-
     /** client/html/catalog/filter/price/template-body
      * Relative path to the HTML body template of the catalog filter price client.
      *

@@ -1,14 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2015-2026
  * @package Client
  * @subpackage Html
  */
-
 namespace Aimeos\Client\Html\Catalog\Suggest;
 
 /**
@@ -51,7 +49,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @param string Last part of the class name
      * @since 2015.02
      */
-
     /**
      * Sets the necessary parameter values in the view.
      *
@@ -64,10 +61,8 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
     {
         $context = $this->context();
         $config = $context->config();
-
-        $cntl = \Aimeos\Controller\Frontend::create($context, 'product')
-            ->text($view->param('f_search')); // sort by relevance first
-
+        $cntl = \Aimeos\Controller\Frontend::create($context, 'product')->text($view->param('f_search'));
+        // sort by relevance first
         /** client/html/catalog/suggest/domains
          * List of domain items that should be fetched along with the products
          *
@@ -86,7 +81,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @see client/html/catalog/suggest/size
          */
         $domains = $config->get('client/html/catalog/suggest/domains', ['text']);
-
         /** client/html/catalog/suggest/size
          * The number of products shown in the list of suggestions
          *
@@ -99,7 +93,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @see client/html/catalog/suggest/restrict
          */
         $size = $config->get('client/html/catalog/suggest/size', 24);
-
         /** client/html/catalog/suggest/restrict
          * Restricts suggestions to category and attribute facets
          *
@@ -115,20 +108,12 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
         if ($config->get('client/html/catalog/suggest/restrict', true) == true) {
             $level = $config->get('client/html/catalog/lists/levels', \Aimeos\MW\Tree\Manager\Base::LEVEL_ONE);
             $catids = $view->param('f_catid', $config->get('client/html/catalog/lists/catid-default'));
-
-            $cntl->category($catids, 'default', $level)
-                ->allOf($view->param('f_attrid', []))
-                ->oneOf($view->param('f_optid', []))
-                ->oneOf($view->param('f_oneid', []));
-
+            $cntl->category($catids, 'default', $level)->all_of($view->param('f_attrid', []))->one_of($view->param('f_optid', []))->one_of($view->param('f_oneid', []));
             $this->call('conditions', $cntl, $view);
         }
-
-        $view->suggestItems = $cntl->uses($domains)->slice(0, $size)->search();
-
+        $view->suggest_items = $cntl->uses($domains)->slice(0, $size)->search();
         return parent::data($view, $tags, $expire);
     }
-
     /**
      * Adds additional conditions for filtering
      *
@@ -141,7 +126,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
             $cntl->compare('>', 'product.instock', 0);
         }
     }
-
     /** client/html/catalog/suggest/template-body
      * Relative path to the HTML body template of the catalog suggest client.
      *
@@ -162,7 +146,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @see client/html/catalog/suggest/template-header
      * @see client/html/catalog/suggest/domains
      */
-
     /** client/html/catalog/suggest/template-header
      * Relative path to the HTML header template of the catalog suggest client.
      *
@@ -184,7 +167,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @see client/html/catalog/suggest/template-body
      * @see client/html/catalog/suggest/domains
      */
-
     /** client/html/catalog/suggest/decorators/excludes
      * Excludes decorators added by the "common" option from the catalog suggest html client
      *
@@ -208,7 +190,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @see client/html/catalog/suggest/decorators/global
      * @see client/html/catalog/suggest/decorators/local
      */
-
     /** client/html/catalog/suggest/decorators/global
      * Adds a list of globally available decorators only to the catalog suggest html client
      *
@@ -230,7 +211,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @see client/html/catalog/suggest/decorators/excludes
      * @see client/html/catalog/suggest/decorators/local
      */
-
     /** client/html/catalog/suggest/decorators/local
      * Adds a list of local decorators only to the catalog suggest html client
      *

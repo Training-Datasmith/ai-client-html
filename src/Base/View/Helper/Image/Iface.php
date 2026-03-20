@@ -1,14 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2020-2026
  * @package MW
  * @subpackage View
  */
-
 namespace Aimeos\Base\View\Helper\Image;
 
 /**
@@ -27,5 +25,5 @@ interface Iface extends \Aimeos\Base\View\Helper\Iface
      * @param bool $main TRUE for main image, FALSE for secondary images
      * @return string HTML image tag
      */
-    public function transform(\Aimeos\MShop\Media\Item\Iface $media, string $sizes = '', $main = true): string;
+    public function transform(\Aimeos\M_Shop\Media\Item\Iface $media, string $sizes = '', $main = true): string;
 }

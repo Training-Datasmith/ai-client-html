@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Metaways Infosystems GmbH, 2014
@@ -9,7 +8,6 @@ declare(strict_types=1);
  * @package Client
  * @subpackage Html
  */
-
 namespace Aimeos\Client\Html\Account\Favorite;
 
 /**
@@ -52,7 +50,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @param string Last part of the class name
      * @since 2014.03
      */
-
     /**
      * Processes the input, e.g. store given values.
      *
@@ -64,28 +61,25 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
         $view = $this->view();
         $context = $this->context();
         $ids = (array) $view->param('fav_id', []);
-
-        if ($context->user() !== null && !empty($ids) && $view->request()->getMethod() === 'POST') {
+        if ($context->user() !== null && !empty($ids) && $view->request()->get_method() === 'POST') {
             switch ($view->param('fav_action')) {
                 case 'add':
-                    $this->addFavorites($ids);
+                    $this->add_favorites($ids);
                     break;
                 case 'delete':
-                    $this->deleteFavorites($ids);
+                    $this->delete_favorites($ids);
                     break;
             }
         }
     }
-
     /**
      * Adds new product favorite references to the given customer
      *
      * @param array $ids List of product IDs
      */
-    protected function addFavorites(array $ids)
+    protected function add_favorites(array $ids)
     {
         $context = $this->context();
-
         /** client/html/account/favorite/maxitems
          * Maximum number of products that can be favorites
          *
@@ -96,63 +90,54 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @since 2019.04
          */
         $max = $context->config()->get('client/html/account/favorite/maxitems', 100);
-
         $cntl = \Aimeos\Controller\Frontend::create($context, 'customer');
         $item = $cntl->uses(['product' => ['favorite']])->get();
-
-        if (count($item->getRefItems('product', null, 'favorite')) + count($ids) > $max) {
+        if (count($item->get_ref_items('product', null, 'favorite')) + count($ids) > $max) {
             $msg = sprintf($context->translate('client', 'You can only save up to %1$s products as favorites'), $max);
             throw new \Aimeos\Client\Html\Exception($msg);
         }
-
         foreach ($ids as $id) {
-            if (($listItem = $item->getListItem('product', 'favorite', $id)) === null) {
-                $listItem = $cntl->createListItem();
+            if (($list_item = $item->get_list_item('product', 'favorite', $id)) === null) {
+                $list_item = $cntl->create_list_item();
             }
-            $cntl->addListItem('product', $listItem->setType('favorite')->setRefId($id));
+            $cntl->add_list_item('product', $list_item->set_type('favorite')->set_ref_id($id));
         }
-
         $cntl->store();
     }
-
     /**
      * Removes product favorite references from the customer
      *
      * @param array $ids List of product IDs
      */
-    protected function deleteFavorites(array $ids)
+    protected function delete_favorites(array $ids)
     {
         $cntl = \Aimeos\Controller\Frontend::create($this->context(), 'customer');
         $item = $cntl->uses(['product' => ['favorite']])->get();
-
         foreach ($ids as $id) {
-            if (($listItem = $item->getListItem('product', 'favorite', $id)) !== null) {
-                $cntl->deleteListItem('product', $listItem);
+            if (($list_item = $item->get_list_item('product', 'favorite', $id)) !== null) {
+                $cntl->delete_list_item('product', $list_item);
             }
         }
-
         $cntl->store();
     }
-
     /**
      * Returns the sanitized page from the parameters for the product list.
      *
      * @param \Aimeos\Base\View\Iface $view View instance with helper for retrieving the required parameters
      * @return int Page number starting from 1
      */
-    protected function getProductListPage(\Aimeos\Base\View\Iface $view): int
+    protected function get_product_list_page(\Aimeos\Base\View\Iface $view): int
     {
         $page = (int) $view->param('fav_page', 1);
-        return ($page < 1 ? 1 : $page);
+        return $page < 1 ? 1 : $page;
     }
-
     /**
      * Returns the sanitized page size from the parameters for the product list.
      *
      * @param \Aimeos\Base\View\Iface $view View instance with helper for retrieving the required parameters
      * @return int Page size
      */
-    protected function getProductListSize(\Aimeos\Base\View\Iface $view): int
+    protected function get_product_list_size(\Aimeos\Base\View\Iface $view): int
     {
         /** client/html/account/favorite/size
          * The number of products shown in a list page for favorite products
@@ -171,12 +156,10 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @since 2014.09
          * @see client/html/catalog/lists/size
          */
-        $defaultSize = $this->context()->config()->get('client/html/account/favorite/size', 48);
-
-        $size = (int) $view->param('fav-size', $defaultSize);
-        return ($size < 1 || $size > 100 ? $defaultSize : $size);
+        $default_size = $this->context()->config()->get('client/html/account/favorite/size', 48);
+        $size = (int) $view->param('fav-size', $default_size);
+        return $size < 1 || $size > 100 ? $default_size : $size;
     }
-
     /**
      * Sets the necessary parameter values in the view.
      *
@@ -188,7 +171,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
     public function data(\Aimeos\Base\View\Iface $view, array &$tags = [], ?string &$expire = null): \Aimeos\Base\View\Iface
     {
         $context = $this->context();
-
         /** client/html/account/favorite/domains
          * A list of domain names whose items should be available in the account favorite view template
          *
@@ -205,32 +187,24 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @see client/html/catalog/domains
          */
         $domains = $context->config()->get('client/html/account/favorite/domains', ['catalog', 'text', 'price', 'media']);
-
         $cntl = \Aimeos\Controller\Frontend::create($context, 'customer');
         $customer = $cntl->uses(['product' => ['favorite']] + $domains)->get();
-
-        $products = $customer->getRefItems('product', null, 'favorite');
-        \Aimeos\MShop::create($context, 'rule')->apply($products, 'catalog');
-
-        $listItems = $customer->getListItems('product', 'favorite');
-        $total = count($listItems);
-
-        $size = $this->getProductListSize($view);
-        $current = $this->getProductListPage($view);
-        $last = ($total != 0 ? ceil($total / $size) : 1);
-
-        $listItems = $listItems->slice(($current - 1) * $size, $size);
-
-        $view->favoriteItems = $listItems;
-        $view->favoritePageFirst = 1;
-        $view->favoritePagePrev = ($current > 1 ? $current - 1 : 1);
-        $view->favoritePageNext = ($current < $last ? $current + 1 : $last);
-        $view->favoritePageLast = $last;
-        $view->favoritePageCurr = $current;
-
+        $products = $customer->get_ref_items('product', null, 'favorite');
+        \Aimeos\M_Shop::create($context, 'rule')->apply($products, 'catalog');
+        $list_items = $customer->get_list_items('product', 'favorite');
+        $total = count($list_items);
+        $size = $this->get_product_list_size($view);
+        $current = $this->get_product_list_page($view);
+        $last = $total != 0 ? ceil($total / $size) : 1;
+        $list_items = $list_items->slice(($current - 1) * $size, $size);
+        $view->favorite_items = $list_items;
+        $view->favorite_page_first = 1;
+        $view->favorite_page_prev = $current > 1 ? $current - 1 : 1;
+        $view->favorite_page_next = $current < $last ? $current + 1 : $last;
+        $view->favorite_page_last = $last;
+        $view->favorite_page_curr = $current;
         return parent::data($view, $tags, $expire);
     }
-
     /** client/html/account/favorite/template-body
      * Relative path to the HTML body template of the account favorite client.
      *
@@ -250,7 +224,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @since 2015.10
      * @see client/html/account/favorite/template-header
      */
-
     /** client/html/account/favorite/template-header
      * Relative path to the HTML header template of the account favorite client.
      *
@@ -271,7 +244,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @since 2015.10
      * @see client/html/account/favorite/template-body
      */
-
     /** client/html/account/favorite/decorators/excludes
      * Excludes decorators added by the "common" option from the account favorite html client
      *
@@ -295,7 +267,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @see client/html/account/favorite/decorators/global
      * @see client/html/account/favorite/decorators/local
      */
-
     /** client/html/account/favorite/decorators/global
      * Adds a list of globally available decorators only to the account favorite html client
      *
@@ -317,7 +288,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @see client/html/account/favorite/decorators/excludes
      * @see client/html/account/favorite/decorators/local
      */
-
     /** client/html/account/favorite/decorators/local
      * Adds a list of local decorators only to the account favorite html client
      *

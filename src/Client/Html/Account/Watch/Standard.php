@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Metaways Infosystems GmbH, 2014
@@ -9,7 +8,6 @@ declare(strict_types=1);
  * @package Client
  * @subpackage Html
  */
-
 namespace Aimeos\Client\Html\Account\Watch;
 
 /**
@@ -52,7 +50,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @param string Last part of the class name
      * @since 2015.10
      */
-
     /**
      * Processes the input, e.g. store given values.
      *
@@ -64,32 +61,29 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
         $view = $this->view();
         $context = $this->context();
         $ids = (array) $view->param('wat_id', []);
-
-        if ($context->user() !== null && !empty($ids) && $view->request()->getMethod() === 'POST') {
+        if ($context->user() !== null && !empty($ids) && $view->request()->get_method() === 'POST') {
             switch ($view->param('wat_action')) {
                 case 'add':
-                    $this->addItems($view, $ids);
+                    $this->add_items($view, $ids);
                     break;
                 case 'edit':
-                    $this->editItems($view, $ids);
+                    $this->edit_items($view, $ids);
                     break;
                 case 'delete':
-                    $this->deleteItems($view, $ids);
+                    $this->delete_items($view, $ids);
                     break;
             }
         }
     }
-
     /**
      * Adds one or more list items to the given customer item
      *
      * @param \Aimeos\Base\View\Iface $view View object
      * @param array $ids List of referenced IDs
      */
-    protected function addItems(\Aimeos\Base\View\Iface $view, array $ids)
+    protected function add_items(\Aimeos\Base\View\Iface $view, array $ids)
     {
         $context = $this->context();
-
         /** client/html/account/watch/maxitems
          * Maximum number of products that can be watched in parallel
          *
@@ -107,96 +101,76 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @since 2014.09
          */
         $max = $context->config()->get('client/html/account/watch/maxitems', 100);
-
         $cntl = \Aimeos\Controller\Frontend::create($context, 'customer');
         $item = $cntl->uses(['product' => ['watch']])->get();
-
-        if (count($item->getRefItems('product', null, 'watch')) + count($ids) > $max) {
+        if (count($item->get_ref_items('product', null, 'watch')) + count($ids) > $max) {
             $msg = sprintf($context->translate('client', 'You can only watch up to %1$s products'), $max);
             throw new \Aimeos\Client\Html\Exception($msg);
         }
-
         foreach ($ids as $id) {
-            if (($listItem = $item->getListItem('product', 'watch', $id)) === null) {
-                $listItem = $cntl->createListItem();
+            if (($list_item = $item->get_list_item('product', 'watch', $id)) === null) {
+                $list_item = $cntl->create_list_item();
             }
-            $cntl->addListItem('product', $listItem->setType('watch')->setRefId($id));
+            $cntl->add_list_item('product', $list_item->set_type('watch')->set_ref_id($id));
         }
-
         $cntl->store();
     }
-
     /**
      * Removes the referencing list items from the given item
      *
      * @param \Aimeos\Base\View\Iface $view View object
      * @param array $ids List of referenced IDs
      */
-    protected function deleteItems(\Aimeos\Base\View\Iface $view, array $ids)
+    protected function delete_items(\Aimeos\Base\View\Iface $view, array $ids)
     {
         $cntl = \Aimeos\Controller\Frontend::create($this->context(), 'customer');
         $item = $cntl->uses(['product' => ['watch']])->get();
-
         foreach ($ids as $id) {
-            if (($listItem = $item->getListItem('product', 'watch', $id)) !== null) {
-                $cntl->deleteListItem('product', $listItem);
+            if (($list_item = $item->get_list_item('product', 'watch', $id)) !== null) {
+                $cntl->delete_list_item('product', $list_item);
             }
         }
-
         $cntl->store();
     }
-
     /**
      * Updates the item using the given reference IDs
      *
      * @param \Aimeos\Base\View\Iface $view View object
      * @param array $ids List of referenced IDs
      */
-    protected function editItems(\Aimeos\Base\View\Iface $view, array $ids)
+    protected function edit_items(\Aimeos\Base\View\Iface $view, array $ids)
     {
         $context = $this->context();
         $cntl = \Aimeos\Controller\Frontend::create($context, 'customer');
         $item = $cntl->uses(['product' => ['watch']])->get();
-
-        $config = [
-            'timeframe' => $view->param('wat_timeframe', 7),
-            'pricevalue' => $view->param('wat_pricevalue', '0.00'),
-            'price' => $view->param('wat_price', 0),
-            'stock' => $view->param('wat_stock', 0),
-            'currency' => $context->locale()->getCurrencyId(),
-        ];
-
+        $config = ['timeframe' => $view->param('wat_timeframe', 7), 'pricevalue' => $view->param('wat_pricevalue', '0.00'), 'price' => $view->param('wat_price', 0), 'stock' => $view->param('wat_stock', 0), 'currency' => $context->locale()->get_currency_id()];
         foreach ($ids as $id) {
-            if (($listItem = $item->getListItem('product', 'watch', $id)) !== null) {
+            if (($list_item = $item->get_list_item('product', 'watch', $id)) !== null) {
                 $time = time() + ($config['timeframe'] + 1) * 86400;
-                $listItem = $listItem->setDateEnd(date('Y-m-d 00:00:00', $time))->setConfig($config);
-
-                $cntl->addListItem('product', $listItem);
+                $list_item = $list_item->set_date_end(date('Y-m-d 00:00:00', $time))->set_config($config);
+                $cntl->add_list_item('product', $list_item);
             }
         }
-
         $cntl->store();
     }
-
     /**
      * Returns the sanitized page from the parameters for the product list.
      *
      * @param \Aimeos\Base\View\Iface $view View instance with helper for retrieving the required parameters
      * @return integer Page number starting from 1
      */
-    protected function getProductListPage(\Aimeos\Base\View\Iface $view): int
+    protected function get_product_list_page(\Aimeos\Base\View\Iface $view): int
     {
         $page = (int) $view->param('wat_page', 1);
-        return ($page < 1 ? 1 : $page);
+        return $page < 1 ? 1 : $page;
     }
-
     /**
      * Returns the sanitized page size from the parameters for the product list.
      *
      * @param \Aimeos\Base\View\Iface $view View instance with helper for retrieving the required parameters
      * @return integer Page size
      */
-    protected function getProductListSize(\Aimeos\Base\View\Iface $view): int
+    protected function get_product_list_size(\Aimeos\Base\View\Iface $view): int
     {
         /** client/html/account/watch/size
          * The number of products shown in a list page for watch products
@@ -215,12 +189,10 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @since 2014.09
          * @see client/html/catalog/lists/size
          */
-        $defaultSize = $this->context()->config()->get('client/html/account/watch/size', 48);
-
-        $size = (int) $view->param('watch-size', $defaultSize);
-        return ($size < 1 || $size > 100 ? $defaultSize : $size);
+        $default_size = $this->context()->config()->get('client/html/account/watch/size', 48);
+        $size = (int) $view->param('watch-size', $default_size);
+        return $size < 1 || $size > 100 ? $default_size : $size;
     }
-
     /**
      * Sets the necessary parameter values in the view.
      *
@@ -232,7 +204,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
     public function data(\Aimeos\Base\View\Iface $view, array &$tags = [], ?string &$expire = null): \Aimeos\Base\View\Iface
     {
         $context = $this->context();
-
         /** client/html/account/watch/domains
          * A list of domain names whose items should be available in the account watch view template
          *
@@ -249,30 +220,23 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @see client/html/catalog/domains
          */
         $domains = $context->config()->get('client/html/account/watch/domains', ['catalog', 'text', 'price', 'media']);
-
         $cntl = \Aimeos\Controller\Frontend::create($context, 'customer');
         $customer = $cntl->uses(['product' => ['watch']] + $domains)->get();
-
-        $products = $customer->getRefItems('product', null, 'watch');
-        \Aimeos\MShop::create($context, 'rule')->apply($products, 'catalog');
-
-        $listItems = $customer->getListItems('product', 'watch');
-        $total = count($listItems);
-
-        $size = $this->getProductListSize($view);
-        $current = $this->getProductListPage($view);
-        $last = ($total != 0 ? ceil($total / $size) : 1);
-
-        $view->watchItems = $listItems;
-        $view->watchPageFirst = 1;
-        $view->watchPagePrev = ($current > 1 ? $current - 1 : 1);
-        $view->watchPageNext = ($current < $last ? $current + 1 : $last);
-        $view->watchPageLast = $last;
-        $view->watchPageCurr = $current;
-
+        $products = $customer->get_ref_items('product', null, 'watch');
+        \Aimeos\M_Shop::create($context, 'rule')->apply($products, 'catalog');
+        $list_items = $customer->get_list_items('product', 'watch');
+        $total = count($list_items);
+        $size = $this->get_product_list_size($view);
+        $current = $this->get_product_list_page($view);
+        $last = $total != 0 ? ceil($total / $size) : 1;
+        $view->watch_items = $list_items;
+        $view->watch_page_first = 1;
+        $view->watch_page_prev = $current > 1 ? $current - 1 : 1;
+        $view->watch_page_next = $current < $last ? $current + 1 : $last;
+        $view->watch_page_last = $last;
+        $view->watch_page_curr = $current;
         return parent::data($view, $tags, $expire);
     }
-
     /** client/html/account/watch/template-body
      * Relative path to the HTML body template of the account watch client.
      *
@@ -292,7 +256,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @since 2015.10
      * @see client/html/account/watch/template-header
      */
-
     /** client/html/account/watch/template-header
      * Relative path to the HTML header template of the account watch client.
      *
@@ -313,7 +276,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @since 2015.10
      * @see client/html/account/watch/template-body
      */
-
     /** client/html/account/watch/decorators/excludes
      * Excludes decorators added by the "common" option from the account watch html client
      *
@@ -337,7 +299,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @see client/html/account/watch/decorators/global
      * @see client/html/account/watch/decorators/local
      */
-
     /** client/html/account/watch/decorators/global
      * Adds a list of globally available decorators only to the account watch html client
      *
@@ -359,7 +320,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @see client/html/account/watch/decorators/excludes
      * @see client/html/account/watch/decorators/local
      */
-
     /** client/html/account/watch/decorators/local
      * Adds a list of local decorators only to the account watch html client
      *

@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Metaways Infosystems GmbH, 2013
@@ -9,7 +8,6 @@ declare(strict_types=1);
  * @package Client
  * @subpackage Html
  */
-
 namespace Aimeos\Client\Html\Checkout\Update;
 
 /**
@@ -51,7 +49,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      *
      * @param string Last part of the class name
      */
-
     /**
      * Processes the input, e.g. store given values.
      *
@@ -62,21 +59,18 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
     {
         $view = $this->view();
         $context = $this->context();
-
         try {
             $cntl = \Aimeos\Controller\Frontend::create($context, 'service');
-            $cntl->updatePush($view->request(), $view->response(), $view->param('code', ''));
+            $cntl->update_push($view->request(), $view->response(), $view->param('code', ''));
         } catch (\Exception $e) {
-            $view->response()->withStatus(500, 'Error updating order status');
-            $view->response()->getBody()->write('Error updating order status');
-
-            $body = (string) $view->request()->getBody();
+            $view->response()->with_status(500, 'Error updating order status');
+            $view->response()->get_body()->write('Error updating order status');
+            $body = (string) $view->request()->get_body();
             $str = "Updating order status failed: %1\$s\n%2\$s\n%3\$s";
-            $msg = sprintf($str, $e->getMessage(), print_r($view->param(), true), $body);
+            $msg = sprintf($str, $e->get_message(), print_r($view->param(), true), $body);
             $context->logger()->error($msg, 'client/html');
         }
     }
-
     /** client/html/checkout/update/template-body
      * Relative path to the HTML body template of the checkout update client.
      *
@@ -95,7 +89,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @param string Relative path to the template creating code for the HTML page body
      * @see client/html/checkout/update/template-header
      */
-
     /** client/html/checkout/update/template-header
      * Relative path to the HTML header template of the checkout update client.
      *
@@ -115,7 +108,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @param string Relative path to the template creating code for the HTML page head
      * @see client/html/checkout/update/template-body
      */
-
     /** client/html/checkout/update/decorators/excludes
      * Excludes decorators added by the "common" option from the checkout update html client
      *
@@ -139,7 +131,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @see client/html/checkout/update/decorators/global
      * @see client/html/checkout/update/decorators/local
      */
-
     /** client/html/checkout/update/decorators/global
      * Adds a list of globally available decorators only to the checkout update html client
      *
@@ -161,7 +152,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @see client/html/checkout/update/decorators/excludes
      * @see client/html/checkout/update/decorators/local
      */
-
     /** client/html/checkout/update/decorators/local
      * Adds a list of local decorators only to the checkout update html client
      *

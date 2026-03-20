@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Metaways Infosystems GmbH, 2013
@@ -9,12 +8,10 @@ declare(strict_types=1);
  * @package Client
  * @subpackage Html
  */
-
 namespace Aimeos\Client\Html\Checkout\Standard\Summary;
 
 // Strings for translation
 sprintf('summary');
-
 /**
  * Default implementation of checkout summary HTML client.
  *
@@ -34,14 +31,11 @@ class Standard extends \Aimeos\Client\Html\Base implements \Aimeos\Client\Html\C
         $view = $this->view();
         $step = $view->get('standardStepActive');
         $onepage = $view->config('client/html/checkout/standard/onepage', []);
-
         if ($step != 'summary' && !(in_array('summary', $onepage) && in_array($step, $onepage))) {
             return '';
         }
-
         return parent::body($uid);
     }
-
     /**
      * Processes the input, e.g. store given values.
      *
@@ -52,44 +46,34 @@ class Standard extends \Aimeos\Client\Html\Base implements \Aimeos\Client\Html\C
     {
         $result = true;
         $view = $this->view();
-
         try {
             if ($view->param('cs_order', null) === null) {
                 return $result;
             }
-
             $context = $this->context();
             $controller = \Aimeos\Controller\Frontend::create($context, 'basket');
             $customerref = strip_tags($view->param('cs_customerref', '', false));
             $comment = strip_tags($view->param('cs_comment', '', false));
-
             if ($customerref || $comment) {
-                $controller->get()->setCustomerReference($customerref)->setComment($comment);
+                $controller->get()->set_customer_reference($customerref)->set_comment($comment);
                 $controller->save();
             }
-
             // only start if there's something to do
-            if ($view->param('cs_option_terms', null) !== null
-                && ($option = $view->param('cs_option_terms_value', 0)) != 1
-            ) {
+            if ($view->param('cs_option_terms', null) !== null && ($option = $view->param('cs_option_terms_value', 0)) != 1) {
                 $error = $view->translate('client', 'Please accept the terms and conditions');
                 $errors = $view->get('summaryErrorCodes', []);
                 $errors['option']['terms'] = $error;
-
-                $view->summaryErrorCodes = $errors;
-                $view->standardStepActive = 'summary';
-                $view->errors = array_merge($view->get('errors', []), [ $error ]);
+                $view->summary_error_codes = $errors;
+                $view->standard_step_active = 'summary';
+                $view->errors = array_merge($view->get('errors', []), [$error]);
             }
-
             parent::init();
-
             $controller->get()->check($context->config()->get('mshop/order/manager/subdomains', []));
         } catch (\Exception $e) {
-            $view->standardStepActive = 'summary';
+            $view->standard_step_active = 'summary';
             throw $e;
         }
     }
-
     /** client/html/checkout/standard/summary/template-body
      * Relative path to the HTML body template of the checkout standard summary client.
      *

@@ -1,14 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2015-2026
  * @package Client
  * @subpackage Html
  */
-
 namespace Aimeos\Client\Html\Catalog\Count\Attribute;
 
 /**
@@ -31,7 +29,6 @@ class Standard extends \Aimeos\Client\Html\Catalog\Base implements \Aimeos\Clien
     {
         $context = $this->context();
         $config = $context->config();
-
         /** client/html/catalog/count/attribute/aggregate
          * Enables or disables generating product counts for the attribute catalog filter
          *
@@ -44,25 +41,11 @@ class Standard extends \Aimeos\Client\Html\Catalog\Base implements \Aimeos\Clien
         if ($config->get('client/html/catalog/count/attribute/aggregate', true) == true) {
             $startid = $view->config('client/html/catalog/filter/tree/startid');
             $level = $view->config('client/html/catalog/lists/levels', \Aimeos\MW\Tree\Manager\Base::LEVEL_ONE);
-
-            $cntl = \Aimeos\Controller\Frontend::create($context, 'product')
-                ->category($view->param('f_catid', $startid), 'default', $level)
-                ->radius($view->param('f_point', []), $view->param('f_dist'))
-                ->supplier($view->param('f_supid', []))
-                ->allof($view->param('f_attrid', []))
-                ->oneOf($view->param('f_optid', []))
-                ->oneOf($view->param('f_oneid', []))
-                ->text($view->param('f_search'))
-                ->price($view->param('f_price'))
-                ->slice(0, 0x7fffffff) // restricted by mshop/common/manager/aggregate/limit
-                ->sort();
-
-            $view->attributeCountList = $cntl->aggregate('index.attribute.id');
+            $cntl = \Aimeos\Controller\Frontend::create($context, 'product')->category($view->param('f_catid', $startid), 'default', $level)->radius($view->param('f_point', []), $view->param('f_dist'))->supplier($view->param('f_supid', []))->allof($view->param('f_attrid', []))->one_of($view->param('f_optid', []))->one_of($view->param('f_oneid', []))->text($view->param('f_search'))->price($view->param('f_price'))->slice(0, 0x7fffffff)->sort();
+            $view->attribute_count_list = $cntl->aggregate('index.attribute.id');
         }
-
         return parent::data($view, $tags, $expire);
     }
-
     /** client/html/catalog/count/attribute/template-body
      * Relative path to the HTML body template of the catalog count attribute client.
      *

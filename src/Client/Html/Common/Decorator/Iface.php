@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Metaways Infosystems GmbH, 2014
@@ -9,7 +8,6 @@ declare(strict_types=1);
  * @package Client
  * @subpackage Html
  */
-
 namespace Aimeos\Client\Html\Common\Decorator;
 
 /**
@@ -26,5 +24,5 @@ interface Iface extends \Aimeos\Client\Html\Iface
      * @param \Aimeos\Client\Html\Iface $client Client object
      * @param \Aimeos\MShop\ContextIface $context Context object with required objects
      */
-    public function __construct(\Aimeos\Client\Html\Iface $client, \Aimeos\MShop\ContextIface $context);
+    public function __construct(\Aimeos\Client\Html\Iface $client, \Aimeos\M_Shop\Context_Iface $context);
 }

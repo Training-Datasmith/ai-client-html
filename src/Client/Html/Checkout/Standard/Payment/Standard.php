@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Metaways Infosystems GmbH, 2013
@@ -9,12 +8,10 @@ declare(strict_types=1);
  * @package Client
  * @subpackage Html
  */
-
 namespace Aimeos\Client\Html\Checkout\Standard\Payment;
 
 // Strings for translation
 sprintf('payment');
-
 /**
  * Default implementation of checkout payment HTML client.
  *
@@ -34,14 +31,11 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
         $view = $this->view();
         $step = $view->get('standardStepActive');
         $onepage = $view->config('client/html/checkout/standard/onepage', []);
-
         if ($step != 'payment' && !(in_array('payment', $onepage) && in_array($step, $onepage))) {
             return '';
         }
-
         return parent::body($uid);
     }
-
     /**
      * Processes the input, e.g. store given values.
      *
@@ -52,38 +46,31 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
     {
         $view = $this->view();
         $context = $this->context();
-
         try {
-            $basketCtrl = \Aimeos\Controller\Frontend::create($context, 'basket');
-            $servCtrl = \Aimeos\Controller\Frontend::create($context, 'service')->uses(['media', 'price', 'text']);
-
+            $basket_ctrl = \Aimeos\Controller\Frontend::create($context, 'basket');
+            $serv_ctrl = \Aimeos\Controller\Frontend::create($context, 'service')->uses(['media', 'price', 'text']);
             // only start if there's something to do
-            if (($serviceIds = $view->param('c_paymentoption', null)) !== null) {
-                $basketCtrl->deleteService('payment');
-
-                foreach ((array) $serviceIds as $idx => $id) {
+            if (($service_ids = $view->param('c_paymentoption', null)) !== null) {
+                $basket_ctrl->delete_service('payment');
+                foreach ((array) $service_ids as $idx => $id) {
                     try {
-                        $basketCtrl->addService($servCtrl->get($id), $view->param('c_payment/' . $id, []), $idx);
+                        $basket_ctrl->add_service($serv_ctrl->get($id), $view->param('c_payment/' . $id, []), $idx);
                     } catch (\Aimeos\Controller\Frontend\Basket\Exception $e) {
-                        $view->deliveryError = $e->getErrors();
-                        $view->errors = array_merge($view->get('errors', []), $e->getErrors());
-
+                        $view->delivery_error = $e->get_errors();
+                        $view->errors = array_merge($view->get('errors', []), $e->get_errors());
                         throw $e;
                     }
                 }
             }
-
             parent::init();
-
-            if (!isset($view->standardStepActive) && !$this->call('isAvailable', $basketCtrl->get())) {
-                $view->standardStepActive = 'payment';
+            if (!isset($view->standard_step_active) && !$this->call('isAvailable', $basket_ctrl->get())) {
+                $view->standard_step_active = 'payment';
             }
         } catch (\Exception $e) {
-            $view->standardStepActive = 'payment';
+            $view->standard_step_active = 'payment';
             throw $e;
         }
     }
-
     /**
      * Sets the necessary parameter values in the view.
      *
@@ -96,7 +83,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
     {
         $context = $this->context();
         $domains = ['media', 'price', 'text'];
-
         /** client/html/checkout/standard/payment/domains
          * List of domain names whose items should be available in the checkout payment templates
          *
@@ -111,53 +97,43 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @see client/html/checkout/standard/delivery/domains
          */
         $domains = $context->config()->get('client/html/checkout/standard/payment/domains', $domains);
-
-        $basketCntl = \Aimeos\Controller\Frontend::create($context, 'basket');
-        $serviceCntl = \Aimeos\Controller\Frontend::create($context, 'service');
-
+        $basket_cntl = \Aimeos\Controller\Frontend::create($context, 'basket');
+        $service_cntl = \Aimeos\Controller\Frontend::create($context, 'service');
         $services = [];
-        $basket = $basketCntl->get();
-        $providers = $serviceCntl->uses($domains)->type('payment')->getProviders();
-        $orderServices = map($basket->getService('payment'))->col(null, 'order.service.serviceid');
-
+        $basket = $basket_cntl->get();
+        $providers = $service_cntl->uses($domains)->type('payment')->get_providers();
+        $order_services = map($basket->get_service('payment'))->col(null, 'order.service.serviceid');
         foreach ($providers as $id => $provider) {
-            if ($provider->isAvailable($basket) === true) {
-                $attr = $provider->getConfigFE($basket);
-
-                if ($oservice = $orderServices->get($id)) {
+            if ($provider->is_available($basket) === true) {
+                $attr = $provider->get_config_fe($basket);
+                if ($oservice = $order_services->get($id)) {
                     foreach ($attr as $key => $item) {
-                        $value = is_array($item->getDefault()) ? key($item->getDefault()) : $item->getDefault();
-                        $value = $oservice->getAttribute($key) ?: $value;
-                        $item->value = $oservice->getAttribute($key, 'hidden') ?: $value;
+                        $value = is_array($item->get_default()) ? key($item->get_default()) : $item->get_default();
+                        $value = $oservice->get_attribute($key) ?: $value;
+                        $item->value = $oservice->get_attribute($key, 'hidden') ?: $value;
                     }
                 } else {
                     foreach ($attr as $item) {
-                        $item->value = is_array($item->getDefault()) ? key($item->getDefault()) : $item->getDefault();
+                        $item->value = is_array($item->get_default()) ? key($item->get_default()) : $item->get_default();
                     }
                 }
-
-                $services[$id] = $provider->getServiceItem()->set('attributes', $attr)
-                    ->set('price', $provider->calcPrice($basket));
+                $services[$id] = $provider->get_service_item()->set('attributes', $attr)->set('price', $provider->calc_price($basket));
             }
         }
-
-        $view->paymentServices = $services;
-        $view->paymentOption = $view->param('c_paymentoption', $orderServices->firstKey() ?: key($services));
-
+        $view->payment_services = $services;
+        $view->payment_option = $view->param('c_paymentoption', $order_services->first_key() ?: key($services));
         return parent::data($view, $tags, $expire);
     }
-
     /**
      * Tests if an item is available and the step can be skipped
      *
      * @param \Aimeos\MShop\Order\Item\Iface $basket Basket object
      * @return bool TRUE if step can be skipped, FALSE if not
      */
-    protected function isAvailable(\Aimeos\MShop\Order\Item\Iface $basket): bool
+    protected function is_available(\Aimeos\M_Shop\Order\Item\Iface $basket): bool
     {
-        return !empty($basket->getService('payment'));
+        return !empty($basket->get_service('payment'));
     }
-
     /** client/html/checkout/standard/payment/template-body
      * Relative path to the HTML body template of the checkout standard payment client.
      *

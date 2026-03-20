@@ -1,14 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2022-2026
  * @package Client
  * @subpackage Html
  */
-
 namespace Aimeos\Client\Html\Account\Basket;
 
 /**
@@ -51,7 +49,6 @@ class Standard extends \Aimeos\Client\Html\Base implements \Aimeos\Client\Html\I
      * @param string Last part of the class name
      * @since 2022.10
      */
-
     /**
      * Processes the input, e.g. store given values.
      *
@@ -61,17 +58,14 @@ class Standard extends \Aimeos\Client\Html\Base implements \Aimeos\Client\Html\I
     public function init(): void
     {
         $view = $this->view();
-
         if (($id = $view->param('bas_id')) != null && $view->param('bas_action') === 'delete') {
-            $manager = \Aimeos\MShop::create($this->context(), 'basket');
+            $manager = \Aimeos\M_Shop::create($this->context(), 'basket');
             $filter = $manager->filter(true)->add('basket.id', '==', $id);
             $manager->delete($manager->search($filter));
-
             $msg = $view->translate('client', 'Saved basket removed sucessfully');
             $view->infos = array_merge($view->get('infos', []), [$msg]);
         }
     }
-
     /**
      * Sets the necessary parameter values in the view.
      *
@@ -83,16 +77,11 @@ class Standard extends \Aimeos\Client\Html\Base implements \Aimeos\Client\Html\I
     public function data(\Aimeos\Base\View\Iface $view, array &$tags = [], ?string &$expire = null): \Aimeos\Base\View\Iface
     {
         $context = $this->context();
-        $manager = \Aimeos\MShop::create($context, 'basket');
-        $filter = $manager->filter()->order('-basket.mtime')
-            ->add('basket.customerid', '==', $context->user()?->getId())
-            ->add('basket.name', '!=', '');
-
-        $view->basketItems = $manager->search($filter);
-
+        $manager = \Aimeos\M_Shop::create($context, 'basket');
+        $filter = $manager->filter()->order('-basket.mtime')->add('basket.customerid', '==', $context->user()?->get_id())->add('basket.name', '!=', '');
+        $view->basket_items = $manager->search($filter);
         return parent::data($view, $tags, $expire);
     }
-
     /** client/html/account/basket/template-body
      * Relative path to the HTML body template of the account basket client.
      *
@@ -112,7 +101,6 @@ class Standard extends \Aimeos\Client\Html\Base implements \Aimeos\Client\Html\I
      * @since 2022.10
      * @see client/html/account/basket/template-header
      */
-
     /** client/html/account/basket/template-header
      * Relative path to the HTML header template of the account basket client.
      *
@@ -133,7 +121,6 @@ class Standard extends \Aimeos\Client\Html\Base implements \Aimeos\Client\Html\I
      * @since 2022.10
      * @see client/html/account/basket/template-body
      */
-
     /** client/html/account/basket/decorators/excludes
      * Excludes decorators added by the "common" option from the account basket html client
      *
@@ -158,7 +145,6 @@ class Standard extends \Aimeos\Client\Html\Base implements \Aimeos\Client\Html\I
      * @see client/html/account/basket/decorators/global
      * @see client/html/account/basket/decorators/local
      */
-
     /** client/html/account/basket/decorators/global
      * Adds a list of globally available decorators only to the account basket html client
      *
@@ -181,7 +167,6 @@ class Standard extends \Aimeos\Client\Html\Base implements \Aimeos\Client\Html\I
      * @see client/html/account/basket/decorators/excludes
      * @see client/html/account/basket/decorators/local
      */
-
     /** client/html/account/basket/decorators/local
      * Adds a list of local decorators only to the account basket html client
      *

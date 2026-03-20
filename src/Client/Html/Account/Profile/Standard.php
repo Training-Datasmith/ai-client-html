@@ -1,14 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2016-2026
  * @package Client
  * @subpackage Html
  */
-
 namespace Aimeos\Client\Html\Account\Profile;
 
 /**
@@ -51,7 +49,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @param string Last part of the class name
      * @since 2016.10
      */
-
     /**
      * Sets the necessary parameter values in the view.
      *
@@ -64,7 +61,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
     {
         $context = $this->context();
         $config = $context->config();
-
         /** client/html/common/address/salutations
          * List of salutions the customers can select from in the HTML frontend
          *
@@ -83,7 +79,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @see client/html/account/profile/address/salutations
          */
         $salutations = $config->get('client/html/common/address/salutations', ['', 'company', 'mr', 'ms']);
-
         /** client/html/account/profile/domains
          * A list of domain names whose items should be available in the account profile view template
          *
@@ -96,7 +91,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @since 2016.10
          */
         $domains = $config->get('client/html/account/profile/domains', ['customer/address']);
-
         /** common/countries
          * A list of ISO country codes which should be available in the checkout address step.
          *
@@ -108,7 +102,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @since 2023.04
          */
         $countries = $view->config('common/countries', []);
-
         /** common/states
          * A list of ISO country codes which should be available in the checkout address step.
          *
@@ -134,42 +127,32 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @since 2023.04
          */
         $states = $view->config('common/states', []);
-
         $item = \Aimeos\Controller\Frontend::create($context, 'customer')->uses($domains)->get();
-
-        $localeManager = \Aimeos\MShop::create($context, 'locale');
-        $languages = $localeManager->search($localeManager->filter(true))
-            ->col('locale.languageid', 'locale.languageid');
-
+        $locale_manager = \Aimeos\M_Shop::create($context, 'locale');
+        $languages = $locale_manager->search($locale_manager->filter(true))->col('locale.languageid', 'locale.languageid');
         $deliveries = [];
-        $addr = $item->getPaymentAddress();
-
-        if (!$addr->getLanguageId()) {
-            $addr->setLanguageId($context->locale()->getLanguageId());
+        $addr = $item->get_payment_address();
+        if (!$addr->get_language_id()) {
+            $addr->set_language_id($context->locale()->get_language_id());
         }
-
-        $payment = $addr->toArray();
+        $payment = $addr->to_array();
         $payment['string'] = $this->call('getAddressString', $view, $addr);
-
-        foreach ($item->getAddressItems() as $pos => $address) {
-            $delivery = $address->toArray();
+        foreach ($item->get_address_items() as $pos => $address) {
+            $delivery = $address->to_array();
             $delivery['string'] = $this->call('getAddressString', $view, $address);
             $deliveries[$pos] = $delivery;
         }
-
-        $view->profileItem = $item;
-        $view->addressPayment = $payment;
-        $view->addressDelivery = $deliveries;
-        $view->addressPaymentCss = $this->cssPayment();
-        $view->addressDeliveryCss = $this->cssDelivery();
-        $view->addressCountries = $countries;
-        $view->addressLanguages = $languages;
-        $view->addressSalutations = $salutations;
-        $view->addressStates = $states;
-
+        $view->profile_item = $item;
+        $view->address_payment = $payment;
+        $view->address_delivery = $deliveries;
+        $view->address_payment_css = $this->css_payment();
+        $view->address_delivery_css = $this->css_delivery();
+        $view->address_countries = $countries;
+        $view->address_languages = $languages;
+        $view->address_salutations = $salutations;
+        $view->address_states = $states;
         return parent::data($view, $tags, $expire);
     }
-
     /**
      * Processes the input, e.g. store given values.
      *
@@ -179,162 +162,126 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
     public function init(): void
     {
         $view = $this->view();
-
         if (!$view->param('address/save') && !$view->param('address/delete')) {
             return;
         }
-
         $data = $view->param('address/payment', []);
         $map = $view->param('address/delivery', []);
-
-        if (!empty($data) && ($view->addressPaymentError = $this->checkFields($data, 'payment')) !== []) {
+        if (!empty($data) && ($view->address_payment_error = $this->check_fields($data, 'payment')) !== []) {
             throw new \Aimeos\Client\Html\Exception(sprintf('At least one payment address part is missing or invalid'));
         }
-
         $cntl = \Aimeos\Controller\Frontend::create($this->context(), 'customer');
-        $addrItems = $cntl->uses(['customer/address'])->get()->getAddressItems();
+        $addr_items = $cntl->uses(['customer/address'])->get()->get_address_items();
         $cntl->add($view->param('address/payment', []));
-
         if ($pos = $view->param('address/delete')) {
-            if (isset($addrItems[$pos])) {
-                $cntl->deleteAddressItem($addrItems[$pos]);
+            if (isset($addr_items[$pos])) {
+                $cntl->delete_address_item($addr_items[$pos]);
             }
-
             unset($map[$pos]);
         }
-
         foreach ($map as $pos => $data) {
-            if (($view->addressDeliveryError = $this->checkFields($data, 'delivery')) !== []) {
+            if (($view->address_delivery_error = $this->check_fields($data, 'delivery')) !== []) {
                 throw new \Aimeos\Client\Html\Exception(sprintf('At least one delivery address part is missing or invalid'));
             }
-
-            $addrItem = $addrItems->get($pos) ?: $cntl->createAddressItem();
-            $cntl->addAddressItem($addrItem->fromArray($data), $pos);
+            $addr_item = $addr_items->get($pos) ?: $cntl->create_address_item();
+            $cntl->add_address_item($addr_item->from_array($data), $pos);
         }
-
         $cntl->store();
     }
-
     /**
      * Checks the address fields for missing data and sanitizes the given parameter list.
      *
      * @param array $params Associative list of address keys (order.address.* or customer.address.*) and their values
      * @return array List of missing field names
      */
-    protected function checkFields(array $params, string $type): array
+    protected function check_fields(array $params, string $type): array
     {
         $view = $this->view();
         $prefix = $type === 'payment' ? 'customer.' : 'customer.address.';
-
         $mandatory = $view->config('client/html/common/address/delivery/mandatory', []);
         $optional = $view->config('client/html/common/address/delivery/optional', []);
         $hidden = $view->config('client/html/common/address/delivery/hidden', []);
-
-        $allFields = array_flip(array_merge($mandatory, $optional, $hidden));
-        $invalid = $this->validateFields($params, $allFields);
-        $this->checkSalutation($params, $mandatory);
-
-        $msg = match($type) {
+        $all_fields = array_flip(array_merge($mandatory, $optional, $hidden));
+        $invalid = $this->validate_fields($params, $all_fields);
+        $this->check_salutation($params, $mandatory);
+        $msg = match ($type) {
             'delivery' => $view->translate('client', 'Delivery address part "%1$s" is invalid'),
             'payment' => $view->translate('client', 'Payment address part "%1$s" is invalid'),
-            default => $view->translate('client', 'Address part "%1$s" is invalid')
+            default => $view->translate('client', 'Address part "%1$s" is invalid'),
         };
-
         foreach ($invalid as $key => $name) {
             $invalid[$key] = sprintf($msg, $name);
         }
-
-        $msg = match($type) {
+        $msg = match ($type) {
             'delivery' => $view->translate('client', 'Delivery address part "%1$s" is missing'),
             'payment' => $view->translate('client', 'Payment address part "%1$s" is missing'),
-            default => $view->translate('client', 'Address part "%1$s" is missing')
+            default => $view->translate('client', 'Address part "%1$s" is missing'),
         };
-
         foreach ($mandatory as $key) {
             if (!isset($params[$prefix . $key]) || $params[$prefix . $key] == '') {
                 $invalid[$key] = sprintf($msg, $key);
             }
         }
-
         return $invalid;
     }
-
     /**
      * Additional checks for the salutation
      *
      * @param array $params Associative list of address keys (order.address.*) and their values
      * @param array &$mandatory List of mandatory field names
      */
-    protected function checkSalutation(array $params, array &$mandatory)
+    protected function check_salutation(array $params, array &$mandatory)
     {
-        if (isset($params['order.address.salutation'])
-                && $params['order.address.salutation'] === 'company'
-                && in_array('company', $mandatory) === false
-        ) {
+        if (isset($params['order.address.salutation']) && $params['order.address.salutation'] === 'company' && in_array('company', $mandatory) === false) {
             $mandatory[] = 'company';
         }
     }
-
     /**
      * Returns the CSS classes for the delivery address fields
      *
      * @return array Associative list of CSS classes for the delivery address fields
      */
-    protected function cssDelivery(): array
+    protected function css_delivery(): array
     {
         $config = $this->context()->config();
-
         $mandatory = $config->get('client/html/common/address/delivery/mandatory', []);
         $optional = $config->get('client/html/common/address/delivery/optional', []);
         $hidden = $config->get('client/html/common/address/delivery/hidden', []);
-
         $css = [];
-
         foreach ($mandatory as $name) {
             $css[$name][] = 'mandatory';
         }
-
         foreach ($optional as $name) {
             $css[$name][] = 'optional';
         }
-
         foreach ($hidden as $name) {
             $css[$name][] = 'hidden';
         }
-
         return $css;
     }
-
     /**
      * Returns the CSS classes for the payment address fields
      *
      * @return array Associative list of CSS classes for the payment address fields
      */
-    protected function cssPayment(): array
+    protected function css_payment(): array
     {
         $config = $this->context()->config();
-
         $mandatory = $config->get('client/html/common/address/payment/mandatory', []);
         $optional = $config->get('client/html/common/address/payment/optional', []);
         $hidden = $config->get('client/html/common/address/payment/hidden', []);
-
         $css = [];
-
         foreach ($mandatory as $name) {
             $css[$name][] = 'mandatory';
         }
-
         foreach ($optional as $name) {
             $css[$name][] = 'optional';
         }
-
         foreach ($hidden as $name) {
             $css[$name][] = 'hidden';
         }
-
         return $css;
     }
-
     /**
      * Returns the address as string
      *
@@ -342,16 +289,14 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @param \Aimeos\MShop\Common\Item\Address\Iface $addr Order address item
      * @return string Address as string
      */
-    protected function getAddressString(\Aimeos\Base\View\Iface $view, \Aimeos\MShop\Common\Item\Address\Iface $addr): ?string
+    protected function get_address_string(\Aimeos\Base\View\Iface $view, \Aimeos\M_Shop\Common\Item\Address\Iface $addr): ?string
     {
         return preg_replace("/\n+/m", "\n", trim(sprintf(
             /// Address format with company (%1$s), salutation (%2$s), title (%3$s), first name (%4$s), last name (%5$s),
             /// address part one (%6$s, e.g street), address part two (%7$s, e.g house number), address part three (%8$s, e.g additional information),
             /// postal/zip code (%9$s), city (%10$s), state (%11$s), country (%12$s), language (%13$s),
             /// e-mail (%14$s), phone (%15$s), facsimile/telefax (%16$s), mobile (%17$s), web site (%18$s), vatid (%19$s)
-            $view->translate(
-                'client',
-                '%1$s
+            $view->translate('client', '%1$s
 %2$s %3$s %4$s %5$s
 %6$s %7$s
 %8$s
@@ -365,30 +310,28 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
 %17$s
 %18$s
 %19$s
-'
-            ),
-            $addr->getCompany(),
-            $view->translate('mshop/code', (string) $addr->getSalutation()),
-            $addr->getTitle(),
-            $addr->getFirstName(),
-            $addr->getLastName(),
-            $addr->getAddress1(),
-            $addr->getAddress2(),
-            $addr->getAddress3(),
-            $addr->getPostal(),
-            $addr->getCity(),
-            $addr->getState(),
-            $view->translate('country', (string) $addr->getCountryId()),
-            $view->translate('language', (string) $addr->getLanguageId()),
-            $addr->getEmail(),
-            $addr->getTelephone(),
-            $addr->getTelefax(),
-            $addr->getMobile(),
-            $addr->getWebsite(),
-            $addr->getVatID()
+'),
+            $addr->get_company(),
+            $view->translate('mshop/code', (string) $addr->get_salutation()),
+            $addr->get_title(),
+            $addr->get_first_name(),
+            $addr->get_last_name(),
+            $addr->get_address1(),
+            $addr->get_address2(),
+            $addr->get_address3(),
+            $addr->get_postal(),
+            $addr->get_city(),
+            $addr->get_state(),
+            $view->translate('country', (string) $addr->get_country_id()),
+            $view->translate('language', (string) $addr->get_language_id()),
+            $addr->get_email(),
+            $addr->get_telephone(),
+            $addr->get_telefax(),
+            $addr->get_mobile(),
+            $addr->get_website(),
+            $addr->get_vat_id()
         )));
     }
-
     /**
      * Validate the address key/value pairs using regular expressions
      *
@@ -396,26 +339,21 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @param array $fields List of field names to validate
      * @return array List of invalid address keys
      */
-    protected function validateFields(array $params, array $fields): array
+    protected function validate_fields(array $params, array $fields): array
     {
         $invalid = [];
         $config = $this->context()->config();
-
         foreach ($params as $key => $value) {
             $name = ($pos = strrpos($key, '.')) ? substr($key, $pos + 1) : $key;
-
             if (isset($fields[$name])) {
                 $regex = $config->get('client/html/common/address/validate/' . $name);
-
                 if ($regex && preg_match('/' . $regex . '/', $value) !== 1) {
                     $invalid[$name] = $name;
                 }
             }
         }
-
         return $invalid;
     }
-
     /** client/html/account/profile/template-body
      * Relative path to the HTML body template of the account profile client.
      *
@@ -435,7 +373,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @since 2016.10
      * @see client/html/account/profile/template-header
      */
-
     /** client/html/account/profile/template-header
      * Relative path to the HTML header template of the account profile client.
      *
@@ -456,7 +393,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @since 2016.10
      * @see client/html/account/profile/template-body
      */
-
     /** client/html/account/profile/decorators/excludes
      * Excludes decorators added by the "common" option from the account profile html client
      *
@@ -480,7 +416,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @see client/html/account/profile/decorators/global
      * @see client/html/account/profile/decorators/local
      */
-
     /** client/html/account/profile/decorators/global
      * Adds a list of globally available decorators only to the account profile html client
      *
@@ -502,7 +437,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @see client/html/account/profile/decorators/excludes
      * @see client/html/account/profile/decorators/local
      */
-
     /** client/html/account/profile/decorators/local
      * Adds a list of local decorators only to the account profile html client
      *

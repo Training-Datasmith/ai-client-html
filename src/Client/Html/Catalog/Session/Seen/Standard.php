@@ -1,14 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2015-2026
  * @package Client
  * @subpackage Html
  */
-
 namespace Aimeos\Client\Html\Catalog\Session\Seen;
 
 /**
@@ -29,11 +27,9 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      */
     public function data(\Aimeos\Base\View\Iface $view, array &$tags = [], ?string &$expire = null): \Aimeos\Base\View\Iface
     {
-        $view->seenItems = array_reverse($this->context()->session()->get('aimeos/catalog/session/seen/list', []));
-
+        $view->seen_items = array_reverse($this->context()->session()->get('aimeos/catalog/session/seen/list', []));
         return parent::data($view, $tags, $expire);
     }
-
     /** client/html/catalog/session/seen/template-body
      * Relative path to the HTML body template of the catalog session seen client.
      *

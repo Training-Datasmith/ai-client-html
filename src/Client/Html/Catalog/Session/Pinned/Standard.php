@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Metaways Infosystems GmbH, 2014
@@ -9,7 +8,6 @@ declare(strict_types=1);
  * @package Client
  * @subpackage Html
  */
-
 namespace Aimeos\Client\Html\Catalog\Session\Pinned;
 
 /**
@@ -31,7 +29,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
         $view = $this->view();
         $context = $this->context();
         $session = $context->session();
-
         /** client/html/catalog/session/pinned
          * All parameters defined for the catalog session pinned subpart
          *
@@ -41,8 +38,7 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @param array Associative list of name/value settings
          */
         $config = $context->config()->get('client/html/catalog/session/pinned', []);
-        $key = $this->getParamHash([], $uid . ':catalog:session-pinned-body', $config);
-
+        $key = $this->get_param_hash([], $uid . ':catalog:session-pinned-body', $config);
         if (($html = $session->get($key)) === null) {
             /** client/html/catalog/session/pinned/template-body
              * Relative path to the HTML body template of the catalog session pinned client.
@@ -65,19 +61,14 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
              */
             $tplconf = 'client/html/catalog/session/pinned/template-body';
             $default = 'catalog/session/pinned-body';
-
             $html = $view->render($view->config($tplconf, $default));
-
-            $cached = $session->get('aimeos/catalog/session/pinned/cache', []) + [ $key => true ];
+            $cached = $session->get('aimeos/catalog/session/pinned/cache', []) + [$key => true];
             $session->set('aimeos/catalog/session/pinned/cache', $cached);
             $session->set($key, $html);
         }
-
         $view->block()->set('catalog/session/pinned', $html);
-
         return $html;
     }
-
     /**
      * Processes the input, e.g. store given values.
      *
@@ -91,15 +82,12 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
         $context = $this->context();
         $session = $context->session();
         $pinned = $session->get('aimeos/catalog/session/pinned/list', []);
-
-        if ($view->request()->getMethod() === 'POST') {
+        if ($view->request()->get_method() === 'POST') {
             switch ($view->param('pin_action')) {
                 case 'add':
-
                     foreach ((array) $view->param('pin_id', []) as $id) {
                         $pinned[$id] = $id;
                     }
-
                     /** client/html/catalog/session/pinned/maxitems
                      * Maximum number of products displayed in the "pinned" section
                      *
@@ -116,31 +104,24 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
                      * @since 2014.09
                      */
                     $max = $context->config()->get('client/html/catalog/session/pinned/maxitems', 50);
-
                     $pinned = array_slice($pinned, -$max, $max, true);
                     $refresh = true;
                     break;
-
                 case 'delete':
-
                     foreach ((array) $view->param('pin_id', []) as $id) {
                         unset($pinned[$id]);
                     }
-
                     $refresh = true;
                     break;
             }
         }
-
         if ($refresh) {
             $session->set('aimeos/catalog/session/pinned/list', $pinned);
-
             foreach ($session->get('aimeos/catalog/session/pinned/cache', []) as $key => $value) {
                 $session->set($key, null);
             }
         }
     }
-
     /**
      * Sets the necessary parameter values in the view.
      *
@@ -155,9 +136,7 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
         $context = $this->context();
         $config = $context->config();
         $session = $context->session();
-
         $domains = $config->get('client/html/catalog/domains', ['catalog', 'media', 'price', 'text']);
-
         /** client/html/catalog/session/pinned/domains
          * A list of domain names whose items should be available in the pinned view template for the product
          *
@@ -176,21 +155,16 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @see client/html/catalog/detail/domains
          */
         $domains = $config->get('client/html/catalog/session/pinned/domains', $domains);
-
         if (($pinned = $session->get('aimeos/catalog/session/pinned/list', [])) !== []) {
-            $result = \Aimeos\Controller\Frontend::create($context, 'product')
-                ->uses($domains)->product($pinned)->slice(0, count($pinned))->search();
-
+            $result = \Aimeos\Controller\Frontend::create($context, 'product')->uses($domains)->product($pinned)->slice(0, count($pinned))->search();
             foreach (array_reverse($pinned) as $id) {
                 if (isset($result[$id])) {
                     $items[$id] = $result[$id];
                 }
             }
         }
-
-        $view->pinnedProductItems = $items;
-        $view->pinnedParams = $this->getClientParams($view->param());
-
+        $view->pinned_product_items = $items;
+        $view->pinned_params = $this->get_client_params($view->param());
         return parent::data($view, $tags, $expire);
     }
 }

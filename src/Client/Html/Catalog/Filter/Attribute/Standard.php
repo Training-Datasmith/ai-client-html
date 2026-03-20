@@ -1,14 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2015-2026
  * @package Client
  * @subpackage Html
  */
-
 namespace Aimeos\Client\Html\Catalog\Filter\Attribute;
 
 /**
@@ -48,7 +46,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @see client/html/catalog/filter/attribute/types-oneof
          */
         $options = $view->config('client/html/catalog/filter/attribute/types-option', []);
-
         /** client/html/catalog/filter/attribute/types-oneof
          * List of attribute types whose values should be used in a type specific "OR" condition
          *
@@ -66,7 +63,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @see client/html/catalog/filter/attribute/types-option
          */
         $oneof = $view->config('client/html/catalog/filter/attribute/types-oneof', []);
-
         /** client/html/catalog/filter/attribute/types
          * List of attribute types that should be displayed in this order in the catalog filter
          *
@@ -87,12 +83,10 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @see client/html/catalog/filter/attribute/types-oneof
          * @see client/html/catalog/filter/attribute/types-option
          */
-        $attrTypes = $view->config('client/html/catalog/filter/attribute/types', []);
-
-        if (!is_array($attrTypes)) {
-            $attrTypes = array_filter(explode(',', $attrTypes));
+        $attr_types = $view->config('client/html/catalog/filter/attribute/types', []);
+        if (!is_array($attr_types)) {
+            $attr_types = array_filter(explode(',', $attr_types));
         }
-
         /** client/html/catalog/filter/attribute/domains
          * List of domain names whose items should be fetched with the filter attributes
          *
@@ -109,56 +103,41 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @see client/html/catalog/filter/attribute/types
          */
         $domains = $view->config('client/html/catalog/filter/attribute/domains', ['text', 'media', 'media/property']);
-
-        $attributes = \Aimeos\Controller\Frontend::create($this->context(), 'attribute')
-            ->uses($domains)->type($attrTypes)->compare('!=', 'attribute.type', ['date', 'price', 'text'])
-            ->sort('position')->slice(0, 10000)->search();
-
-        $this->addMetaItems($attributes, $expire, $tags);
-
+        $attributes = \Aimeos\Controller\Frontend::create($this->context(), 'attribute')->uses($domains)->type($attr_types)->compare('!=', 'attribute.type', ['date', 'price', 'text'])->sort('position')->slice(0, 10000)->search();
+        $this->add_meta_items($attributes, $expire, $tags);
         $active = [];
-        $params = $this->getClientParams($view->param());
-
-        $attrIds = array_filter($view->param('f_attrid', []));
-        $oneIds = array_filter($view->param('f_oneid', []));
-        $optIds = array_filter($view->param('f_optid', []));
-
+        $params = $this->get_client_params($view->param());
+        $attr_ids = array_filter($view->param('f_attrid', []));
+        $one_ids = array_filter($view->param('f_oneid', []));
+        $opt_ids = array_filter($view->param('f_optid', []));
         foreach ($attributes as $id => $item) {
             $attrparams = $params;
-            $type = $item->getType();
-
-            if (($key = array_search($id, $attrIds)) !== false) {
+            $type = $item->get_type();
+            if (($key = array_search($id, $attr_ids)) !== false) {
                 $item = $item->set('checked', true);
                 unset($attrparams['f_attrid'][$key]);
-            } elseif (($key = array_search($id, $optIds)) !== false) {
+            } elseif (($key = array_search($id, $opt_ids)) !== false) {
                 $item = $item->set('checked', true);
                 unset($attrparams['f_optid'][$key]);
-            } elseif (isset($oneIds[$type]) && ($key = array_search($id, (array) $oneIds[$type])) !== false) {
+            } elseif (isset($one_ids[$type]) && ($key = array_search($id, (array) $one_ids[$type])) !== false) {
                 $item = $item->set('checked', true);
                 unset($attrparams['f_oneid'][$key]);
             }
-
-            $fparams = $this->getFormParams($type, $oneof, $options);
-            $active[$item->getType()] = (int) $item->get('checked', $active[$item->getType()] ?? false);
+            $fparams = $this->get_form_params($type, $oneof, $options);
+            $active[$item->get_type()] = (int) $item->get('checked', $active[$item->get_type()] ?? false);
             $item->set('params', $attrparams)->set('formparam', $fparams);
         }
-
         arsort($active);
         unset($params['f_attrid'], $params['f_oneid'], $params['f_optid']);
-
-        $attributes->uasort(fn ($a, $b) => $a->getPosition() <=> $b->getPosition());
-
-        $attrMap = $attributes->groupBy('attribute.type');
-        $attrTypes = $this->attributeTypes($attrMap->keys());
-
-        $view->attributeResetParams = $params;
-        $view->attributeMap = $attrMap->order($attrTypes->getCode());
-        $view->detailAttributeTypes = $attrTypes->col(null, 'attribute.type.code');
-        $view->attributeMapActive = map($view->attributeMap)->uksort(fn ($a, $b) => ($active[$b] ?? null) <=> ($active[$a] ?? null));
-
+        $attributes->uasort(fn($a, $b) => $a->get_position() <=> $b->get_position());
+        $attr_map = $attributes->group_by('attribute.type');
+        $attr_types = $this->attribute_types($attr_map->keys());
+        $view->attribute_reset_params = $params;
+        $view->attribute_map = $attr_map->order($attr_types->get_code());
+        $view->detail_attribute_types = $attr_types->col(null, 'attribute.type.code');
+        $view->attribute_map_active = map($view->attribute_map)->uksort(fn($a, $b) => ($active[$b] ?? null) <=> ($active[$a] ?? null));
         return parent::data($view, $tags, $expire);
     }
-
     /**
      * Returns the HTML string for insertion into the header.
      *
@@ -169,25 +148,21 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
     {
         return null;
     }
-
     /**
      * Returns the attribute type items for the given codes
      *
      * @param \Aimeos\Map $codes List of attribute type codes
      * @return \Aimeos\Map List of attribute type items
      */
-    protected function attributeTypes(\Aimeos\Map $codes): \Aimeos\Map
+    protected function attribute_types(\Aimeos\Map $codes): \Aimeos\Map
     {
-        $manager = \Aimeos\MShop::create($this->context(), 'attribute/type');
+        $manager = \Aimeos\M_Shop::create($this->context(), 'attribute/type');
         $filter = $manager->filter(true)->order('attribute.type.position');
-
-        if (!$codes->isEmpty()) {
+        if (!$codes->is_empty()) {
             $filter->add('attribute.type.code', '==', $codes);
         }
-
         return $manager->search($filter->slice(0, count($codes) ?: 10000));
     }
-
     /**
      * Returns the form parameter names for the given attribute type
      *
@@ -196,19 +171,16 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @param array $options List of attribute type codes for optional filter
      * @return array Ordered list of form parameter names
      */
-    protected function getFormParams(string $type, array $oneof, array $options): array
+    protected function get_form_params(string $type, array $oneof, array $options): array
     {
         if (in_array($type, $oneof)) {
             return ['f_oneid', $type, ''];
         }
-
         if (in_array($type, $options)) {
             return ['f_optid', ''];
         }
-
         return ['f_attrid', ''];
     }
-
     /**
      * Sorts the attribute types according to the configured order
      *
@@ -216,28 +188,22 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @param array $attrTypes List of attribute type names
      * @return array Sorted associative list of attribute types and attribute items
      */
-    protected function sort(array $attrMap, array $attrTypes): array
+    protected function sort(array $attr_map, array $attr_types): array
     {
         $map = [];
-
-        $manager = \Aimeos\MShop::create($this->context(), 'attribute/type');
+        $manager = \Aimeos\M_Shop::create($this->context(), 'attribute/type');
         $filter = $manager->filter(true)->order('attribute.type.position');
-
-        if (!empty($attrTypes)) {
-            $filter->add('attribute.type.code', '==', $attrTypes);
+        if (!empty($attr_types)) {
+            $filter->add('attribute.type.code', '==', $attr_types);
         }
-
-        foreach ($manager->search($filter->slice(0, 10000)) as $typeItem) {
-            if ($list = $attrMap[$typeItem->getCode()] ?? null) {
-                uasort($list, fn ($a, $b) => $a->getPosition() <=> $b->getPosition());
-
-                $map[$typeItem->getCode()] = $list;
+        foreach ($manager->search($filter->slice(0, 10000)) as $type_item) {
+            if ($list = $attr_map[$type_item->get_code()] ?? null) {
+                uasort($list, fn($a, $b) => $a->get_position() <=> $b->get_position());
+                $map[$type_item->get_code()] = $list;
             }
         }
-
         return $map;
     }
-
     /** client/html/catalog/filter/attribute/template-body
      * Relative path to the HTML body template of the catalog filter attribute client.
      *

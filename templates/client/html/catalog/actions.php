@@ -5,13 +5,10 @@
  * @copyright Metaways Infosystems GmbH, 2014
  * @copyright Aimeos (aimeos.org), 2015-2026
  */
-
 /* Available data:
  * - productItem : Product item incl. referenced items
  */
-
 $enc = $this->encoder();
-
 /** client/html/catalog/actions/list
  * List of user action names that should be displayed in the catalog detail view
  *
@@ -28,45 +25,116 @@ $enc = $this->encoder();
  * @since 2017.04
  */
 $list = $this->config('client/html/catalog/actions/list', ['pin', 'watch', 'favorite']);
-
 ?>
 <ul class="catalog-actions">
-	<?php if (in_array('pin', $list)) : ?>
+	<?php 
+if (in_array('pin', $list)) {
+    ?>
 		<li>
-			<form class="actions-pin" method="POST" action="<?= $enc->attr($this->link('client/html/catalog/session/pinned/url')) ?>">
-				<!-- catalog.detail.csrf --><?= $this->csrf()->formfield() ?><!-- catalog.detail.csrf -->
-				<input type="hidden" name="<?= $this->formparam('pin_action') ?>" value="add">
-				<input type="hidden" name="<?= $this->formparam('pin_id') ?>" value="<?= $enc->attr($this->productItem->getId()) ?>">
-				<input type="hidden" name="<?= $this->formparam('d_prodid') ?>" value="<?= $enc->attr($this->productItem->getId()) ?>">
-				<input type="hidden" name="<?= $this->formparam('d_name') ?>" value="<?= $this->productItem->getName('url') ?>">
-				<button class="actions-button actions-button-pin" type="submit" title="<?= $enc->attr($this->translate('client/code', 'pin')) ?>"></button>
+			<form class="actions-pin" method="POST" action="<?php 
+    echo $enc->attr($this->link('client/html/catalog/session/pinned/url'));
+    ?>">
+				<!-- catalog.detail.csrf --><?php 
+    echo $this->csrf()->formfield();
+    ?><!-- catalog.detail.csrf -->
+				<input type="hidden" name="<?php 
+    echo $this->formparam('pin_action');
+    ?>" value="add">
+				<input type="hidden" name="<?php 
+    echo $this->formparam('pin_id');
+    ?>" value="<?php 
+    echo $enc->attr($this->product_item->get_id());
+    ?>">
+				<input type="hidden" name="<?php 
+    echo $this->formparam('d_prodid');
+    ?>" value="<?php 
+    echo $enc->attr($this->product_item->get_id());
+    ?>">
+				<input type="hidden" name="<?php 
+    echo $this->formparam('d_name');
+    ?>" value="<?php 
+    echo $this->product_item->get_name('url');
+    ?>">
+				<button class="actions-button actions-button-pin" type="submit" title="<?php 
+    echo $enc->attr($this->translate('client/code', 'pin'));
+    ?>"></button>
 			</form>
 		</li>
-	<?php endif ?>
+	<?php 
+}
+?>
 
-	<?php if (in_array('watch', $list)) : ?>
+	<?php 
+if (in_array('watch', $list)) {
+    ?>
 		<li>
-			<form class="actions-watch" method="POST" action="<?= $enc->attr($this->link('client/html/account/watch/url')) ?>">
-				<!-- catalog.detail.csrf --><?= $this->csrf()->formfield() ?><!-- catalog.detail.csrf -->
-				<input type="hidden" name="<?= $this->formparam('wat_action') ?>" value="add">
-				<input type="hidden" name="<?= $this->formparam('wat_id') ?>" value="<?= $enc->attr($this->productItem->getId()) ?>">
-				<input type="hidden" name="<?= $this->formparam('d_prodid') ?>" value="<?= $enc->attr($this->productItem->getId()) ?>">
-				<input type="hidden" name="<?= $this->formparam('d_name') ?>" value="<?= $this->productItem->getName('url') ?>">
-				<button class="actions-button actions-button-watch" type="submit" title="<?= $enc->attr($this->translate('client/code', 'watch')) ?>"></button>
+			<form class="actions-watch" method="POST" action="<?php 
+    echo $enc->attr($this->link('client/html/account/watch/url'));
+    ?>">
+				<!-- catalog.detail.csrf --><?php 
+    echo $this->csrf()->formfield();
+    ?><!-- catalog.detail.csrf -->
+				<input type="hidden" name="<?php 
+    echo $this->formparam('wat_action');
+    ?>" value="add">
+				<input type="hidden" name="<?php 
+    echo $this->formparam('wat_id');
+    ?>" value="<?php 
+    echo $enc->attr($this->product_item->get_id());
+    ?>">
+				<input type="hidden" name="<?php 
+    echo $this->formparam('d_prodid');
+    ?>" value="<?php 
+    echo $enc->attr($this->product_item->get_id());
+    ?>">
+				<input type="hidden" name="<?php 
+    echo $this->formparam('d_name');
+    ?>" value="<?php 
+    echo $this->product_item->get_name('url');
+    ?>">
+				<button class="actions-button actions-button-watch" type="submit" title="<?php 
+    echo $enc->attr($this->translate('client/code', 'watch'));
+    ?>"></button>
 			</form>
 		</li>
-	<?php endif ?>
+	<?php 
+}
+?>
 
-	<?php if (in_array('favorite', $list)) : ?>
+	<?php 
+if (in_array('favorite', $list)) {
+    ?>
 		<li>
-			<form class="actions-favorite" method="POST" action="<?= $enc->attr($this->link('client/html/account/favorite/url')) ?>">
-				<!-- catalog.detail.csrf --><?= $this->csrf()->formfield() ?><!-- catalog.detail.csrf -->
-				<input type="hidden" name="<?= $this->formparam('fav_action') ?>" value="add">
-				<input type="hidden" name="<?= $this->formparam('fav_id') ?>" value="<?= $enc->attr($this->productItem->getId()) ?>">
-				<input type="hidden" name="<?= $this->formparam('d_prodid') ?>" value="<?= $enc->attr($this->productItem->getId()) ?>">
-				<input type="hidden" name="<?= $this->formparam('d_name') ?>" value="<?= $this->productItem->getName('url') ?>">
-				<button class="actions-button actions-button-favorite" type="submit" title="<?= $enc->attr($this->translate('client/code', 'favorite')) ?>"></button>
+			<form class="actions-favorite" method="POST" action="<?php 
+    echo $enc->attr($this->link('client/html/account/favorite/url'));
+    ?>">
+				<!-- catalog.detail.csrf --><?php 
+    echo $this->csrf()->formfield();
+    ?><!-- catalog.detail.csrf -->
+				<input type="hidden" name="<?php 
+    echo $this->formparam('fav_action');
+    ?>" value="add">
+				<input type="hidden" name="<?php 
+    echo $this->formparam('fav_id');
+    ?>" value="<?php 
+    echo $enc->attr($this->product_item->get_id());
+    ?>">
+				<input type="hidden" name="<?php 
+    echo $this->formparam('d_prodid');
+    ?>" value="<?php 
+    echo $enc->attr($this->product_item->get_id());
+    ?>">
+				<input type="hidden" name="<?php 
+    echo $this->formparam('d_name');
+    ?>" value="<?php 
+    echo $this->product_item->get_name('url');
+    ?>">
+				<button class="actions-button actions-button-favorite" type="submit" title="<?php 
+    echo $enc->attr($this->translate('client/code', 'favorite'));
+    ?>"></button>
 			</form>
 		</li>
-	<?php endif ?>
+	<?php 
+}
+?>
 </ul>

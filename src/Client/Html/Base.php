@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Metaways Infosystems GmbH, 2012
@@ -9,7 +8,6 @@ declare(strict_types=1);
  * @package Client
  * @subpackage Html
  */
-
 namespace Aimeos\Client\Html;
 
 /**
@@ -21,24 +19,21 @@ namespace Aimeos\Client\Html;
 abstract class Base implements \Aimeos\Client\Html\Iface, \Aimeos\Macro\Iface
 {
     use \Aimeos\Macro\Macroable;
-
-    private \Aimeos\MShop\ContextIface $context;
+    private \Aimeos\M_Shop\Context_Iface $context;
     private ?\Aimeos\Base\View\Iface $view = null;
     private ?\Aimeos\Client\Html\Iface $object = null;
-    private ?\Aimeos\Base\View\Iface $cachedView = null;
+    private ?\Aimeos\Base\View\Iface $cached_view = null;
     private ?array $subclients = null;
     private array $cache = [];
-
     /**
      * Initializes the class instance.
      *
      * @param \Aimeos\MShop\ContextIface $context Context object
      */
-    public function __construct(\Aimeos\MShop\ContextIface $context)
+    public function __construct(\Aimeos\M_Shop\Context_Iface $context)
     {
         $this->context = $context;
     }
-
     /**
      * Returns the HTML code for insertion into the body.
      *
@@ -48,28 +43,21 @@ abstract class Base implements \Aimeos\Client\Html\Iface, \Aimeos\Macro\Iface
     public function body(string $uid = ''): string
     {
         $html = '';
-        $type = $this->clientType();
-
+        $type = $this->client_type();
         $parts = explode('/', $type);
         $list = array_merge($parts, ['body']);
-
         $template = join('/', array_splice($list, 0, 2, [])) . '/' . join('-', $list);
-
         // populate view only once
         if (count($parts) === 2) {
-            $view = ($this->cachedView ??= $this->object()->data($this->view()));
+            $view = $this->cached_view ??= $this->object()->data($this->view());
         } else {
             $view = $this->view();
         }
-
-        foreach ($this->getSubClients() as $subclient) {
-            $html .= $subclient->setView($view)->body($uid);
+        foreach ($this->get_sub_clients() as $subclient) {
+            $html .= $subclient->set_view($view)->body($uid);
         }
-
-        return $view->set('body', $html)
-            ->render($view->config("client/html/{$type}/template-body", $template));
+        return $view->set('body', $html)->render($view->config("client/html/{$type}/template-body", $template));
     }
-
     /**
      * Adds the data to the view object required by the templates
      *
@@ -80,13 +68,11 @@ abstract class Base implements \Aimeos\Client\Html\Iface, \Aimeos\Macro\Iface
      */
     public function data(\Aimeos\Base\View\Iface $view, array &$tags = [], ?string &$expire = null): \Aimeos\Base\View\Iface
     {
-        foreach ($this->getSubClients() as $subclient) {
+        foreach ($this->get_sub_clients() as $subclient) {
             $view = $subclient->data($view, $tags, $expire);
         }
-
         return $view;
     }
-
     /**
      * Returns the sub-client given by its name.
      *
@@ -94,11 +80,10 @@ abstract class Base implements \Aimeos\Client\Html\Iface, \Aimeos\Macro\Iface
      * @param string|null $name Name of the sub-client (Default if null)
      * @return \Aimeos\Client\Html\Iface Sub-client object
      */
-    public function getSubClient(string $type, ?string $name = null): \Aimeos\Client\Html\Iface
+    public function get_sub_client(string $type, ?string $name = null): \Aimeos\Client\Html\Iface
     {
-        return $this->createSubClient($this->clientType() . '/' . $type, $name);
+        return $this->create_sub_client($this->client_type() . '/' . $type, $name);
     }
-
     /**
      * Returns the HTML string for insertion into the header.
      *
@@ -107,12 +92,10 @@ abstract class Base implements \Aimeos\Client\Html\Iface, \Aimeos\Macro\Iface
      */
     public function header(string $uid = ''): ?string
     {
-        $type = $this->clientType();
-        $view = ($this->cachedView ??= $this->object()->data($this->view()));
-
+        $type = $this->client_type();
+        $view = $this->cached_view ??= $this->object()->data($this->view());
         return $view->render($view->config("client/html/{$type}/template-header", $type . '/header'));
     }
-
     /**
      * Processes the input, e.g. store given values.
      *
@@ -122,12 +105,10 @@ abstract class Base implements \Aimeos\Client\Html\Iface, \Aimeos\Macro\Iface
     public function init(): void
     {
         $view = $this->view();
-
-        foreach ($this->getSubClients() as $subclient) {
-            $subclient->setView($view)->init();
+        foreach ($this->get_sub_clients() as $subclient) {
+            $subclient->set_view($view)->init();
         }
     }
-
     /**
      * Modifies the cached content to replace content based on sessions or cookies.
      *
@@ -138,49 +119,43 @@ abstract class Base implements \Aimeos\Client\Html\Iface, \Aimeos\Macro\Iface
     public function modify(string $content, string $uid): string
     {
         $view = $this->view();
-
-        foreach ($this->getSubClients() as $subclient) {
-            $subclient->setView($view);
+        foreach ($this->get_sub_clients() as $subclient) {
+            $subclient->set_view($view);
             $content = $subclient->modify($content, $uid);
         }
-
         return $content;
     }
-
     /**
      * Returns the PSR-7 response object for the request
      *
      * @return \Psr\Http\Message\ResponseInterface Response object
      */
-    public function response(): \Psr\Http\Message\ResponseInterface
+    public function response(): \Psr\Http\Message\Response_Interface
     {
         return $this->view()->response();
     }
-
     /**
      * Injects the reference of the outmost client object or decorator
      *
      * @param \Aimeos\Client\Html\Iface $object Reference to the outmost client or decorator
      * @return \Aimeos\Client\Html\Iface Client object for chaining method calls
      */
-    public function setObject(\Aimeos\Client\Html\Iface $object): \Aimeos\Client\Html\Iface
+    public function set_object(\Aimeos\Client\Html\Iface $object): \Aimeos\Client\Html\Iface
     {
         $this->object = $object;
         return $this;
     }
-
     /**
      * Sets the view object that will generate the HTML output.
      *
      * @param \Aimeos\Base\View\Iface $view The view object which generates the HTML output
      * @return \Aimeos\Client\Html\Iface Reference to this object for fluent calls
      */
-    public function setView(\Aimeos\Base\View\Iface $view): \Aimeos\Client\Html\Iface
+    public function set_view(\Aimeos\Base\View\Iface $view): \Aimeos\Client\Html\Iface
     {
         $this->view = $view;
         return $this;
     }
-
     /**
      * Returns the outmost decorator of the decorator stack
      *
@@ -191,10 +166,8 @@ abstract class Base implements \Aimeos\Client\Html\Iface, \Aimeos\Macro\Iface
         if ($this->object !== null) {
             return $this->object;
         }
-
         return $this;
     }
-
     /**
      * Returns the view object that will generate the HTML output.
      *
@@ -205,10 +178,8 @@ abstract class Base implements \Aimeos\Client\Html\Iface, \Aimeos\Macro\Iface
         if (!isset($this->view)) {
             throw new \Aimeos\Client\Html\Exception(sprintf('No view available'));
         }
-
         return $this->view;
     }
-
     /**
      * Adds the decorators to the client object
      *
@@ -218,23 +189,19 @@ abstract class Base implements \Aimeos\Client\Html\Iface, \Aimeos\Macro\Iface
      * @return \Aimeos\Client\Html\Iface Client object
      * @throws \LogicException If class can't be instantiated
      */
-    protected function addDecorators(\Aimeos\Client\Html\Iface $client, array $decorators, string $classprefix): \Aimeos\Client\Html\Iface
+    protected function add_decorators(\Aimeos\Client\Html\Iface $client, array $decorators, string $classprefix): \Aimeos\Client\Html\Iface
     {
         $interface = \Aimeos\Client\Html\Common\Decorator\Iface::class;
-
         foreach ($decorators as $name) {
             if (ctype_alnum($name) === false) {
                 $classname = is_string($name) ? $classprefix . $name : '<not a string>';
                 throw new \Aimeos\Client\Html\Exception(sprintf('Invalid class name "%1$s"', $classname));
             }
-
             $classname = $classprefix . $name;
             $client = \Aimeos\Utils::create($classname, [$client, $this->context], $interface);
         }
-
         return $client;
     }
-
     /**
      * Adds the decorators to the client object
      *
@@ -242,25 +209,20 @@ abstract class Base implements \Aimeos\Client\Html\Iface, \Aimeos\Macro\Iface
      * @param string $path Client string in lower case, e.g. "catalog/detail/basic"
      * @return \Aimeos\Client\Html\Iface Client object
      */
-    protected function addClientDecorators(\Aimeos\Client\Html\Iface $client, string $path): \Aimeos\Client\Html\Iface
+    protected function add_client_decorators(\Aimeos\Client\Html\Iface $client, string $path): \Aimeos\Client\Html\Iface
     {
         if ($path === '') {
             throw new \Aimeos\Client\Html\Exception(sprintf('Invalid domain "%1$s"', $path));
         }
-
-        $localClass = str_replace('/', '\\', ucwords($path, '/'));
+        $local_class = str_replace('/', '\\', ucwords($path, '/'));
         $config = $this->context->config();
-
-        $classprefix = '\\Aimeos\\Client\\Html\\Common\\Decorator\\';
+        $classprefix = '\Aimeos\Client\Html\Common\Decorator\\';
         $decorators = $config->get('client/html/' . $path . '/decorators/global', []);
-        $client = $this->addDecorators($client, $decorators, $classprefix);
-
-        $classprefix = '\\Aimeos\\Client\\Html\\' . $localClass . '\\Decorator\\';
+        $client = $this->add_decorators($client, $decorators, $classprefix);
+        $classprefix = '\Aimeos\Client\Html\\' . $local_class . '\Decorator\\';
         $decorators = $config->get('client/html/' . $path . '/decorators/local', []);
-
-        return $this->addDecorators($client, $decorators, $classprefix);
+        return $this->add_decorators($client, $decorators, $classprefix);
     }
-
     /**
      * Adds the cache tags to the given list and sets a new expiration date if necessary based on the given item.
      *
@@ -269,7 +231,7 @@ abstract class Base implements \Aimeos\Client\Html\Iface, \Aimeos\Macro\Iface
      * @param array &$tags List of tags the new tags will be added to
      * @param array $custom List of custom tags which are added too
      */
-    protected function addMetaItems($items, ?string &$expire, array &$tags, array $custom = [])
+    protected function add_meta_items($items, ?string &$expire, array &$tags, array $custom = [])
     {
         /** client/html/common/cache/tag-all
          * Adds tags for all items used in a cache entry
@@ -301,31 +263,23 @@ abstract class Base implements \Aimeos\Client\Html\Iface, \Aimeos\Macro\Iface
          * @see madmin/cache/manager/name
          * @see madmin/cache/name
          */
-        $tagAll = $this->context->config()->get('client/html/common/cache/tag-all', true);
-
+        $tag_all = $this->context->config()->get('client/html/common/cache/tag-all', true);
         $expires = [];
-
         foreach (map($items) as $item) {
-            if ($item instanceof \Aimeos\MShop\Common\Item\ListsRef\Iface) {
-                $this->addMetaItemRef($item, $expires, $tags, $tagAll);
+            if ($item instanceof \Aimeos\M_Shop\Common\Item\Lists_Ref\Iface) {
+                $this->add_meta_item_ref($item, $expires, $tags, $tag_all);
             }
-
-            $this->addMetaItemSingle($item, $expires, $tags, $tagAll);
+            $this->add_meta_item_single($item, $expires, $tags, $tag_all);
         }
-
         if ($expire !== null) {
             $expires[] = $expire;
         }
-
         if (!empty($expires)) {
             $expire = min($expires);
         }
-
         $tags = array_unique(array_merge($tags, $custom));
-
         return $items;
     }
-
     /**
      * Adds the cache tags to the given list and sets a new expiration date if necessary based on the given catalog tree.
      *
@@ -334,15 +288,13 @@ abstract class Base implements \Aimeos\Client\Html\Iface, \Aimeos\Macro\Iface
      * @param array &$tags List of tags the new tags will be added to
      * @param array $custom List of custom tags which are added too
      */
-    protected function addMetaItemCatalog(\Aimeos\MShop\Catalog\Item\Iface $tree, ?string &$expire = null, array &$tags = [], array $custom = [])
+    protected function add_meta_item_catalog(\Aimeos\M_Shop\Catalog\Item\Iface $tree, ?string &$expire = null, array &$tags = [], array $custom = [])
     {
-        $this->addMetaItems($tree, $expire, $tags, $custom);
-
-        foreach ($tree->getChildren() as $child) {
-            $this->addMetaItemCatalog($child, $expire, $tags, $custom);
+        $this->add_meta_items($tree, $expire, $tags, $custom);
+        foreach ($tree->get_children() as $child) {
+            $this->add_meta_item_catalog($child, $expire, $tags, $custom);
         }
     }
-
     /**
      * Adds expire date and tags for a single item.
      *
@@ -351,23 +303,20 @@ abstract class Base implements \Aimeos\Client\Html\Iface, \Aimeos\Macro\Iface
      * @param array &$tags List of tags the new tags will be added to
      * @param bool $tagAll True of tags for all items should be added, false if only for the main item
      */
-    private function addMetaItemSingle(\Aimeos\MShop\Common\Item\Iface $item, array &$expires, array &$tags, bool $tagAll): void
+    private function add_meta_item_single(\Aimeos\M_Shop\Common\Item\Iface $item, array &$expires, array &$tags, bool $tag_all): void
     {
-        $domain = str_replace('/', '_', $item->getResourceType()); // maximum compatiblity
-
-        if (in_array($item->getResourceType(), ['catalog', 'product', 'supplier', 'cms'])) {
-            $tags[] = $tagAll ? $domain . '-' . $item->getId() : $domain;
+        $domain = str_replace('/', '_', $item->get_resource_type());
+        // maximum compatiblity
+        if (in_array($item->get_resource_type(), ['catalog', 'product', 'supplier', 'cms'])) {
+            $tags[] = $tag_all ? $domain . '-' . $item->get_id() : $domain;
         }
-
-        if ($item instanceof \Aimeos\MShop\Common\Item\Time\Iface && ($date = $item->getDateEnd()) !== null) {
+        if ($item instanceof \Aimeos\M_Shop\Common\Item\Time\Iface && ($date = $item->get_date_end()) !== null) {
             $expires[] = $date;
         }
-
-        if ($item instanceof \Aimeos\MShop\Common\Item\ListsRef\Iface) {
-            $this->addMetaItemRef($item, $expires, $tags, $tagAll);
+        if ($item instanceof \Aimeos\M_Shop\Common\Item\Lists_Ref\Iface) {
+            $this->add_meta_item_ref($item, $expires, $tags, $tag_all);
         }
     }
-
     /**
      * Adds expire date and tags for referenced items
      *
@@ -376,35 +325,30 @@ abstract class Base implements \Aimeos\Client\Html\Iface, \Aimeos\Macro\Iface
      * @param array &$tags List of tags the new tags will be added to
      * @param bool $tagAll True of tags for all items should be added, false if only for the main item
      */
-    private function addMetaItemRef(\Aimeos\MShop\Common\Item\ListsRef\Iface $item, array &$expires, array &$tags, bool $tagAll): void
+    private function add_meta_item_ref(\Aimeos\M_Shop\Common\Item\Lists_Ref\Iface $item, array &$expires, array &$tags, bool $tag_all): void
     {
-        foreach ($item->getListItems() as $listItem) {
-            if (($refItem = $listItem->getRefItem()) === null) {
+        foreach ($item->get_list_items() as $list_item) {
+            if (($ref_item = $list_item->get_ref_item()) === null) {
                 continue;
             }
-
-            if ($tagAll === true && in_array($listItem->getDomain(), ['catalog', 'product', 'supplier'])) {
-                $tags[] = str_replace('/', '_', $listItem->getDomain()) . '-' . $listItem->getRefId();
+            if ($tag_all === true && in_array($list_item->get_domain(), ['catalog', 'product', 'supplier'])) {
+                $tags[] = str_replace('/', '_', $list_item->get_domain()) . '-' . $list_item->get_ref_id();
             }
-
-            if (($date = $listItem->getDateEnd()) !== null) {
+            if (($date = $list_item->get_date_end()) !== null) {
                 $expires[] = $date;
             }
-
-            $this->addMetaItemSingle($refItem, $expires, $tags, $tagAll);
+            $this->add_meta_item_single($ref_item, $expires, $tags, $tag_all);
         }
     }
-
     /**
      * Returns the client type of the class
      *
      * @return string Client type, e.g. "catalog/detail"
      */
-    protected function clientType(): string
+    protected function client_type(): string
     {
         return strtolower(trim(dirname(str_replace('\\', '/', substr(static::class, 19))), '/'));
     }
-
     /**
      * Returns the sub-client given by its name.
      *
@@ -413,25 +357,20 @@ abstract class Base implements \Aimeos\Client\Html\Iface, \Aimeos\Macro\Iface
      * @return \Aimeos\Client\Html\Iface Sub-part object
      * @throws \LogicException If class can't be instantiated
      */
-    protected function createSubClient(string $path, ?string $name = null): \Aimeos\Client\Html\Iface
+    protected function create_sub_client(string $path, ?string $name = null): \Aimeos\Client\Html\Iface
     {
         $path = strtolower($path);
         $name = $name ?: $this->context->config()->get('client/html/' . $path . '/name', 'Standard');
-
         if (empty($name) || ctype_alnum($name) === false) {
             throw new \LogicException(sprintf('Invalid characters in client name "%1$s"', $name), 400);
         }
-
         $subnames = str_replace('/', '\\', ucwords($path, '/'));
-        $classname = '\\Aimeos\\Client\\Html\\' . $subnames . '\\' . $name;
+        $classname = '\Aimeos\Client\Html\\' . $subnames . '\\' . $name;
         $interface = \Aimeos\Client\Html\Iface::class;
-
         $object = \Aimeos\Utils::create($classname, [$this->context], $interface);
-        $object = $this->addClientDecorators($object, $path);
-
-        return $object->setObject($object);
+        $object = $this->add_client_decorators($object, $path);
+        return $object->set_object($object);
     }
-
     /**
      * Returns the minimal expiration date.
      *
@@ -441,9 +380,8 @@ abstract class Base implements \Aimeos\Client\Html\Iface, \Aimeos\Macro\Iface
      */
     protected function expires(?string $first = null, ?string $second = null): ?string
     {
-        return ($first !== null ? ($second !== null ? min($first, $second) : $first) : $second);
+        return $first !== null ? $second !== null ? min($first, $second) : $first : $second;
     }
-
     /**
      * Returns the parameters used by the html client.
      *
@@ -451,21 +389,19 @@ abstract class Base implements \Aimeos\Client\Html\Iface, \Aimeos\Macro\Iface
      * @param array $prefixes List of prefixes the parameters must start with
      * @return array Associative list of parameters used by the html client
      */
-    protected function getClientParams(array $params, array $prefixes = ['f_', 'l_', 'd_', 'path']): array
+    protected function get_client_params(array $params, array $prefixes = ['f_', 'l_', 'd_', 'path']): array
     {
-        return map($params)->filter(fn ($val, $key) => \Aimeos\Base\Str::starts($key, $prefixes))->toArray();
+        return map($params)->filter(fn($val, $key) => \Aimeos\Base\Str::starts($key, $prefixes))->to_array();
     }
-
     /**
      * Returns the context object.
      *
      * @return \Aimeos\MShop\ContextIface Context object
      */
-    protected function context(): \Aimeos\MShop\ContextIface
+    protected function context(): \Aimeos\M_Shop\Context_Iface
     {
         return $this->context;
     }
-
     /**
      * Generates an unique hash from based on the input suitable to be used as part of the cache key
      *
@@ -474,46 +410,39 @@ abstract class Base implements \Aimeos\Client\Html\Iface, \Aimeos\Macro\Iface
      * @param array $config Multi-dimensional array of configuration options used by the client and sub-clients
      * @return string Unique hash
      */
-    protected function getParamHash(array $prefixes = ['f_', 'l_', 'd_'], string $key = '', array $config = []): string
+    protected function get_param_hash(array $prefixes = ['f_', 'l_', 'd_'], string $key = '', array $config = []): string
     {
         $locale = $this->context()->locale();
-        $pstr = map($this->getClientParams($this->view()->param(), $prefixes))->ksort()->toJson();
-
+        $pstr = map($this->get_client_params($this->view()->param(), $prefixes))->ksort()->to_json();
         if (($cstr = json_encode($config)) === false) {
             throw new \Aimeos\Client\Html\Exception('Unable to encode parameters or configuration options');
         }
-
-        return md5($key . $pstr . $cstr . $locale->getLanguageId() . $locale->getCurrencyId() . $locale->getSiteId());
+        return md5($key . $pstr . $cstr . $locale->get_language_id() . $locale->get_currency_id() . $locale->get_site_id());
     }
-
     /**
      * Returns the list of sub-client names configured for the client.
      *
      * @return array List of HTML client names
      */
-    protected function getSubClientNames(): array
+    protected function get_sub_client_names(): array
     {
         return [];
     }
-
     /**
      * Returns the configured sub-clients or the ones named in the default parameter if none are configured.
      *
      * @return array List of sub-clients implementing \Aimeos\Client\Html\Iface	ordered in the same way as the names
      */
-    protected function getSubClients(): array
+    protected function get_sub_clients(): array
     {
         if (!isset($this->subclients)) {
             $this->subclients = [];
-
-            foreach ($this->getSubClientNames() as $name) {
-                $this->subclients[$name] = $this->getSubClient($name);
+            foreach ($this->get_sub_client_names() as $name) {
+                $this->subclients[$name] = $this->get_sub_client($name);
             }
         }
-
         return $this->subclients;
     }
-
     /**
      * Returns the cache entry for the given unique ID and type.
      *
@@ -527,7 +456,6 @@ abstract class Base implements \Aimeos\Client\Html\Iface, \Aimeos\Macro\Iface
     {
         $context = $this->context();
         $config = $context->config();
-
         /** client/html/common/cache/force
          * Enforces content caching regardless of user logins
          *
@@ -546,25 +474,16 @@ abstract class Base implements \Aimeos\Client\Html\Iface, \Aimeos\Macro\Iface
          */
         $force = $config->get('client/html/common/cache/force', false);
         $enable = $config->get($confkey . '/cache', true);
-
         if ($enable == false || $force == false && $context->user() !== null) {
             return null;
         }
-
-        $cfg = array_merge($config->get('client/html', []), $this->getSubClientNames());
-
-        $keys = [
-            'body' => $this->getParamHash($prefixes, $uid . ':' . $confkey . ':body', $cfg),
-            'header' => $this->getParamHash($prefixes, $uid . ':' . $confkey . ':header', $cfg),
-        ];
-
+        $cfg = array_merge($config->get('client/html', []), $this->get_sub_client_names());
+        $keys = ['body' => $this->get_param_hash($prefixes, $uid . ':' . $confkey . ':body', $cfg), 'header' => $this->get_param_hash($prefixes, $uid . ':' . $confkey . ':header', $cfg)];
         if (!isset($this->cache[$keys[$type]])) {
-            $this->cache = $context->cache()->getMultiple($keys);
+            $this->cache = $context->cache()->get_multiple($keys);
         }
-
-        return ($this->cache[$keys[$type]] ?? null);
+        return $this->cache[$keys[$type]] ?? null;
     }
-
     /**
      * Returns the cache entry for the given type and unique ID.
      *
@@ -581,35 +500,28 @@ abstract class Base implements \Aimeos\Client\Html\Iface, \Aimeos\Macro\Iface
     {
         $context = $this->context();
         $config = $context->config();
-
         $force = $config->get('client/html/common/cache/force', false);
         $enable = $config->get($confkey . '/cache', true);
-
         if (!$value || !$enable || !$force && $context->user()) {
             return $value;
         }
-
-        $cfg = array_merge($config->get('client/html', []), $this->getSubClientNames());
-        $key = $this->getParamHash($prefixes, $uid . ':' . $confkey . ':' . $type, $cfg);
-
+        $cfg = array_merge($config->get('client/html', []), $this->get_sub_client_names());
+        $key = $this->get_param_hash($prefixes, $uid . ':' . $confkey . ':' . $type, $cfg);
         $context->cache()->set($key, $value, $expire, array_unique($tags));
-
         return $value;
     }
-
     /**
      * Writes the exception details to the log
      *
      * @param \Exception $e Exception object
      * @param int $level Log level of the exception
      */
-    protected function logException(\Exception $e, int $level = \Aimeos\Base\Logger\Iface::WARN)
+    protected function log_exception(\Exception $e, int $level = \Aimeos\Base\Logger\Iface::WARN)
     {
-        $uri = $this->view()->request()->getServerParams()['REQUEST_URI'] ?? '';
-        $msg = ($uri ? $uri . PHP_EOL : '') . $e->getMessage() . PHP_EOL . $e->getTraceAsString();
+        $uri = $this->view()->request()->get_server_params()['REQUEST_URI'] ?? '';
+        $msg = ($uri ? $uri . PHP_EOL : '') . $e->get_message() . PHP_EOL . $e->get_trace_as_string();
         $this->context->logger()->log($msg, $level, 'client/html');
     }
-
     /**
      * Replaces the section in the content that is enclosed by the marker.
      *
@@ -617,22 +529,19 @@ abstract class Base implements \Aimeos\Client\Html\Iface, \Aimeos\Macro\Iface
      * @param string $section New section content
      * @param string $marker Name of the section marker without "<!-- " and " -->" parts
      */
-    protected function replaceSection(string $content, string $section, string $marker): string
+    protected function replace_section(string $content, string $section, string $marker): string
     {
         $marker = '<!-- ' . $marker . ' -->';
         $clen = strlen($content);
         $mlen = strlen($marker);
         $len = strlen($section);
         $start = 0;
-
         while ($start + 2 * $mlen <= $clen && ($start = strpos($content, $marker, $start)) !== false) {
             if (($end = strpos($content, $marker, $start + $mlen)) !== false) {
                 $content = substr_replace($content, $section, $start + $mlen, $end - $start - $mlen);
             }
-
             $start += 2 * $mlen + $len;
         }
-
         return $content;
     }
 }

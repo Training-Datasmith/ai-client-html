@@ -1,14 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2015-2026
  * @package Client
  * @subpackage Html
  */
-
 namespace Aimeos\Client\Html\Basket\Standard;
 
 /**
@@ -51,7 +49,6 @@ class Standard extends \Aimeos\Client\Html\Basket\Base implements \Aimeos\Client
      * @param string Last part of the class name
      * @since 2014.03
      */
-
     /**
      * Sets the necessary parameter values in the view.
      *
@@ -63,14 +60,11 @@ class Standard extends \Aimeos\Client\Html\Basket\Base implements \Aimeos\Client
     public function data(\Aimeos\Base\View\Iface $view, array &$tags = [], ?string &$expire = null): \Aimeos\Base\View\Iface
     {
         $context = $this->context();
-        $site = $context->locale()->getSiteItem()->getCode();
-
-        $view->standardBackUrl = $context->session()->get('aimeos/catalog/last/' . $site);
-        $view->standardBasket = \Aimeos\Controller\Frontend::create($this->context(), 'basket')->get();
-
+        $site = $context->locale()->get_site_item()->get_code();
+        $view->standard_back_url = $context->session()->get('aimeos/catalog/last/' . $site);
+        $view->standard_basket = \Aimeos\Controller\Frontend::create($this->context(), 'basket')->get();
         return parent::data($view, $tags, $expire);
     }
-
     /**
      * Sets the necessary parameter values in the view.
      *
@@ -81,50 +75,45 @@ class Standard extends \Aimeos\Client\Html\Basket\Base implements \Aimeos\Client
     {
         $view = $this->view();
         $val = $view->param('b_check', 0);
-
         try {
             switch ($view->param('b_action')) {
                 case 'add':
-                    $this->addProducts($view);
+                    $this->add_products($view);
                     break;
                 case 'coupon-delete':
-                    $this->deleteCoupon($view);
+                    $this->delete_coupon($view);
                     break;
                 case 'delete':
-                    $this->deleteProducts($view);
+                    $this->delete_products($view);
                     break;
                 case 'save':
-                    $this->saveBasket($view);
+                    $this->save_basket($view);
                     break;
                 default:
-                    $this->updateProducts($view);
-                    $this->addCoupon($view);
+                    $this->update_products($view);
+                    $this->add_coupon($view);
             }
         } catch (\Exception $e) {
             try {
-                $view->standardCheckout = $this->save($val);
+                $view->standard_checkout = $this->save($val);
             } catch (\Exception) {
-                $view->standardCheckout = false;
+                $view->standard_checkout = false;
             }
-
             throw $e;
         }
-
-        $view->standardCheckout = $this->save($val);
+        $view->standard_checkout = $this->save($val);
     }
-
     /**
      * Adds the coupon specified by the view parameters from the basket.
      *
      * @param \Aimeos\Base\View\Iface $view View object
      */
-    protected function addCoupon(\Aimeos\Base\View\Iface $view)
+    protected function add_coupon(\Aimeos\Base\View\Iface $view)
     {
         if (($coupon = $view->param('b_coupon')) != '') {
             $context = $this->context();
             $cntl = \Aimeos\Controller\Frontend::create($context, 'basket');
-            $code = $cntl->get()->getCoupons()->keys()->first();
-
+            $code = $cntl->get()->get_coupons()->keys()->first();
             /** client/html/basket/standard/coupon/overwrite
              * Replace previous coupon codes each time the user enters a new one
              *
@@ -136,84 +125,59 @@ class Standard extends \Aimeos\Client\Html\Basket\Base implements \Aimeos\Client
              * @since 2020.04
              */
             if ($code && $context->config()->get('client/html/basket/standard/coupon/overwrite', false)) {
-                $cntl->deleteCoupon($code);
+                $cntl->delete_coupon($code);
             }
-
-            $cntl->addCoupon($coupon);
-            $this->clearCached();
+            $cntl->add_coupon($coupon);
+            $this->clear_cached();
         }
     }
-
     /**
      * Adds the products specified by the view parameters to the basket.
      *
      * @param \Aimeos\Base\View\Iface $view View object
      */
-    protected function addProducts(\Aimeos\Base\View\Iface $view)
+    protected function add_products(\Aimeos\Base\View\Iface $view)
     {
         $context = $this->context();
-        $basketCntl = \Aimeos\Controller\Frontend::create($context, 'basket');
-        $productCntl = \Aimeos\Controller\Frontend::create($context, 'product')->uses($this->call('domains'));
-
+        $basket_cntl = \Aimeos\Controller\Frontend::create($context, 'basket');
+        $product_cntl = \Aimeos\Controller\Frontend::create($context, 'product')->uses($this->call('domains'));
         if (($prodid = $view->param('b_prodid', '')) !== '' && $view->param('b_quantity', 0) > 0) {
-            $basketCntl->addProduct(
-                $productCntl->get($prodid),
-                (float) $view->param('b_quantity', 0),
-                (array) $view->param('b_attrvarid', []),
-                $this->getAttributeMap($view->param('b_attrconfid', [])),
-                array_filter((array) $view->param('b_attrcustid', [])),
-                (string) $view->param('b_stocktype', 'default'),
-                $view->param('b_siteid')
-            );
+            $basket_cntl->add_product($product_cntl->get($prodid), (float) $view->param('b_quantity', 0), (array) $view->param('b_attrvarid', []), $this->get_attribute_map($view->param('b_attrconfid', [])), array_filter((array) $view->param('b_attrcustid', [])), (string) $view->param('b_stocktype', 'default'), $view->param('b_siteid'));
         } else {
             foreach ((array) $view->param('b_prod', []) as $values) {
                 if (($values['prodid'] ?? null) && ($values['quantity'] ?? 0) > 0) {
-                    $basketCntl->addProduct(
-                        $productCntl->get($values['prodid']),
-                        (float) ($values['quantity'] ?? 0),
-                        array_filter((array) ($values['attrvarid'] ?? [])),
-                        $this->getAttributeMap((array) ($values['attrconfid'] ?? [])),
-                        array_filter((array) ($values['attrcustid'] ?? [])),
-                        (string) ($values['stocktype'] ?? 'default'),
-                        $values['siteid'] ?? null
-                    );
+                    $basket_cntl->add_product($product_cntl->get($values['prodid']), (float) ($values['quantity'] ?? 0), array_filter((array) ($values['attrvarid'] ?? [])), $this->get_attribute_map((array) ($values['attrconfid'] ?? [])), array_filter((array) ($values['attrcustid'] ?? [])), (string) ($values['stocktype'] ?? 'default'), $values['siteid'] ?? null);
                 }
             }
         }
-
-        $this->clearCached();
+        $this->clear_cached();
     }
-
     /**
      * Removes the coupon specified by the view parameters from the basket.
      *
      * @param \Aimeos\Base\View\Iface $view View object
      */
-    protected function deleteCoupon(\Aimeos\Base\View\Iface $view)
+    protected function delete_coupon(\Aimeos\Base\View\Iface $view)
     {
         if (($coupon = $view->param('b_coupon')) != '') {
-            \Aimeos\Controller\Frontend::create($this->context(), 'basket')->deleteCoupon($coupon);
-            $this->clearCached();
+            \Aimeos\Controller\Frontend::create($this->context(), 'basket')->delete_coupon($coupon);
+            $this->clear_cached();
         }
     }
-
     /**
      * Removes the products specified by the view parameters from the basket.
      *
      * @param \Aimeos\Base\View\Iface $view View object
      */
-    protected function deleteProducts(\Aimeos\Base\View\Iface $view)
+    protected function delete_products(\Aimeos\Base\View\Iface $view)
     {
         $controller = \Aimeos\Controller\Frontend::create($this->context(), 'basket');
         $products = (array) $view->param('b_position', []);
-
         foreach ($products as $position) {
-            $controller->deleteProduct($position);
+            $controller->delete_product($position);
         }
-
-        $this->clearCached();
+        $this->clear_cached();
     }
-
     /**
      * Returns the name of the domains that should be fetched together with the product
      *
@@ -223,28 +187,24 @@ class Standard extends \Aimeos\Client\Html\Basket\Base implements \Aimeos\Client
     {
         return ['attribute', 'catalog', 'media', 'price', 'product', 'text', 'locale/site'];
     }
-
     /**
      * Returns the configurable attribute values as ID/quantity pairs
      *
      * @param array $values Associative list which "id" and "qty" keys
      * @return array Pairs of config attribute ID/quantity pairs
      */
-    protected function getAttributeMap(array $values): array
+    protected function get_attribute_map(array $values): array
     {
         $list = [];
-        $confIds = (isset($values['id']) ? array_filter((array) $values['id']) : []);
-        $confQty = (isset($values['qty']) ? array_filter((array) $values['qty']) : []);
-
-        foreach ($confIds as $idx => $id) {
-            if (isset($confQty[$idx]) && $confQty[$idx] > 0) {
-                $list[$id] = $confQty[$idx];
+        $conf_ids = isset($values['id']) ? array_filter((array) $values['id']) : [];
+        $conf_qty = isset($values['qty']) ? array_filter((array) $values['qty']) : [];
+        foreach ($conf_ids as $idx => $id) {
+            if (isset($conf_qty[$idx]) && $conf_qty[$idx] > 0) {
+                $list[$id] = $conf_qty[$idx];
             }
         }
-
         return $list;
     }
-
     /**
      * Saves the basket content and checks before checkout
      *
@@ -256,7 +216,6 @@ class Standard extends \Aimeos\Client\Html\Basket\Base implements \Aimeos\Client
     {
         $view = $this->view();
         $controller = \Aimeos\Controller\Frontend::create($this->context(), 'basket')->save();
-
         /** client/html/basket/standard/check
          * Alters the behavior of the product checks before continuing with the checkout
          *
@@ -282,75 +241,56 @@ class Standard extends \Aimeos\Client\Html\Basket\Base implements \Aimeos\Client
          * @since 2016.08
          */
         $check = (int) $view->config('client/html/basket/standard/check', 1);
-
         switch ($check) {
-            case 2: if ($val == 0) {
-                break;
-            }
-                // no break
-            case 1: $controller->get()->check(['order/product']);
-                // no break
-            default: return true;
+            case 2:
+                if ($val == 0) {
+                    break;
+                }
+            // no break
+            case 1:
+                $controller->get()->check(['order/product']);
+            // no break
+            default:
+                return true;
         }
-
         return false;
     }
-
     /**
      * Saves the basket of the user permanently
      *
      * @param \Aimeos\Base\View\Iface $view View object
      */
-    protected function saveBasket(\Aimeos\Base\View\Iface $view)
+    protected function save_basket(\Aimeos\Base\View\Iface $view)
     {
         $context = $this->context();
-
-        if (($userId = $context->user()) === null) {
+        if (($user_id = $context->user()) === null) {
             $msg = $view->translate('client', 'You must log in first');
             $view->errors = array_merge($view->get('errors', []), [$msg]);
-
             return;
         }
-
-        $manager = \Aimeos\MShop::create($context, 'basket');
-
-        $item = $manager->create()->setId(md5(microtime(true) . getmypid() . random_int(0, mt_getrandmax())))
-            ->setCustomerId($userId)->setName($view->param('b_name', date('Y-m-d H:i:s')))
-            ->setItem(\Aimeos\Controller\Frontend::create($context, 'basket')->get());
-
+        $manager = \Aimeos\M_Shop::create($context, 'basket');
+        $item = $manager->create()->set_id(md5(microtime(true) . getmypid() . random_int(0, mt_getrandmax())))->set_customer_id($user_id)->set_name($view->param('b_name', date('Y-m-d H:i:s')))->set_item(\Aimeos\Controller\Frontend::create($context, 'basket')->get());
         $manager->save($item);
-
         $msg = $view->translate('client', 'Basket saved sucessfully');
         $view->infos = array_merge($view->get('infos', []), [$msg]);
     }
-
     /**
      * Edits the products specified by the view parameters to the basket.
      *
      * @param \Aimeos\Base\View\Iface $view View object
      */
-    protected function updateProducts(\Aimeos\Base\View\Iface $view)
+    protected function update_products(\Aimeos\Base\View\Iface $view)
     {
         $controller = \Aimeos\Controller\Frontend::create($this->context(), 'basket');
         $products = (array) $view->param('b_prod', []);
-
         if (($position = $view->param('b_position', '')) !== '') {
-            $products[] = [
-                'position' => $position,
-                'quantity' => $view->param('b_quantity', 1),
-            ];
+            $products[] = ['position' => $position, 'quantity' => $view->param('b_quantity', 1)];
         }
-
         foreach ($products as $values) {
-            $controller->updateProduct(
-                (isset($values['position']) ? (int) $values['position'] : 0),
-                (isset($values['quantity']) ? (float) $values['quantity'] : 1)
-            );
+            $controller->update_product(isset($values['position']) ? (int) $values['position'] : 0, isset($values['quantity']) ? (float) $values['quantity'] : 1);
         }
-
-        $this->clearCached();
+        $this->clear_cached();
     }
-
     /** client/html/basket/standard/template-body
      * Relative path to the HTML body template of the basket standard client.
      *
@@ -370,7 +310,6 @@ class Standard extends \Aimeos\Client\Html\Basket\Base implements \Aimeos\Client
      * @since 2014.03
      * @see client/html/basket/standard/template-header
      */
-
     /** client/html/basket/standard/template-header
      * Relative path to the HTML header template of the basket standard client.
      *
@@ -391,7 +330,6 @@ class Standard extends \Aimeos\Client\Html\Basket\Base implements \Aimeos\Client
      * @since 2014.03
      * @see client/html/basket/standard/template-body
      */
-
     /** client/html/basket/standard/decorators/excludes
      * Excludes decorators added by the "common" option from the basket standard html client
      *
@@ -416,7 +354,6 @@ class Standard extends \Aimeos\Client\Html\Basket\Base implements \Aimeos\Client
      * @see client/html/basket/standard/decorators/global
      * @see client/html/basket/standard/decorators/local
      */
-
     /** client/html/basket/standard/decorators/global
      * Adds a list of globally available decorators only to the basket standard html client
      *
@@ -439,7 +376,6 @@ class Standard extends \Aimeos\Client\Html\Basket\Base implements \Aimeos\Client
      * @see client/html/basket/standard/decorators/excludes
      * @see client/html/basket/standard/decorators/local
      */
-
     /** client/html/basket/standard/decorators/local
      * Adds a list of local decorators only to the basket standard html client
      *

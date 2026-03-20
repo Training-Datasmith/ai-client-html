@@ -1,14 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2018-2026
  * @package Client
  * @subpackage Html
  */
-
 namespace Aimeos\Client\Html\Catalog\Filter\Supplier;
 
 /**
@@ -45,22 +43,14 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @see client/html/catalog/filter/supplier/types
          */
         $domains = $view->config('client/html/catalog/filter/supplier/domains', ['text', 'media', 'media/property']);
-
-        $cntl = \Aimeos\Controller\Frontend::create($this->context(), 'supplier')
-            ->uses($domains)->sort('supplier.position,supplier.label');
-
+        $cntl = \Aimeos\Controller\Frontend::create($this->context(), 'supplier')->uses($domains)->sort('supplier.position,supplier.label');
         $items = $cntl->slice(0, 20)->search();
-        $items = $cntl->compare('==', 'supplier.id', $view->param('f_supid', []))
-            ->slice(0, 100)->search()->replace($items);
-
-        $this->addMetaItems($items, $expire, $tags, ['supplier']);
-
-        $view->supplierList = $items;
-        $view->supplierResetParams = map($view->param())->except('f_supid')->toArray();
-
+        $items = $cntl->compare('==', 'supplier.id', $view->param('f_supid', []))->slice(0, 100)->search()->replace($items);
+        $this->add_meta_items($items, $expire, $tags, ['supplier']);
+        $view->supplier_list = $items;
+        $view->supplier_reset_params = map($view->param())->except('f_supid')->to_array();
         return parent::data($view, $tags, $expire);
     }
-
     /**
      * Returns the HTML string for insertion into the header.
      *
@@ -71,7 +61,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
     {
         return null;
     }
-
     /** client/html/catalog/filter/supplier/template-body
      * Relative path to the HTML body template of the catalog filter supplier client.
      *

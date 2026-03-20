@@ -5,9 +5,7 @@
  * @copyright Metaways Infosystems GmbH, 2013
  * @copyright Aimeos (aimeos.org), 2015-2026
  */
-
 $enc = $this->encoder();
-
 /** client/html/catalog/filter/button
  * Displays the "Search" button in the catalog filter if Javascript is disabled
  *
@@ -20,122 +18,204 @@ $enc = $this->encoder();
  * @param boolean A value of "1" to enable the button, "0" to disable it
  * @since 2014.03
  */
-
 $multi = $this->config('client/html/catalog/multiroute', false);
-$linkKey = $multi && $this->param('path') || $this->param('f_catid') ? 'client/html/catalog/tree/url' : 'client/html/catalog/lists/url';
-
-$attrIds = array_filter($this->param('f_attrid', []));
-$optIds = array_filter($this->param('f_optid', []));
-$oneIds = array_filter($this->param('f_oneid', []));
-$attrTypes = $this->get('detailAttributeTypes', []);
-$attrMap = $this->get('attributeMap', []);
+$link_key = $multi && $this->param('path') || $this->param('f_catid') ? 'client/html/catalog/tree/url' : 'client/html/catalog/lists/url';
+$attr_ids = array_filter($this->param('f_attrid', []));
+$opt_ids = array_filter($this->param('f_optid', []));
+$one_ids = array_filter($this->param('f_oneid', []));
+$attr_types = $this->get('detailAttributeTypes', []);
+$attr_map = $this->get('attributeMap', []);
 $params = $this->param();
-
-?>
-<?php $this->block()->start('catalog/filter/attribute') ?>
-<?php if (!empty($attrMap)) : ?>
+$this->block()->start('catalog/filter/attribute');
+if (!empty($attr_map)) {
+    ?>
 	<div class="section catalog-filter-attribute"
-		aria-label="<?= $enc->attr($this->translate('client', 'Product filters')) ?>"
-		data-counturl="<?= $enc->attr($this->link('client/html/catalog/count/url', ['count' => 'attribute'] + $this->get('filterParams', []))) ?>">
+		aria-label="<?php 
+    echo $enc->attr($this->translate('client', 'Product filters'));
+    ?>"
+		data-counturl="<?php 
+    echo $enc->attr($this->link('client/html/catalog/count/url', ['count' => 'attribute'] + $this->get('filterParams', [])));
+    ?>">
 
-		<div class="attr-header header-name"><?= $enc->html($this->translate('client', 'Filter'), $enc::TRUST) ?></div>
+		<div class="attr-header header-name"><?php 
+    echo $enc->html($this->translate('client', 'Filter'), $enc::TRUST);
+    ?></div>
 
 		<div class="attribute-lists">
 
-			<?php if (array_merge($attrIds, $optIds, $oneIds) !== []) : ?>
+			<?php 
+    if (array_merge($attr_ids, $opt_ids, $one_ids) !== []) {
+        ?>
 
 				<div class="attribute-selected">
-					<a class="btn reset" href="<?= $enc->attr($this->link($linkKey, $this->get('attributeResetParams', []))) ?>">
-						<?= $enc->html($this->translate('client', 'Reset'), $enc::TRUST) ?>
+					<a class="btn reset" href="<?php 
+        echo $enc->attr($this->link($link_key, $this->get('attributeResetParams', [])));
+        ?>">
+						<?php 
+        echo $enc->html($this->translate('client', 'Reset'), $enc::TRUST);
+        ?>
 					</a>
 
 					<div class="selected">
-						<div class="selected-intro"><?= $enc->html($this->translate('client', 'Your choice'), $enc::TRUST); ?></div>
+						<div class="selected-intro"><?php 
+        echo $enc->html($this->translate('client', 'Your choice'), $enc::TRUST);
+        ?></div>
 
-						<?php foreach ($attrMap as $attrType => $attributes) : ?>
-							<?php foreach ($attributes as $id => $attribute) : ?>
-								<?php if (($key = array_search($id, $attrIds)) !== false) : ?>
-									<?php $current = $params;
-								    if (is_array($current['f_attrid'])) {
-								        unset($current['f_attrid'][$key]);
-								    } ?>
-								<?php elseif (($key = array_search($id, $optIds)) !== false) : ?>
-									<?php $current = $params;
-								    if (is_array($current['f_optid'])) {
-								        unset($current['f_optid'][$key]);
-								    } ?>
-								<?php elseif (isset($oneIds[$attrType]) && ($key = array_search($id, (array) $oneIds[$attrType])) !== false) : ?>
-									<?php $current = $params;
-								    if (is_array($current['f_oneid'][$attrType])) {
-								        unset($current['f_oneid'][$attrType][$key]);
-								    } ?>
-								<?php else : continue; ?>
-								<?php endif; ?>
+						<?php 
+        foreach ($attr_map as $attr_type => $attributes) {
+            ?>
+							<?php 
+            foreach ($attributes as $id => $attribute) {
+                ?>
+								<?php 
+                if (($key = array_search($id, $attr_ids)) !== false) {
+                    ?>
+									<?php 
+                    $current = $params;
+                    if (is_array($current['f_attrid'])) {
+                        unset($current['f_attrid'][$key]);
+                    }
+                    ?>
+								<?php 
+                } elseif (($key = array_search($id, $opt_ids)) !== false) {
+                    ?>
+									<?php 
+                    $current = $params;
+                    if (is_array($current['f_optid'])) {
+                        unset($current['f_optid'][$key]);
+                    }
+                    ?>
+								<?php 
+                } elseif (isset($one_ids[$attr_type]) && ($key = array_search($id, (array) $one_ids[$attr_type])) !== false) {
+                    ?>
+									<?php 
+                    $current = $params;
+                    if (is_array($current['f_oneid'][$attr_type])) {
+                        unset($current['f_oneid'][$attr_type][$key]);
+                    }
+                    ?>
+								<?php 
+                } else {
+                    continue;
+                    ?>
+								<?php 
+                }
+                ?>
 
-								<a class="minibutton close" href="<?= $enc->attr($this->link($linkKey, $attribute->get('params', []))); ?>">
-									<?= $enc->html($attribute->getName(), $enc::TRUST); ?>
+								<a class="minibutton close" href="<?php 
+                echo $enc->attr($this->link($link_key, $attribute->get('params', [])));
+                ?>">
+									<?php 
+                echo $enc->html($attribute->get_name(), $enc::TRUST);
+                ?>
 								</a>
-							<?php endforeach; ?>
-						<?php endforeach; ?>
+							<?php 
+            }
+            ?>
+						<?php 
+        }
+        ?>
 					</div>
 				</div>
 
-			<?php endif; ?>
+			<?php 
+    }
+    ?>
 
 
 			<div class="fieldsets">
 
-				<?php foreach ($attrMap as $attrType => $attributes) : ?>
-					<?php if (!empty($attributes)) : ?>
+				<?php 
+    foreach ($attr_map as $attr_type => $attributes) {
+        ?>
+					<?php 
+        if (!empty($attributes)) {
+            ?>
 
-						<fieldset class="attr-sets attr-<?= $enc->attr($attrType, $enc::TAINT, '-') ?>">
-							<legend class="attr-type"><?= $enc->html($attrTypes[$attrType]?->getName() ?? $attrType) ?></legend>
+						<fieldset class="attr-sets attr-<?php 
+            echo $enc->attr($attr_type, $enc::TAINT, '-');
+            ?>">
+							<legend class="attr-type"><?php 
+            echo $enc->html($attr_types[$attr_type]?->get_name() ?? $attr_type);
+            ?></legend>
 							<ul class="attr-list"><!--
 
-								<?php foreach ($attributes as $id => $attribute) : ?>
-									--><li class="attr-item" data-id="<?= $enc->attr($id) ?>">
+								<?php 
+            foreach ($attributes as $id => $attribute) {
+                ?>
+									--><li class="attr-item" data-id="<?php 
+                echo $enc->attr($id);
+                ?>">
 
 										<input class="attr-item" type="checkbox"
-											id="attr-<?= $enc->attr($id) ?>"
-											value="<?= $enc->attr($id) ?>"
-											name="<?= $enc->attr($this->formparam($attribute->get('formparam', []))) ?>"
-											<?= $attribute->get('checked', false) ? 'checked="checked"' : '' ?>
+											id="attr-<?php 
+                echo $enc->attr($id);
+                ?>"
+											value="<?php 
+                echo $enc->attr($id);
+                ?>"
+											name="<?php 
+                echo $enc->attr($this->formparam($attribute->get('formparam', [])));
+                ?>"
+											<?php 
+                echo $attribute->get('checked', false) ? 'checked="checked"' : '';
+                ?>
 										>
 
-										<label class="attr-name" for="attr-<?= $enc->attr($id) ?>"><!--
+										<label class="attr-name" for="attr-<?php 
+                echo $enc->attr($id);
+                ?>"><!--
 											--><span class="media-list"><!--
 
-												<?php foreach ($attribute->getRefItems('media', 'icon', 'default') as $mediaItem) : ?>
-													<?= '-->' . $this->partial(
-													    $this->config('client/html/common/partials/media', 'common/partials/media'),
-													    [ 'item' => $mediaItem, 'boxAttributes' => [ 'class' => 'media-item' ] ]
-													) . '<!--' ?>
-												<?php endforeach ?>
+												<?php 
+                foreach ($attribute->get_ref_items('media', 'icon', 'default') as $media_item) {
+                    ?>
+													<?php 
+                    echo '-->' . $this->partial($this->config('client/html/common/partials/media', 'common/partials/media'), ['item' => $media_item, 'boxAttributes' => ['class' => 'media-item']]) . '<!--';
+                    ?>
+												<?php 
+                }
+                ?>
 
 											--></span>
-											<span><?= $enc->html($attribute->getName(), $enc::TRUST) ?></span><!--
+											<span><?php 
+                echo $enc->html($attribute->get_name(), $enc::TRUST);
+                ?></span><!--
 										--></label>
 									</li><!--
 
-								<?php endforeach ?>
+								<?php 
+            }
+            ?>
 							--></ul>
 						</fieldset>
 
-					<?php endif ?>
-				<?php endforeach ?>
+					<?php 
+        }
+        ?>
+				<?php 
+    }
+    ?>
 
 			</div>
 		</div>
 
-		<?php if ($this->config('client/html/catalog/filter/button', true)) : ?>
+		<?php 
+    if ($this->config('client/html/catalog/filter/button', true)) {
+        ?>
 			<noscript>
 				<button class="filter btn btn-primary" type="submit">
-					<?= $enc->html($this->translate('client', 'Show'), $enc::TRUST) ?>
+					<?php 
+        echo $enc->html($this->translate('client', 'Show'), $enc::TRUST);
+        ?>
 				</button>
 			</noscript>
-		<?php endif ?>
+		<?php 
+    }
+    ?>
 
 	</div>
-<?php endif ?>
-<?php $this->block()->stop() ?>
-<?= $this->block()->get('catalog/filter/attribute') ?>
+<?php 
+}
+$this->block()->stop();
+echo $this->block()->get('catalog/filter/attribute');

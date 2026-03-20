@@ -4,13 +4,11 @@
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2017-2026
  */
-
 /* Available data:
  * - id : ID of the service option (required)
  * - type : Type of the service attributes ("delivery" or "payment", required)
  * - attributes : Associative list of codes as keys and \Aimeos\Base\Criteria\Attribute\Iface objects as values (required)
  */
-
 /*
  * Displays the required and optional service attributes depending on their type
  *
@@ -36,145 +34,272 @@
  * If you have values that should be named differently depending on the attribute, you can prefix
  * them with an arbitrary string or the code of the attribute.
  */
-
 $enc = $this->encoder();
-
 ?>
 <ul class="form-list form-horizontal">
 
-	<?php foreach ($this->get('attributes', []) as $key => $item) : ?>
+	<?php 
+foreach ($this->get('attributes', []) as $key => $item) {
+    ?>
 
-		<li class="row form-item form-group <?= $enc->attr($key) . ($item->isRequired() ? ' mandatory' : '') ?>">
+		<li class="row form-item form-group <?php 
+    echo $enc->attr($key) . ($item->is_required() ? ' mandatory' : '');
+    ?>">
 
 			<div class="col-md-5">
 				<label class="form-item-label">
-					<?= $enc->html($this->translate('client/code', $key)) ?>
+					<?php 
+    echo $enc->html($this->translate('client/code', $key));
+    ?>
 				</label>
 			</div>
 
-			<?php switch ($item->getType()) : case 'select': ?>
+			<?php 
+    switch ($item->get_type()) {
+        case 'select':
+            ?>
 
 					<div class="col-md-7">
-						<select class="form-control" id="<?= $enc->attr($this->type . '-' . $key) ?>"
-							name="<?= $enc->attr($this->formparam([ 'c_' . $this->type, $this->id, $key ])) ?>"
-							title="<?= $enc->attr($this->translate('client/code', $key)) ?>">
+						<select class="form-control" id="<?php 
+            echo $enc->attr($this->type . '-' . $key);
+            ?>"
+							name="<?php 
+            echo $enc->attr($this->formparam(['c_' . $this->type, $this->id, $key]));
+            ?>"
+							title="<?php 
+            echo $enc->attr($this->translate('client/code', $key));
+            ?>">
 
-							<?php foreach ((array) $item->getDefault() as $option) : $code = $key . ':' . $option ?>
-								<option value="<?= $enc->attr($option) ?>">
-									<?= $enc->html($this->translate('client/code', $code)) ?>
+							<?php 
+            foreach ((array) $item->get_default() as $option) {
+                $code = $key . ':' . $option;
+                ?>
+								<option value="<?php 
+                echo $enc->attr($option);
+                ?>">
+									<?php 
+                echo $enc->html($this->translate('client/code', $code));
+                ?>
 								</option>
-							<?php endforeach ?>
+							<?php 
+            }
+            ?>
 						</select>
 					</div>
 
-				<?php break;
-			    // no break
-			case 'list': ?>
+				<?php 
+            break;
+        // no break
+        case 'list':
+            ?>
 
 					<div class="col-md-7 form-item-value">
-						<?php foreach ((array) $item->getDefault() as $code => $val) : ?>
+						<?php 
+            foreach ((array) $item->get_default() as $code => $val) {
+                ?>
 							<input class="form-control" type="radio"
-								id="<?= $enc->attr($this->type . '-' . $key . '-' . $code) ?>"
-								name="<?= $enc->attr($this->formparam(['c_' . $this->type, $this->id, $key])) ?>"
-								value="<?= $enc->attr($code) ?>"
-								<?= $this->param('c_' . $this->type . '/' . $this->id . '/' . $key, $item->value ?? null) == $code ? 'checked="checked"' : '' ?>
+								id="<?php 
+                echo $enc->attr($this->type . '-' . $key . '-' . $code);
+                ?>"
+								name="<?php 
+                echo $enc->attr($this->formparam(['c_' . $this->type, $this->id, $key]));
+                ?>"
+								value="<?php 
+                echo $enc->attr($code);
+                ?>"
+								<?php 
+                echo $this->param('c_' . $this->type . '/' . $this->id . '/' . $key, $item->value ?? null) == $code ? 'checked="checked"' : '';
+                ?>
 							>
-							<label for="<?= $enc->attr($this->type . '-' . $key . '-' . $code) ?>" class="attr-list-item">
-								<?= nl2br($enc->html($this->translate('client/code', $val))) ?>
+							<label for="<?php 
+                echo $enc->attr($this->type . '-' . $key . '-' . $code);
+                ?>" class="attr-list-item">
+								<?php 
+                echo nl2br($enc->html($this->translate('client/code', $val)));
+                ?>
 							</label>
-						<?php endforeach ?>
+						<?php 
+            }
+            ?>
 					</div>
 
-				<?php break;
-			    // no break
-			case 'boolean': ?>
+				<?php 
+            break;
+        // no break
+        case 'boolean':
+            ?>
 
 					<div class="col-md-7">
 						<input class="form-control" type="checkbox"
-							id="<?= $enc->attr($this->type . '-' . $key) ?>"
-							title="<?= $enc->attr($this->translate('client/code', $key)) ?>"
-							name="<?= $enc->attr($this->formparam(['c_' . $this->type, $this->id, $key])) ?>" value="1"
-							<?= $this->param('c_' . $this->type . '/' . $this->id . '/' . $key, $item->value ?? null) ? 'checked="checked"' : '' ?>
+							id="<?php 
+            echo $enc->attr($this->type . '-' . $key);
+            ?>"
+							title="<?php 
+            echo $enc->attr($this->translate('client/code', $key));
+            ?>"
+							name="<?php 
+            echo $enc->attr($this->formparam(['c_' . $this->type, $this->id, $key]));
+            ?>" value="1"
+							<?php 
+            echo $this->param('c_' . $this->type . '/' . $this->id . '/' . $key, $item->value ?? null) ? 'checked="checked"' : '';
+            ?>
 						>
 					</div>
 
-				<?php break;
-			case 'integer': case 'number': ?>
+				<?php 
+            break;
+        case 'integer':
+        case 'number':
+            ?>
 
 					<div class="col-md-7">
 						<input class="form-control" type="number"
-							id="<?= $enc->attr($this->type . '-' . $key) ?>"
-							title="<?= $enc->attr($this->translate('client/code', $key)) ?>"
-							name="<?= $enc->attr($this->formparam([ 'c_' . $this->type, $this->id, $key ])) ?>"
-							value="<?= $enc->attr($this->param('c_' . $this->type . '/' . $this->id . '/' . $key, $item->value ?? $item->getDefault())) ?>"
+							id="<?php 
+            echo $enc->attr($this->type . '-' . $key);
+            ?>"
+							title="<?php 
+            echo $enc->attr($this->translate('client/code', $key));
+            ?>"
+							name="<?php 
+            echo $enc->attr($this->formparam(['c_' . $this->type, $this->id, $key]));
+            ?>"
+							value="<?php 
+            echo $enc->attr($this->param('c_' . $this->type . '/' . $this->id . '/' . $key, $item->value ?? $item->get_default()));
+            ?>"
 						>
 					</div>
 
-				<?php break;
-			case 'date': ?>
+				<?php 
+            break;
+        case 'date':
+            ?>
 
 					<div class="col-md-7">
-						<input class="form-control" type="<?= $enc->attr($item->getType()) ?>"
-							id="<?= $enc->attr($this->type . '-' . $key) ?>"
-							title="<?= $enc->attr($this->translate('client/code', $key)) ?>"
-							name="<?= $enc->attr($this->formparam([ 'c_' . $this->type, $this->id, $key ])) ?>"
-							value="<?= $enc->attr($this->param('c_' . $this->type . '/' . $this->id . '/' . $key, $item->value ?? $item->getDefault())) ?>"
-							placeholder="<?= $enc->attr($this->translate('client', 'YYYY-MM-DD')) ?>"
+						<input class="form-control" type="<?php 
+            echo $enc->attr($item->get_type());
+            ?>"
+							id="<?php 
+            echo $enc->attr($this->type . '-' . $key);
+            ?>"
+							title="<?php 
+            echo $enc->attr($this->translate('client/code', $key));
+            ?>"
+							name="<?php 
+            echo $enc->attr($this->formparam(['c_' . $this->type, $this->id, $key]));
+            ?>"
+							value="<?php 
+            echo $enc->attr($this->param('c_' . $this->type . '/' . $this->id . '/' . $key, $item->value ?? $item->get_default()));
+            ?>"
+							placeholder="<?php 
+            echo $enc->attr($this->translate('client', 'YYYY-MM-DD'));
+            ?>"
 						>
 					</div>
 
-				<?php break;
-			case 'datetime': ?>
+				<?php 
+            break;
+        case 'datetime':
+            ?>
 
 					<div class="col-md-7">
-						<input class="form-control" type="<?= $enc->attr($item->getType()) ?>"
-							id="<?= $enc->attr($this->type . '-' . $key) ?>"
-							title="<?= $enc->attr($this->translate('client/code', $key)) ?>"
-							name="<?= $enc->attr($this->formparam([ 'c_' . $this->type, $this->id, $key ])) ?>"
-							value="<?= $enc->attr($this->param('c_' . $this->type . '/' . $this->id . '/' . $key, $item->value ?? $item->getDefault())) ?>"
-							placeholder="<?= $enc->attr($this->translate('client', 'YYYY-MM-DD HH:mm')) ?>"
+						<input class="form-control" type="<?php 
+            echo $enc->attr($item->get_type());
+            ?>"
+							id="<?php 
+            echo $enc->attr($this->type . '-' . $key);
+            ?>"
+							title="<?php 
+            echo $enc->attr($this->translate('client/code', $key));
+            ?>"
+							name="<?php 
+            echo $enc->attr($this->formparam(['c_' . $this->type, $this->id, $key]));
+            ?>"
+							value="<?php 
+            echo $enc->attr($this->param('c_' . $this->type . '/' . $this->id . '/' . $key, $item->value ?? $item->get_default()));
+            ?>"
+							placeholder="<?php 
+            echo $enc->attr($this->translate('client', 'YYYY-MM-DD HH:mm'));
+            ?>"
 						>
 					</div>
 
-				<?php break;
-			case 'time': ?>
+				<?php 
+            break;
+        case 'time':
+            ?>
 
 					<div class="col-md-7">
-						<input class="form-control" type="<?= $enc->attr($item->getType()) ?>"
-							id="<?= $enc->attr($this->type . '-' . $key) ?>"
-							title="<?= $enc->attr($this->translate('client/code', $key)) ?>"
-							name="<?= $enc->attr($this->formparam([ 'c_' . $this->type, $this->id, $key ])) ?>"
-							value="<?= $enc->attr($this->param('c_' . $this->type . '/' . $this->id . '/' . $key, $item->value ?? $item->getDefault())) ?>"
-							placeholder="<?= $enc->attr($this->translate('client', 'HH:mm')) ?>"
+						<input class="form-control" type="<?php 
+            echo $enc->attr($item->get_type());
+            ?>"
+							id="<?php 
+            echo $enc->attr($this->type . '-' . $key);
+            ?>"
+							title="<?php 
+            echo $enc->attr($this->translate('client/code', $key));
+            ?>"
+							name="<?php 
+            echo $enc->attr($this->formparam(['c_' . $this->type, $this->id, $key]));
+            ?>"
+							value="<?php 
+            echo $enc->attr($this->param('c_' . $this->type . '/' . $this->id . '/' . $key, $item->value ?? $item->get_default()));
+            ?>"
+							placeholder="<?php 
+            echo $enc->attr($this->translate('client', 'HH:mm'));
+            ?>"
 						>
 					</div>
 
-				<?php break;
-			case 'text': ?>
+				<?php 
+            break;
+        case 'text':
+            ?>
 
 					<div class="col-md-7">
 						<textarea class="form-control"
-							id="<?= $enc->attr($this->type . '-' . $key) ?>"
-							title="<?= $enc->attr($this->translate('client/code', $key)) ?>"
-							name="<?= $enc->attr($this->formparam([ 'c_' . $this->type, $this->id, $key ])) ?>"
-						><?= $enc->html($this->param('c_' . $this->type . '/' . $this->id . '/' . $key, $item->value ?? $item->getDefault())) ?></textarea>
+							id="<?php 
+            echo $enc->attr($this->type . '-' . $key);
+            ?>"
+							title="<?php 
+            echo $enc->attr($this->translate('client/code', $key));
+            ?>"
+							name="<?php 
+            echo $enc->attr($this->formparam(['c_' . $this->type, $this->id, $key]));
+            ?>"
+						><?php 
+            echo $enc->html($this->param('c_' . $this->type . '/' . $this->id . '/' . $key, $item->value ?? $item->get_default()));
+            ?></textarea>
 					</div>
 
-				<?php break;
-			default: ?>
+				<?php 
+            break;
+        default:
+            ?>
 
 					<div class="col-md-7">
 						<input class="form-control" type="text"
-							id="<?= $enc->attr($this->type . '-' . $key) ?>"
-							title="<?= $enc->attr($this->translate('client/code', $key)) ?>"
-							name="<?= $enc->attr($this->formparam([ 'c_' . $this->type, $this->id, $key ])) ?>"
-							value="<?= $enc->attr($this->param('c_' . $this->type . '/' . $this->id . '/' . $key, $item->value ?? $item->getDefault())) ?>"
+							id="<?php 
+            echo $enc->attr($this->type . '-' . $key);
+            ?>"
+							title="<?php 
+            echo $enc->attr($this->translate('client/code', $key));
+            ?>"
+							name="<?php 
+            echo $enc->attr($this->formparam(['c_' . $this->type, $this->id, $key]));
+            ?>"
+							value="<?php 
+            echo $enc->attr($this->param('c_' . $this->type . '/' . $this->id . '/' . $key, $item->value ?? $item->get_default()));
+            ?>"
 						>
 					</div>
 
-			<?php endswitch ?>
+			<?php 
+    }
+    ?>
 
 		</li>
-	<?php endforeach ?>
+	<?php 
+}
+?>
 
 </ul>

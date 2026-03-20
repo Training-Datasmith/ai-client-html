@@ -1,14 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2015-2026
  * @package Client
  * @subpackage Html
  */
-
 namespace Aimeos\Client\Html\Catalog\Lists;
 
 /**
@@ -51,11 +49,9 @@ class Standard extends \Aimeos\Client\Html\Catalog\Base implements \Aimeos\Clien
      * @param string Last part of the class name
      * @since 2014.03
      */
-
     private array $tags = [];
     private ?string $expire = null;
     private ?\Aimeos\Base\View\Iface $view = null;
-
     /**
      * Returns the HTML code for insertion into the body.
      *
@@ -66,7 +62,6 @@ class Standard extends \Aimeos\Client\Html\Catalog\Base implements \Aimeos\Clien
     {
         $view = $this->view();
         $prefixes = ['f_catid', 'f_supid', 'f_sort', 'l_page', 'l_type'];
-
         /** client/html/catalog/lists/cache
          * Enables or disables caching only for the catalog lists component
          *
@@ -79,7 +74,6 @@ class Standard extends \Aimeos\Client\Html\Catalog\Base implements \Aimeos\Clien
          * @see client/html/catalog/filter/cache
          * @see client/html/catalog/stage/cache
          */
-
         /** client/html/catalog/lists
          * All parameters defined for the catalog list component and its subparts
          *
@@ -90,13 +84,10 @@ class Standard extends \Aimeos\Client\Html\Catalog\Base implements \Aimeos\Clien
          * @see client/html/catalog#list
          */
         $confkey = 'client/html/catalog/lists';
-
-        $args = map($view->param())->except(['f_catid', 'f_name', 'f_supid', 's_name'])->filter(fn ($val, $key) => !strncmp($key, 'f_', 2) || !strncmp($key, 'l_', 2));
-
-        if ($args->isEmpty() && ($html = $this->cached('body', $uid, $prefixes, $confkey)) !== null) {
+        $args = map($view->param())->except(['f_catid', 'f_name', 'f_supid', 's_name'])->filter(fn($val, $key) => !strncmp($key, 'f_', 2) || !strncmp($key, 'l_', 2));
+        if ($args->is_empty() && ($html = $this->cached('body', $uid, $prefixes, $confkey)) !== null) {
             return $this->modify($html, $uid);
         }
-
         /** client/html/catalog/lists/template-body
          * Relative path to the HTML body template of the catalog list client.
          *
@@ -131,17 +122,13 @@ class Standard extends \Aimeos\Client\Html\Catalog\Base implements \Aimeos\Clien
          * @see client/html/catalog/lists/type/template-body
          */
         $template = $this->context()->config()->get('client/html/catalog/lists/template-body', 'catalog/lists/body');
-
-        $view = ($this->view ??= $this->object()->data($view, $this->tags, $this->expire));
+        $view = $this->view ??= $this->object()->data($view, $this->tags, $this->expire);
         $html = $this->modify($view->render($template), $uid);
-
-        if ($args->isEmpty()) {
+        if ($args->is_empty()) {
             return $this->cache('body', $uid, $prefixes, $confkey, $html, $this->tags, $this->expire);
         }
-
         return $html;
     }
-
     /**
      * Returns the HTML string for insertion into the header.
      *
@@ -153,13 +140,10 @@ class Standard extends \Aimeos\Client\Html\Catalog\Base implements \Aimeos\Clien
         $view = $this->view();
         $confkey = 'client/html/catalog/lists';
         $prefixes = ['f_catid', 'f_supid', 'f_sort', 'l_page', 'l_type'];
-
-        $args = map($view->param())->except(['f_catid', 'f_name', 'f_supid', 's_name'])->filter(fn ($val, $key) => !strncmp($key, 'f_', 2) || !strncmp($key, 'l_', 2));
-
-        if ($args->isEmpty() && ($html = $this->cached('header', $uid, $prefixes, $confkey)) !== null) {
+        $args = map($view->param())->except(['f_catid', 'f_name', 'f_supid', 's_name'])->filter(fn($val, $key) => !strncmp($key, 'f_', 2) || !strncmp($key, 'l_', 2));
+        if ($args->is_empty() && ($html = $this->cached('header', $uid, $prefixes, $confkey)) !== null) {
             return $this->modify($html, $uid);
         }
-
         /** client/html/catalog/lists/template-header
          * Relative path to the HTML header template of the catalog list client.
          *
@@ -195,17 +179,13 @@ class Standard extends \Aimeos\Client\Html\Catalog\Base implements \Aimeos\Clien
          * @see client/html/catalog/lists/type/template-body
          */
         $template = $this->context()->config()->get('client/html/catalog/lists/template-header', 'catalog/lists/header');
-
-        $view = ($this->view ??= $this->object()->data($view, $this->tags, $this->expire));
+        $view = $this->view ??= $this->object()->data($view, $this->tags, $this->expire);
         $html = $this->modify($view->render($template), $uid);
-
-        if ($args->isEmpty()) {
+        if ($args->is_empty()) {
             return $this->cache('header', $uid, $prefixes, $confkey, $html, $this->tags, $this->expire);
         }
-
         return $html;
     }
-
     /**
      * Processes the input, e.g. store given values.
      *
@@ -217,15 +197,12 @@ class Standard extends \Aimeos\Client\Html\Catalog\Base implements \Aimeos\Clien
         $view = $this->view();
         $context = $this->context();
         $session = $context->session();
-
         $params = $view->param();
-        $site = $context->locale()->getSiteItem()->getCode();
+        $site = $context->locale()->get_site_item()->get_code();
         $key = $view->param('f_catid') ? 'client/html/catalog/tree/url' : 'client/html/catalog/lists/url';
-
         $session->set('aimeos/catalog/last/' . $site, $view->link($key, $params));
         $session->set('aimeos/catalog/lists/params/last/' . $site, $params);
     }
-
     /**
      * Sets the necessary parameter values in the view.
      *
@@ -242,63 +219,36 @@ class Standard extends \Aimeos\Client\Html\Catalog\Base implements \Aimeos\Clien
         $pages = $this->pages();
         $context = $this->context();
         $page = min(max($view->param('l_page', 1), 1), $pages);
-        $catIds = $this->categories();
-
-        if ($catItem = $this->category($catIds)) {
-            $listCatPath = \Aimeos\Controller\Frontend::create($context, 'catalog')
-                ->uses(['media', 'media/property', 'text'])
-                ->getPath($catItem->getId());
-
-            $view->listCatPath = $this->addMetaItems($listCatPath, $expire, $tags);
-            $catIds[] = $catItem->getId();
+        $cat_ids = $this->categories();
+        if ($cat_item = $this->category($cat_ids)) {
+            $list_cat_path = \Aimeos\Controller\Frontend::create($context, 'catalog')->uses(['media', 'media/property', 'text'])->get_path($cat_item->get_id());
+            $view->list_cat_path = $this->add_meta_items($list_cat_path, $expire, $tags);
+            $cat_ids[] = $cat_item->get_id();
         }
-
-        $cntl = \Aimeos\Controller\Frontend::create($context, 'product')
-            ->sort($sort) // prioritize user sorting over the sorting through relevance and category
-            ->text($view->param('f_search'))
-            ->price($view->param('f_price'))
-            ->category($catIds, 'default', $this->level())
-            ->radius($view->param('f_point', []), $view->param('f_dist'))
-            ->supplier($this->suppliers())
-            ->allOf($this->attributes())
-            ->allOf($view->param('f_attrid', []))
-            ->oneOf($view->param('f_optid', []))
-            ->oneOf($view->param('f_oneid', []))
-            ->slice(($page - 1) * $size, $size)
-            ->uses($this->domains());
-
+        $cntl = \Aimeos\Controller\Frontend::create($context, 'product')->sort($sort)->text($view->param('f_search'))->price($view->param('f_price'))->category($cat_ids, 'default', $this->level())->radius($view->param('f_point', []), $view->param('f_dist'))->supplier($this->suppliers())->all_of($this->attributes())->all_of($view->param('f_attrid', []))->one_of($view->param('f_optid', []))->one_of($view->param('f_oneid', []))->slice(($page - 1) * $size, $size)->uses($this->domains());
         $this->call('conditions', $cntl, $view);
-
         $products = $cntl->search($total);
-        $articles = $products->getRefItems('product', 'default', 'default')->flat(1)->union($products);
-
-        $attrMap = $articles->getRefItems('attribute')->flat(1)->groupBy('attribute.type');
-        $attrTypes = $this->attributeTypes($attrMap->keys());
-
-        $this->addMetaItems($products, $expire, $tags, ['product']);
-
-        $view->listProductItems = $products;
-        $view->listProductSort = $sort;
-        $view->listProductTotal = $total;
-
-        $view->listPageSize = $size;
-        $view->listPageCurr = $page;
-        $view->listPagePrev = ($page > 1 ? $page - 1 : 1);
-        $view->listPageLast = ($total != 0 ? min(ceil($total / $size), $pages) : 1);
-        $view->listPageNext = ($page < $view->listPageLast ? $page + 1 : $view->listPageLast);
-
-        $view->listAttributeTypes = $attrTypes->col(null, 'attribute.type.code');
-        $view->listParams = $this->getClientParams(map($view->param())->toArray());
-        $view->listStockUrl = $this->stockUrl($articles);
-        $view->listPosition = ($page - 1) * $size;
-
+        $articles = $products->get_ref_items('product', 'default', 'default')->flat(1)->union($products);
+        $attr_map = $articles->get_ref_items('attribute')->flat(1)->group_by('attribute.type');
+        $attr_types = $this->attribute_types($attr_map->keys());
+        $this->add_meta_items($products, $expire, $tags, ['product']);
+        $view->list_product_items = $products;
+        $view->list_product_sort = $sort;
+        $view->list_product_total = $total;
+        $view->list_page_size = $size;
+        $view->list_page_curr = $page;
+        $view->list_page_prev = $page > 1 ? $page - 1 : 1;
+        $view->list_page_last = $total != 0 ? min(ceil($total / $size), $pages) : 1;
+        $view->list_page_next = $page < $view->list_page_last ? $page + 1 : $view->list_page_last;
+        $view->list_attribute_types = $attr_types->col(null, 'attribute.type.code');
+        $view->list_params = $this->get_client_params(map($view->param())->to_array());
+        $view->list_stock_url = $this->stock_url($articles);
+        $view->list_position = ($page - 1) * $size;
         if (!empty($type = $view->param('l_type')) && ctype_alnum($type)) {
             return $view->set('listPartial', 'catalog/lists/items-' . $type);
         }
-
         return parent::data($view, $tags, $expire);
     }
-
     /**
      * Modifies the cached content to replace content based on sessions or cookies.
      *
@@ -308,9 +258,8 @@ class Standard extends \Aimeos\Client\Html\Catalog\Base implements \Aimeos\Clien
      */
     public function modify(string $content, string $uid): string
     {
-        return $this->replaceSection($content, $this->view()->csrf()->formfield(), 'catalog.lists.items.csrf');
+        return $this->replace_section($content, $this->view()->csrf()->formfield(), 'catalog.lists.items.csrf');
     }
-
     /**
      * Returns the attribute IDs used for filtering products
      *
@@ -338,51 +287,39 @@ class Standard extends \Aimeos\Client\Html\Catalog\Base implements \Aimeos\Clien
          * @see client/html/catalog/instock
          */
         $attrids = $this->context()->config()->get('client/html/catalog/lists/attrid-default');
-        $attrids = $attrids != null && is_scalar($attrids) ? explode(',', $attrids) : $attrids; // workaround for TYPO3
-
+        $attrids = $attrids != null && is_scalar($attrids) ? explode(',', $attrids) : $attrids;
+        // workaround for TYPO3
         return (array) $attrids;
     }
-
     /**
      * Returns the attribute type items for the given codes
      *
      * @param \Aimeos\Map $codes List of attribute type codes
      * @return \Aimeos\Map List of attribute type items
      */
-    protected function attributeTypes(\Aimeos\Map $codes): \Aimeos\Map
+    protected function attribute_types(\Aimeos\Map $codes): \Aimeos\Map
     {
-        $manager = \Aimeos\MShop::create($this->context(), 'attribute/type');
-
-        $filter = $manager->filter(true)
-            ->add('attribute.type.domain', '==', 'product')
-            ->add('attribute.type.code', '==', $codes)
-            ->order('attribute.type.position');
-
+        $manager = \Aimeos\M_Shop::create($this->context(), 'attribute/type');
+        $filter = $manager->filter(true)->add('attribute.type.domain', '==', 'product')->add('attribute.type.code', '==', $codes)->order('attribute.type.position');
         return $manager->search($filter->slice(0, count($codes)));
     }
-
     /**
      * Returns the category item
      *
      * @param array $catIds List of category IDs
      * @return \Aimeos\MShop\Catalog\Item\Iface|null Catalog item
      */
-    protected function category(array $catIds): ?\Aimeos\MShop\Catalog\Item\Iface
+    protected function category(array $cat_ids): ?\Aimeos\M_Shop\Catalog\Item\Iface
     {
-        $cntl = \Aimeos\Controller\Frontend::create($this->context(), 'catalog')
-            ->uses(['media', 'media/property', 'text']);
-
-        if ($id = current($catIds)) {
+        $cntl = \Aimeos\Controller\Frontend::create($this->context(), 'catalog')->uses(['media', 'media/property', 'text']);
+        if ($id = current($cat_ids)) {
             return $cntl->get($id);
         }
-
         if ($name = $this->view()->param('f_name')) {
             return $cntl->resolve($name);
         }
-
         return null;
     }
-
     /**
      * Returns the category IDs used for filtering products
      *
@@ -412,11 +349,10 @@ class Standard extends \Aimeos\Client\Html\Catalog\Base implements \Aimeos\Clien
          * @see client/html/catalog/instock
          */
         $catids = $this->view()->param('f_catid', $this->context()->config()->get('client/html/catalog/lists/catid-default'));
-        $catids = $catids && is_scalar($catids) ? explode(',', (string) $catids) : $catids; // workaround for TYPO3
-
+        $catids = $catids && is_scalar($catids) ? explode(',', (string) $catids) : $catids;
+        // workaround for TYPO3
         return array_filter((array) $catids);
     }
-
     /**
      * Adds additional conditions for filtering
      *
@@ -446,12 +382,10 @@ class Standard extends \Aimeos\Client\Html\Catalog\Base implements \Aimeos\Clien
          * @see client/html/catalog/lists/sort
          * @see client/html/catalog/lists/pages
          */
-
         if ($view->config('client/html/catalog/instock', false)) {
             $cntl->compare('>', 'product.instock', 0);
         }
     }
-
     /**
      * Returns the data domains fetched along with the products
      *
@@ -461,7 +395,6 @@ class Standard extends \Aimeos\Client\Html\Catalog\Base implements \Aimeos\Clien
     {
         $config = $this->context()->config();
         $domains = ['catalog', 'media', 'media/property', 'price', 'supplier', 'text'];
-
         /** client/html/catalog/domains
          * A list of domain names whose items should be available in the catalog view templates
          *
@@ -486,7 +419,6 @@ class Standard extends \Aimeos\Client\Html\Catalog\Base implements \Aimeos\Clien
          * @see client/html/catalog/lists/pages
          */
         $domains = $config->get('client/html/catalog/domains', $domains);
-
         /** client/html/catalog/lists/domains
          * A list of domain names whose items should be available in the product list view template
          *
@@ -517,14 +449,11 @@ class Standard extends \Aimeos\Client\Html\Catalog\Base implements \Aimeos\Clien
          * @see client/html/catalog/instock
          */
         $domains = $config->get('client/html/catalog/lists/domains', $domains);
-
         if ($config->get('client/html/catalog/lists/basket-add', false)) {
             return array_merge_recursive($domains, ['product' => ['default'], 'attribute' => ['variant', 'custom', 'config']]);
         }
-
         return $domains;
     }
-
     /**
      * Returns the category depth level
      *
@@ -568,7 +497,6 @@ class Standard extends \Aimeos\Client\Html\Catalog\Base implements \Aimeos\Clien
          */
         return $this->context()->config()->get('client/html/catalog/lists/levels', \Aimeos\MW\Tree\Manager\Base::LEVEL_ONE);
     }
-
     /**
      * Returns the number of allowed pages
      *
@@ -599,7 +527,6 @@ class Standard extends \Aimeos\Client\Html\Catalog\Base implements \Aimeos\Clien
          */
         return $this->context()->config()->get('client/html/catalog/lists/pages', 100);
     }
-
     /**
      * Returns the maximum products per page
      *
@@ -632,10 +559,8 @@ class Standard extends \Aimeos\Client\Html\Catalog\Base implements \Aimeos\Clien
          * @see client/html/catalog/instock
          */
         $size = $this->context()->config()->get('client/html/catalog/lists/size', 48);
-
         return min(max($this->view()->param('l_size', $size), 1), 100);
     }
-
     /**
      * Returns the product sorting
      *
@@ -663,7 +588,6 @@ class Standard extends \Aimeos\Client\Html\Catalog\Base implements \Aimeos\Clien
          */
         return $this->view()->param('f_sort', $this->context()->config()->get('client/html/catalog/lists/sort', 'relevance'));
     }
-
     /**
      * Returns the supplier IDs used for filtering products
      *
@@ -692,18 +616,17 @@ class Standard extends \Aimeos\Client\Html\Catalog\Base implements \Aimeos\Clien
          * @see client/html/catalog/instock
          */
         $supids = $this->view()->param('f_supid', $this->context()->config()->get('client/html/catalog/lists/supid-default'));
-        $supids = $supids != null && is_scalar($supids) ? explode(',', $supids) : $supids; // workaround for TYPO3
-
+        $supids = $supids != null && is_scalar($supids) ? explode(',', $supids) : $supids;
+        // workaround for TYPO3
         return (array) $supids;
     }
-
     /**
      * Returns the URLs for fetching stock information
      *
      * @param \Aimeos\Map $products Products to fetch stock information for
      * @return \Aimeos\Map List of stock URLs
      */
-    protected function stockUrl(\Aimeos\Map $products): \Aimeos\Map
+    protected function stock_url(\Aimeos\Map $products): \Aimeos\Map
     {
         /** client/html/catalog/lists/stock
          * Enables or disables displaying product stock levels in product list views
@@ -724,13 +647,11 @@ class Standard extends \Aimeos\Client\Html\Catalog\Base implements \Aimeos\Clien
          * @see client/html/catalog/stock/url/action
          * @see client/html/catalog/stock/url/config
          */
-        if (!$products->isEmpty() && $this->context()->config()->get('client/html/catalog/lists/stock', true)) {
-            return $this->getStockUrl($this->view(), $products);
+        if (!$products->is_empty() && $this->context()->config()->get('client/html/catalog/lists/stock', true)) {
+            return $this->get_stock_url($this->view(), $products);
         }
-
         return map();
     }
-
     /** client/html/catalog/lists/decorators/excludes
      * Excludes decorators added by the "common" option from the catalog lists html client
      *
@@ -754,7 +675,6 @@ class Standard extends \Aimeos\Client\Html\Catalog\Base implements \Aimeos\Clien
      * @see client/html/catalog/lists/decorators/global
      * @see client/html/catalog/lists/decorators/local
      */
-
     /** client/html/catalog/lists/decorators/global
      * Adds a list of globally available decorators only to the catalog lists html client
      *
@@ -776,7 +696,6 @@ class Standard extends \Aimeos\Client\Html\Catalog\Base implements \Aimeos\Clien
      * @see client/html/catalog/lists/decorators/excludes
      * @see client/html/catalog/lists/decorators/local
      */
-
     /** client/html/catalog/lists/decorators/local
      * Adds a list of local decorators only to the catalog lists html client
      *

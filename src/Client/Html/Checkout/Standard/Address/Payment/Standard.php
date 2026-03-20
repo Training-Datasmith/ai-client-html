@@ -1,14 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2015-2026
  * @package Client
  * @subpackage Html
  */
-
 namespace Aimeos\Client\Html\Checkout\Standard\Address\Payment;
 
 /**
@@ -28,22 +26,18 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
     public function init(): void
     {
         $view = $this->view();
-
         try {
             // only start if there's something to do
             if ($view->param('ca_paymentoption', null) === null) {
                 return;
             }
-
-            $this->setAddress($view);
-
+            $this->set_address($view);
             parent::init();
         } catch (\Aimeos\Controller\Frontend\Exception $e) {
-            $view->addressPaymentError = $e->getErrorList();
+            $view->address_payment_error = $e->get_error_list();
             throw $e;
         }
     }
-
     /**
      * Sets the necessary parameter values in the view.
      *
@@ -55,33 +49,27 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
     public function data(\Aimeos\Base\View\Iface $view, array &$tags = [], ?string &$expire = null): \Aimeos\Base\View\Iface
     {
         $context = $this->context();
-        $basketCntl = \Aimeos\Controller\Frontend::create($context, 'basket');
-
-        $addr = current($basketCntl->get()->getAddress('payment'));
-
-        $values = $addr ? $addr->toArray() : [];
-        $id = $view->get('addressCustomerItem') && $view->addressCustomerItem->getId() ? $view->addressCustomerItem->getId() : 'null';
-        $id = ($values['order.address.addressid'] ?? null) ?: $id;
-
-        $view->addressPaymentString = $this->getAddressString($view, $view->addressPaymentItem);
-        $view->addressPaymentValuesNew = array_merge($values, $view->param('ca_payment', []));
-        $view->addressPaymentValues = array_merge($values, $view->param('ca_payment_' . $id, []));
-        $view->addressPaymentOption = $view->param('ca_paymentoption', $id);
-        $view->addressPaymentCss = $this->cssPayment();
-
+        $basket_cntl = \Aimeos\Controller\Frontend::create($context, 'basket');
+        $addr = current($basket_cntl->get()->get_address('payment'));
+        $values = $addr ? $addr->to_array() : [];
+        $id = $view->get('addressCustomerItem') && $view->address_customer_item->get_id() ? $view->address_customer_item->get_id() : 'null';
+        $id = $values['order.address.addressid'] ?? null ?: $id;
+        $view->address_payment_string = $this->get_address_string($view, $view->address_payment_item);
+        $view->address_payment_values_new = array_merge($values, $view->param('ca_payment', []));
+        $view->address_payment_values = array_merge($values, $view->param('ca_payment_' . $id, []));
+        $view->address_payment_option = $view->param('ca_paymentoption', $id);
+        $view->address_payment_css = $this->css_payment();
         return parent::data($view, $tags, $expire);
     }
-
     /**
      * Checks the address fields for missing data and sanitizes the given parameter list.
      *
      * @param array $params Associative list of address keys (order.address.*) and their values
      * @return array List of missing field names
      */
-    protected function checkFields(array $params): array
+    protected function check_fields(array $params): array
     {
         $view = $this->view();
-
         /** client/html/common/address/payment/mandatory
          * List of payment address input fields that are required
          *
@@ -122,7 +110,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @see common/states
          */
         $mandatory = $view->config('client/html/common/address/payment/mandatory', []);
-
         /** client/html/common/address/payment/optional
          * List of payment address input fields that are optional
          *
@@ -163,7 +150,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @see common/states
          */
         $optional = $view->config('client/html/common/address/payment/optional', []);
-
         /** client/html/common/address/payment/hidden
          * List of payment address input fields that are optional and should be hidden
          *
@@ -202,7 +188,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @see common/states
          */
         $hidden = $view->config('client/html/common/address/payment/hidden', []);
-
         /** client/html/common/address/validate
          * List of regular expressions to validate the data of the address fields
          *
@@ -261,28 +246,21 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @see client/html/common/address/payment/mandatory
          * @see client/html/common/address/payment/optional
          */
-
-        $allFields = array_flip(array_merge($mandatory, $optional, $hidden));
-        $invalid = $this->validateFields($params, $allFields);
-        $this->checkSalutation($params, $mandatory);
-
+        $all_fields = array_flip(array_merge($mandatory, $optional, $hidden));
+        $invalid = $this->validate_fields($params, $all_fields);
+        $this->check_salutation($params, $mandatory);
         $msg = $view->translate('client', 'Billing address part "%1$s" is invalid');
-
         foreach ($invalid as $key => $name) {
             $invalid[$key] = sprintf($msg, $name);
         }
-
         $msg = $view->translate('client', 'Billing address part "%1$s" is missing');
-
         foreach ($mandatory as $key) {
             if (!isset($params['order.address.' . $key]) || $params['order.address.' . $key] == '') {
                 $invalid[$key] = sprintf($msg, $key);
             }
         }
-
         return $invalid;
     }
-
     /**
      * Additional checks for the salutation
      *
@@ -290,46 +268,35 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @param array &$mandatory List of mandatory field names
      * @since 2016.05
      */
-    protected function checkSalutation(array $params, array &$mandatory)
+    protected function check_salutation(array $params, array &$mandatory)
     {
-        if (isset($params['order.address.salutation'])
-            && $params['order.address.salutation'] === 'company'
-            && in_array('company', $mandatory) === false
-        ) {
+        if (isset($params['order.address.salutation']) && $params['order.address.salutation'] === 'company' && in_array('company', $mandatory) === false) {
             $mandatory[] = 'company';
         }
     }
-
     /**
      * Returns the CSS classes for the payment address fields
      *
      * @return array Associative list of CSS classes for the payment address fields
      */
-    protected function cssPayment(): array
+    protected function css_payment(): array
     {
         $config = $this->context()->config();
-
         $mandatory = $config->get('client/html/common/address/payment/mandatory', []);
         $optional = $config->get('client/html/common/address/payment/optional', []);
         $hidden = $config->get('client/html/common/address/payment/hidden', []);
-
         $css = [];
-
         foreach ($mandatory as $name) {
             $css[$name][] = 'mandatory';
         }
-
         foreach ($optional as $name) {
             $css[$name][] = 'optional';
         }
-
         foreach ($hidden as $name) {
             $css[$name][] = 'hidden';
         }
-
         return $css;
     }
-
     /**
      * Returns the address as string
      *
@@ -337,16 +304,14 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @param \Aimeos\MShop\Order\Item\Address\Iface $addr Order address item
      * @return string Address as string
      */
-    protected function getAddressString(\Aimeos\Base\View\Iface $view, \Aimeos\MShop\Order\Item\Address\Iface $addr): ?string
+    protected function get_address_string(\Aimeos\Base\View\Iface $view, \Aimeos\M_Shop\Order\Item\Address\Iface $addr): ?string
     {
         return preg_replace("/\n+/m", "\n", trim(sprintf(
             /// Address format with company (%1$s), salutation (%2$s), title (%3$s), first name (%4$s), last name (%5$s),
             /// address part one (%6$s, e.g street), address part two (%7$s, e.g house number), address part three (%8$s, e.g additional information),
             /// postal/zip code (%9$s), city (%10$s), state (%11$s), country (%12$s), language (%13$s),
             /// e-mail (%14$s), phone (%15$s), facsimile/telefax (%16$s), mobile number (%17$s), web site (%18$s), vatid (%19$s)
-            $view->translate(
-                'client',
-                '%1$s
+            $view->translate('client', '%1$s
 %2$s %3$s %4$s %5$s
 %6$s %7$s
 %8$s
@@ -360,30 +325,28 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
 %17$s
 %18$s
 %19$s
-'
-            ),
-            $addr->getCompany(),
-            $view->translate('mshop/code', (string) $addr->getSalutation()),
-            $addr->getTitle(),
-            $addr->getFirstName(),
-            $addr->getLastName(),
-            $addr->getAddress1(),
-            $addr->getAddress2(),
-            $addr->getAddress3(),
-            $addr->getPostal(),
-            $addr->getCity(),
-            $addr->getState(),
-            $view->translate('country', (string) $addr->getCountryId()),
-            $view->translate('language', (string) $addr->getLanguageId()),
-            $addr->getEmail(),
-            $addr->getTelephone(),
-            $addr->getTelefax(),
-            $addr->getMobile(),
-            $addr->getWebsite(),
-            $addr->getVatID()
+'),
+            $addr->get_company(),
+            $view->translate('mshop/code', (string) $addr->get_salutation()),
+            $addr->get_title(),
+            $addr->get_first_name(),
+            $addr->get_last_name(),
+            $addr->get_address1(),
+            $addr->get_address2(),
+            $addr->get_address3(),
+            $addr->get_postal(),
+            $addr->get_city(),
+            $addr->get_state(),
+            $view->translate('country', (string) $addr->get_country_id()),
+            $view->translate('language', (string) $addr->get_language_id()),
+            $addr->get_email(),
+            $addr->get_telephone(),
+            $addr->get_telefax(),
+            $addr->get_mobile(),
+            $addr->get_website(),
+            $addr->get_vat_id()
         )));
     }
-
     /**
      * Sets the new address
      *
@@ -391,11 +354,10 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @throws \Aimeos\Client\Html\Exception If an error occurs
      * @since 2016.05
      */
-    protected function setAddress(\Aimeos\Base\View\Iface $view)
+    protected function set_address(\Aimeos\Base\View\Iface $view)
     {
         $context = $this->context();
-        $basketCtrl = \Aimeos\Controller\Frontend::create($context, 'basket');
-
+        $basket_ctrl = \Aimeos\Controller\Frontend::create($context, 'basket');
         /** client/html/checkout/standard/address/payment/disable-new
          * Disables the option to enter a new payment address for an order
          *
@@ -414,28 +376,24 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @see client/html/common/address/salutations
          */
         $disable = $view->config('client/html/checkout/standard/address/payment/disable-new', false);
-        $type = \Aimeos\MShop\Order\Item\Address\Base::TYPE_PAYMENT;
-
-        if (($option = $view->param('ca_paymentoption', 'null')) === 'null' && $disable === false) { // new address
+        $type = \Aimeos\M_Shop\Order\Item\Address\Base::TYPE_PAYMENT;
+        if (($option = $view->param('ca_paymentoption', 'null')) === 'null' && $disable === false) {
+            // new address
             $params = $view->param('ca_payment', []);
-
-            if (($view->addressPaymentError = $this->checkFields($params)) !== []) {
+            if (($view->address_payment_error = $this->check_fields($params)) !== []) {
                 throw new \Aimeos\Client\Html\Exception(sprintf('At least one payment address part is missing or invalid'));
             }
-        } else { // existing address
+        } else {
+            // existing address
             $params = $view->param('ca_payment_' . $option, []);
-
-            if (!empty($params) && ($view->addressPaymentError = $this->checkFields($params)) !== []) {
+            if (!empty($params) && ($view->address_payment_error = $this->check_fields($params)) !== []) {
                 throw new \Aimeos\Client\Html\Exception(sprintf('At least one payment address part is missing or invalid'));
             }
-
             $cntl = \Aimeos\Controller\Frontend::create($context, 'customer')->uses([]);
-            $params = $cntl->add($params)->store()->get()->getPaymentAddress()->toArray();
+            $params = $cntl->add($params)->store()->get()->get_payment_address()->to_array();
         }
-
-        $basketCtrl->addAddress($type, $params, 0);
+        $basket_ctrl->add_address($type, $params, 0);
     }
-
     /**
      * Validate the address key/value pairs using regular expressions
      *
@@ -444,141 +402,116 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @return array List of invalid address keys
      * @since 2016.05
      */
-    protected function validateFields(array $params, array $fields): array
+    protected function validate_fields(array $params, array $fields): array
     {
         $config = $this->context()->config();
-
         /** client/html/common/address/validate/company
          * Regular expression to check the "company" address value
          *
          * @see client/html/common/address/validate
          */
-
         /** client/html/common/address/validate/vatid
          * Regular expression to check the "vatid" address value
          *
          * @see client/html/common/address/validate
          */
-
         /** client/html/common/address/validate/salutation
          * Regular expression to check the "salutation" address value
          *
          * @see client/html/common/address/validate
          */
-
         /** client/html/common/address/validate/title
          * Regular expression to check the "title" address value
          *
          * @see client/html/common/address/validate
          */
-
         /** client/html/common/address/validate/firstname
          * Regular expression to check the "firstname" address value
          *
          * @see client/html/common/address/validate
          */
-
         /** client/html/common/address/validate/lastname
          * Regular expression to check the "lastname" address value
          *
          * @see client/html/common/address/validate
          */
-
         /** client/html/common/address/validate/address1
          * Regular expression to check the "address1" address value
          *
          * @see client/html/common/address/validate
          */
-
         /** client/html/common/address/validate/address2
          * Regular expression to check the "address2" address value
          *
          * @see client/html/common/address/validate
          */
-
         /** client/html/common/address/validate/address3
          * Regular expression to check the "address3" address value
          *
          * @see client/html/common/address/validate
          */
-
         /** client/html/common/address/validate/postal
          * Regular expression to check the "postal" address value
          *
          * @see client/html/common/address/validate
          */
-
         /** client/html/common/address/validate/city
          * Regular expression to check the "city" address value
          *
          * @see client/html/common/address/validate
          */
-
         /** client/html/common/address/validate/state
          * Regular expression to check the "state" address value
          *
          * @see client/html/common/address/validate
          */
-
         /** client/html/common/address/validate/languageid
          * Regular expression to check the "languageid" address value
          *
          * @see client/html/common/address/validate
          */
-
         /** client/html/common/address/validate/countryid
          * Regular expression to check the "countryid" address value
          *
          * @see client/html/common/address/validate
          */
-
         /** client/html/common/address/validate/telephone
          * Regular expression to check the "telephone" address value
          *
          * @see client/html/common/address/validate
          */
-
         /** client/html/common/address/validate/telefax
          * Regular expression to check the "telefax" address value
          *
          * @see client/html/common/address/validate
          */
-
         /** client/html/common/address/validate/mobile
          * Regular expression to check the "mobile" address value
          *
          * @see client/html/common/address/validate
          */
-
         /** client/html/common/address/validate/email
          * Regular expression to check the "email" address value
          *
          * @see client/html/common/address/validate
          */
-
         /** client/html/common/address/validate/website
          * Regular expression to check the "website" address value
          *
          * @see client/html/common/address/validate
          */
-
         $invalid = [];
-
         foreach ($params as $key => $value) {
             $name = ($pos = strrpos($key, '.')) ? substr($key, $pos + 1) : $key;
-
             if (isset($fields[$name])) {
                 $regex = $config->get('client/html/common/address/validate/' . $name);
-
                 if ($regex && preg_match('/' . $regex . '/', $value) !== 1) {
                     $invalid[$name] = $name;
                 }
             }
         }
-
         return $invalid;
     }
-
     /** client/html/checkout/standard/address/payment/template-body
      * Relative path to the HTML body template of the checkout standard address payment client.
      *

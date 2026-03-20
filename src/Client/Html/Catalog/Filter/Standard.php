@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Metaways Infosystems GmbH, 2012
@@ -9,7 +8,6 @@ declare(strict_types=1);
  * @package Client
  * @subpackage Html
  */
-
 namespace Aimeos\Client\Html\Catalog\Filter;
 
 /**
@@ -52,7 +50,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @param string Last part of the class name
      * @since 2014.03
      */
-
     /** client/html/catalog/filter/subparts
      * List of HTML sub-clients rendered within the catalog filter section
      *
@@ -85,8 +82,7 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @param array List of sub-client names
      * @since 2014.03
      */
-    private string $subPartPath = 'client/html/catalog/filter/subparts';
-
+    private string $sub_part_path = 'client/html/catalog/filter/subparts';
     /** client/html/catalog/filter/search/name
      * Name of the search part used by the catalog filter client implementation
      *
@@ -96,7 +92,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @param string Last part of the client class name
      * @since 2014.03
      */
-
     /** client/html/catalog/filter/tree/name
      * Name of the tree part used by the catalog filter client implementation
      *
@@ -106,7 +101,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @param string Last part of the client class name
      * @since 2014.03
      */
-
     /** client/html/catalog/filter/price/name
      * Name of the price part used by the catalog filter client implementation
      *
@@ -116,7 +110,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @param string Last part of the client class name
      * @since 2020.10
      */
-
     /** client/html/catalog/filter/attribute/name
      * Name of the attribute part used by the catalog filter client implementation
      *
@@ -126,7 +119,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @param string Last part of the client class name
      * @since 2014.03
      */
-
     /** client/html/catalog/filter/supplier/name
      * Name of the supplier part used by the catalog filter client implementation
      *
@@ -136,12 +128,10 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @param string Last part of the client class name
      * @since 2018.07
      */
-    private array $subPartNames = ['tree', 'search', 'price', 'supplier', 'attribute'];
-
+    private array $sub_part_names = ['tree', 'search', 'price', 'supplier', 'attribute'];
     private array $tags = [];
     private ?string $expire = null;
     private ?\Aimeos\Base\View\Iface $view = null;
-
     /**
      * Returns the HTML code for insertion into the body.
      *
@@ -152,7 +142,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
     {
         $view = $this->view();
         $prefixes = ['f_name', 'f_catid', 'f_supid', 's_name'];
-
         /** client/html/catalog/filter/cache
          * Enables or disables caching only for the catalog filter component
          *
@@ -165,7 +154,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @see client/html/catalog/lists/cache
          * @see client/html/catalog/stage/cache
          */
-
         /** client/html/catalog/filter
          * All parameters defined for the catalog filter component and its subparts
          *
@@ -176,20 +164,15 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @see client/html/catalog#filter
          */
         $confkey = 'client/html/catalog/filter';
-
-        $args = map($view->param())->except(array_merge($prefixes, ['f_sort']))->filter(fn ($val, $key) => !strncmp($key, 'f_', 2));
-
+        $args = map($view->param())->except(array_merge($prefixes, ['f_sort']))->filter(fn($val, $key) => !strncmp($key, 'f_', 2));
         if ($args->empty() && ($html = $this->cached('body', $uid, $prefixes, $confkey)) !== null) {
             return $this->modify($html, $uid);
         }
-
-        $view = ($this->view ??= $this->object()->data($view, $this->tags, $this->expire));
-
+        $view = $this->view ??= $this->object()->data($view, $this->tags, $this->expire);
         $html = '';
-        foreach ($this->getSubClients() as $subclient) {
-            $html .= $subclient->setView($view)->body($uid);
+        foreach ($this->get_sub_clients() as $subclient) {
+            $html .= $subclient->set_view($view)->body($uid);
         }
-
         /** client/html/catalog/filter/template-body
          * Relative path to the HTML body template of the catalog filter client.
          *
@@ -209,17 +192,13 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @since 2014.03
          * @see client/html/catalog/filter/template-header
          */
-
         $template = $this->context()->config()->get('client/html/catalog/filter/template-body', 'catalog/filter/body');
         $html = $view->set('body', $html)->render($template);
-
         if ($args->empty()) {
             return $this->cache('body', $uid, $prefixes, $confkey, $html, $this->tags, $this->expire);
         }
-
         return $html;
     }
-
     /**
      * Returns the HTML string for insertion into the header.
      *
@@ -231,18 +210,14 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
         $view = $this->view();
         $confkey = 'client/html/catalog/filter';
         $prefixes = ['f_name', 'f_catid', 'f_supid', 's_name'];
-
-        $args = map($view->param())->except(array_merge($prefixes, ['f_sort']))->filter(fn ($val, $key) => !strncmp($key, 'f_', 2));
-
+        $args = map($view->param())->except(array_merge($prefixes, ['f_sort']))->filter(fn($val, $key) => !strncmp($key, 'f_', 2));
         if ($html = $this->cached('header', $uid, $prefixes, $confkey)) {
             return $this->modify($html, $uid);
         }
-
         $html = '';
-        foreach ($this->getSubClients() as $subclient) {
-            $html .= $subclient->setView($view)->header($uid);
+        foreach ($this->get_sub_clients() as $subclient) {
+            $html .= $subclient->set_view($view)->header($uid);
         }
-
         /** client/html/catalog/filter/template-header
          * Relative path to the HTML header template of the catalog filter client.
          *
@@ -263,18 +238,14 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @since 2014.03
          * @see client/html/catalog/filter/template-body
          */
-
         $template = $this->context()->config()->get('client/html/catalog/filter/template-header', 'catalog/filter/header');
-        $view = ($this->view ??= $this->object()->data($view, $this->tags, $this->expire));
+        $view = $this->view ??= $this->object()->data($view, $this->tags, $this->expire);
         $html = $view->set('header', $html)->render($template);
-
         if ($args->empty()) {
             return $this->cache('header', $uid, $prefixes, $confkey, $html, $this->tags, $this->expire);
         }
-
         return $html;
     }
-
     /**
      * Returns the sub-client given by its name.
      *
@@ -282,11 +253,10 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @param string|null $name Name of the sub-client (Default if null)
      * @return \Aimeos\Client\Html\Iface Sub-client object
      */
-    public function getSubClient(string $type, ?string $name = null): \Aimeos\Client\Html\Iface
+    public function get_sub_client(string $type, ?string $name = null): \Aimeos\Client\Html\Iface
     {
-        return $this->createSubClient('catalog/filter/' . $type, $name);
+        return $this->create_sub_client('catalog/filter/' . $type, $name);
     }
-
     /**
      * Modifies the cached content to replace content based on sessions or cookies.
      *
@@ -297,20 +267,17 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
     public function modify(string $content, string $uid): string
     {
         $content = parent::modify($content, $uid);
-
-        return $this->replaceSection($content, $this->view()->csrf()->formfield(), 'catalog.filter.csrf');
+        return $this->replace_section($content, $this->view()->csrf()->formfield(), 'catalog.filter.csrf');
     }
-
     /**
      * Returns the list of sub-client names configured for the client.
      *
      * @return array List of HTML client names
      */
-    protected function getSubClientNames(): array
+    protected function get_sub_client_names(): array
     {
-        return $this->context()->config()->get($this->subPartPath, $this->subPartNames);
+        return $this->context()->config()->get($this->sub_part_path, $this->sub_part_names);
     }
-
     /**
      * Sets the necessary parameter values in the view.
      *
@@ -322,8 +289,7 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
     public function data(\Aimeos\Base\View\Iface $view, array &$tags = [], ?string &$expire = null): \Aimeos\Base\View\Iface
     {
         $config = $this->context()->config();
-        $params = $this->getClientParams($view->param(), ['f_', 'l_type']);
-
+        $params = $this->get_client_params($view->param(), ['f_', 'l_type']);
         /** client/html/catalog/count/enable
          * Enables or disables displaying product counts in the catalog filter
          *
@@ -344,9 +310,7 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @see client/html/catalog/count/url/config
          * @see client/html/catalog/count/url/filter
          */
-        if ($config->get('client/html/catalog/count/enable', true) == true
-            && array_intersect($this->getSubClientNames(), ['tree', 'supplier', 'attribute']) !== []
-        ) {
+        if ($config->get('client/html/catalog/count/enable', true) == true && array_intersect($this->get_sub_client_names(), ['tree', 'supplier', 'attribute']) !== []) {
             /** client/html/catalog/count/url/target
              * Destination of the URL where the controller specified in the URL is known
              *
@@ -361,7 +325,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
              * @see client/html/catalog/count/url/config
              * @see client/html/catalog/count/url/filter
              */
-
             /** client/html/catalog/count/url/controller
              * Name of the controller whose action should be called
              *
@@ -376,7 +339,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
              * @see client/html/catalog/count/url/config
              * @see client/html/catalog/count/url/filter
              */
-
             /** client/html/catalog/count/url/action
              * Name of the action that should create the output
              *
@@ -391,7 +353,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
              * @see client/html/catalog/count/url/config
              * @see client/html/catalog/count/url/filter
              */
-
             /** client/html/catalog/count/url/config
              * Associative list of configuration options used for generating the URL
              *
@@ -412,7 +373,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
              * @see client/html/catalog/count/url/action
              * @see client/html/catalog/count/url/filter
              */
-
             /** client/html/catalog/count/url/filter
              * Removes parameters for the detail page before generating the URL
              *
@@ -426,7 +386,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
              * @see client/html/catalog/count/url/action
              * @see client/html/catalog/count/url/config
              */
-
             /** client/html/catalog/filter/remove-params
              * Removes the configured parameters before generating filter URLs for the list view
              *
@@ -440,25 +399,19 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
              * @param array List of parameter names
              * @since 2020.04
              */
-
             $startid = $config->get('client/html/catalog/lists/catid-default');
             $startid = $config->get('client/html/catalog/filter/tree/startid', $startid);
-
             if ($startid) {
                 $params['f_catid'] = $view->param('f_catid', $startid);
                 $params['f_name'] = $view->param('f_name', '');
             }
-
             foreach ($config->get('client/html/catalog/filter/remove-params', ['f_sort']) as $name) {
                 unset($params['f_sort']);
             }
-
-            $view->filterParams = $params;
+            $view->filter_params = $params;
         }
-
         return parent::data($view, $tags, $expire);
     }
-
     /** client/html/catalog/filter/decorators/excludes
      * Excludes decorators added by the "common" option from the catalog filter html client
      *
@@ -483,7 +436,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @see client/html/catalog/filter/decorators/global
      * @see client/html/catalog/filter/decorators/local
      */
-
     /** client/html/catalog/filter/decorators/global
      * Adds a list of globally available decorators only to the catalog filter html client
      *
@@ -506,7 +458,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @see client/html/catalog/filter/decorators/excludes
      * @see client/html/catalog/filter/decorators/local
      */
-
     /** client/html/catalog/filter/decorators/local
      * Adds a list of local decorators only to the catalog filter html client
      *

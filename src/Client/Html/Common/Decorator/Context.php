@@ -1,14 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2020-2026
  * @package Client
  * @subpackage Html
  */
-
 namespace Aimeos\Client\Html\Common\Decorator;
 
 /**
@@ -32,18 +30,16 @@ class Context extends Base implements Iface
     {
         $context = $this->context();
         $locale = $context->locale();
-
-        $view->contextLanguage = $locale->getLanguageId();
-        $view->contextCurrency = $locale->getCurrencyId();
-        $view->contextSiteIcon = $locale->getSiteItem()->getIcon();
-        $view->contextSiteLogo = $locale->getSiteItem()->getLogo();
-        $view->contextSiteLogos = $locale->getSiteItem()->getLogos();
-        $view->contextSite = $locale->getSiteItem()->getCode();
-        $view->contextSiteLabel = $locale->getSiteItem()->getLabel();
-        $view->contextSiteTheme = $locale->getSiteItem()->getTheme();
-        $view->contextSiteId = $locale->getSiteId();
-        $view->contextNonce = $context->nonce();
-
+        $view->context_language = $locale->get_language_id();
+        $view->context_currency = $locale->get_currency_id();
+        $view->context_site_icon = $locale->get_site_item()->get_icon();
+        $view->context_site_logo = $locale->get_site_item()->get_logo();
+        $view->context_site_logos = $locale->get_site_item()->get_logos();
+        $view->context_site = $locale->get_site_item()->get_code();
+        $view->context_site_label = $locale->get_site_item()->get_label();
+        $view->context_site_theme = $locale->get_site_item()->get_theme();
+        $view->context_site_id = $locale->get_site_id();
+        $view->context_nonce = $context->nonce();
         return $this->client()->data($view, $tags, $expire);
     }
 }

@@ -5,9 +5,7 @@
  * @copyright Metaways Infosystems GmbH, 2012
  * @copyright Aimeos (aimeos.org), 2015-2026
  */
-
 $enc = $this->encoder();
-
 /** client/html/catalog/lists/url/target
  * Destination of the URL where the controller specified in the URL is known
  *
@@ -22,7 +20,6 @@ $enc = $this->encoder();
  * @see client/html/catalog/lists/url/config
  * @see client/html/catalog/lists/url/filter
  */
-
 /** client/html/catalog/lists/url/controller
  * Name of the controller whose action should be called
  *
@@ -37,7 +34,6 @@ $enc = $this->encoder();
  * @see client/html/catalog/lists/url/config
  * @see client/html/catalog/lists/url/filter
  */
-
 /** client/html/catalog/lists/url/action
  * Name of the action that should create the output
  *
@@ -52,7 +48,6 @@ $enc = $this->encoder();
  * @see client/html/catalog/lists/url/config
  * @see client/html/catalog/lists/url/filter
  */
-
 /** client/html/catalog/lists/url/config
  * Associative list of configuration options used for generating the URL
  *
@@ -73,7 +68,6 @@ $enc = $this->encoder();
  * @see client/html/catalog/lists/url/action
  * @see client/html/catalog/lists/url/filter
  */
-
 /** client/html/catalog/lists/url/filter
  * Removes parameters for the detail page before generating the URL
  *
@@ -87,7 +81,6 @@ $enc = $this->encoder();
  * @see client/html/catalog/lists/url/action
  * @see client/html/catalog/lists/url/config
  */
-
 /** client/html/catalog/multiroute
  * Enables multiple entities sharing the same route
  *
@@ -98,28 +91,48 @@ $enc = $this->encoder();
  * @since 2023.10
  */
 $multi = $this->config('client/html/catalog/multiroute', false);
-$linkKey = $multi && $this->param('path') || $this->param('f_catid') ? 'client/html/catalog/tree/url' : 'client/html/catalog/lists/url';
+$link_key = $multi && $this->param('path') || $this->param('f_catid') ? 'client/html/catalog/tree/url' : 'client/html/catalog/lists/url';
 $params = map($this->param())->only(['path', 'f_catid', 'f_name', 'f_search']);
-
 if ($catid = $this->config('client/html/catalog/filter/tree/startid')) {
     $params = $params->union(['f_catid' => $catid]);
 }
-
 ?>
-<div class="section aimeos catalog-filter" data-jsonurl="<?= $enc->attr($this->link('client/jsonapi/url')) ?>">
+<div class="section aimeos catalog-filter" data-jsonurl="<?php 
+echo $enc->attr($this->link('client/jsonapi/url'));
+?>">
 
 	<nav class="container-xxl">
-		<form method="GET" action="<?= $enc->attr($this->link($linkKey, $params->all())) ?>">
+		<form method="GET" action="<?php 
+echo $enc->attr($this->link($link_key, $params->all()));
+?>">
 
-			<?php foreach (map($this->param())->only(['f_sort', 'l_type']) as $name => $value) : ?>
-				<input type="hidden" name="<?= $enc->attr($this->formparam($name)) ?>" value="<?= $enc->attr($value) ?>">
-			<?php endforeach ?>
+			<?php 
+foreach (map($this->param())->only(['f_sort', 'l_type']) as $name => $value) {
+    ?>
+				<input type="hidden" name="<?php 
+    echo $enc->attr($this->formparam($name));
+    ?>" value="<?php 
+    echo $enc->attr($value);
+    ?>">
+			<?php 
+}
+?>
 
-			<?= $this->block()->get('catalog/filter/tree') ?>
-			<?= $this->block()->get('catalog/filter/search') ?>
-			<?= $this->block()->get('catalog/filter/price') ?>
-			<?= $this->block()->get('catalog/filter/supplier') ?>
-			<?= $this->block()->get('catalog/filter/attribute') ?>
+			<?php 
+echo $this->block()->get('catalog/filter/tree');
+?>
+			<?php 
+echo $this->block()->get('catalog/filter/search');
+?>
+			<?php 
+echo $this->block()->get('catalog/filter/price');
+?>
+			<?php 
+echo $this->block()->get('catalog/filter/supplier');
+?>
+			<?php 
+echo $this->block()->get('catalog/filter/attribute');
+?>
 
 		</form>
 	</nav>

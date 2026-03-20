@@ -1,14 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2015-2026
  * @package Client
  * @subpackage Html
  */
-
 namespace Aimeos\Client\Html\Basket\Related;
 
 /**
@@ -51,7 +49,6 @@ class Standard extends \Aimeos\Client\Html\Basket\Base implements \Aimeos\Client
      * @param string Last part of the class name
      * @since 2014.03
      */
-
     /**
      * Sets the necessary parameter values in the view.
      *
@@ -63,21 +60,9 @@ class Standard extends \Aimeos\Client\Html\Basket\Base implements \Aimeos\Client
     public function data(\Aimeos\Base\View\Iface $view, array &$tags = [], ?string &$expire = null): \Aimeos\Base\View\Iface
     {
         $cntl = \Aimeos\Controller\Frontend::create($this->context(), 'product');
-
-        $view->boughtItems = $cntl->uses($this->domains())
-            ->product($this->productIds()->all())
-            ->search()
-            ->getListItems('product', 'bought-together')
-            ->flat(1)
-            ->usort(fn ($a, $b) => $a->getPosition() <=> $b->getPosition())
-            ->getRefItem()
-            ->filter()
-            ->slice(0, $this->size())
-            ->col(null, 'product.id');
-
+        $view->bought_items = $cntl->uses($this->domains())->product($this->product_ids()->all())->search()->get_list_items('product', 'bought-together')->flat(1)->usort(fn($a, $b) => $a->get_position() <=> $b->get_position())->get_ref_item()->filter()->slice(0, $this->size())->col(null, 'product.id');
         return parent::data($view, $tags, $expire);
     }
-
     /**
      * Returns the data domains fetched along with the products
      *
@@ -86,7 +71,6 @@ class Standard extends \Aimeos\Client\Html\Basket\Base implements \Aimeos\Client
     protected function domains(): array
     {
         $config = $this->context()->config();
-
         /** client/html/basket/related/bought/domains
          * The list of domain names whose items should be available in the template for the products
          *
@@ -104,7 +88,6 @@ class Standard extends \Aimeos\Client\Html\Basket\Base implements \Aimeos\Client
         $domains = ['catalog', 'media', 'media/property', 'price', 'supplier', 'text'];
         $domains = $config->get('client/html/basket/related/bought/domains', $domains);
         $domains['product'] = ['bought-together'];
-
         /** client/html/basket/related/basket-add
          * Display the "add to basket" button for each product item
          *
@@ -123,25 +106,18 @@ class Standard extends \Aimeos\Client\Html\Basket\Base implements \Aimeos\Client
         if ($config->get('client/html/basket/related/basket-add', false)) {
             return array_merge_recursive($domains, ['product' => ['default'], 'attribute' => ['variant', 'custom', 'config']]);
         }
-
         return $domains;
     }
-
     /**
      * Returns the IDs of the products in the basket
      *
      * @return \Aimeos\Map List of product IDs
      */
-    protected function productIds(): \Aimeos\Map
+    protected function product_ids(): \Aimeos\Map
     {
         $basket = \Aimeos\Controller\Frontend::create($this->context(), 'basket')->get();
-
-        return $basket->getProducts()
-            ->concat($basket->getProducts()->getProducts())
-            ->col('order.product.parentproductid')
-            ->unique();
+        return $basket->get_products()->concat($basket->get_products()->get_products())->col('order.product.parentproductid')->unique();
     }
-
     /**
      * Returns the number of products shown in the list
      *
@@ -166,7 +142,6 @@ class Standard extends \Aimeos\Client\Html\Basket\Base implements \Aimeos\Client
          */
         return $this->context()->config()->get('client/html/basket/related/bought/limit', 6);
     }
-
     /** client/html/basket/related/template-body
      * Relative path to the HTML body template of the basket related client.
      *
@@ -186,7 +161,6 @@ class Standard extends \Aimeos\Client\Html\Basket\Base implements \Aimeos\Client
      * @since 2014.03
      * @see client/html/basket/related/template-header
      */
-
     /** client/html/basket/related/template-header
      * Relative path to the HTML header template of the basket related client.
      *
@@ -207,7 +181,6 @@ class Standard extends \Aimeos\Client\Html\Basket\Base implements \Aimeos\Client
      * @since 2014.03
      * @see client/html/basket/related/template-body
      */
-
     /** client/html/basket/related/decorators/excludes
      * Excludes decorators added by the "common" option from the basket related html client
      *
@@ -232,7 +205,6 @@ class Standard extends \Aimeos\Client\Html\Basket\Base implements \Aimeos\Client
      * @see client/html/basket/related/decorators/global
      * @see client/html/basket/related/decorators/local
      */
-
     /** client/html/basket/related/decorators/global
      * Adds a list of globally available decorators only to the basket related html client
      *
@@ -255,7 +227,6 @@ class Standard extends \Aimeos\Client\Html\Basket\Base implements \Aimeos\Client
      * @see client/html/basket/related/decorators/excludes
      * @see client/html/basket/related/decorators/local
      */
-
     /** client/html/basket/related/decorators/local
      * Adds a list of local decorators only to the basket related html client
      *

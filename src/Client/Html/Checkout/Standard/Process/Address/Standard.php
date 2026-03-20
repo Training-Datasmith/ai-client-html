@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Metaways Infosystems GmbH, 2013
@@ -9,7 +8,6 @@ declare(strict_types=1);
  * @package Client
  * @subpackage Html
  */
-
 namespace Aimeos\Client\Html\Checkout\Standard\Process\Address;
 
 /**
@@ -30,7 +28,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
     {
         return '';
     }
-
     /**
      * Processes the input, e.g. provides the address form.
      *
@@ -40,26 +37,23 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
     public function init(): void
     {
         $context = $this->context();
-
         try {
             if ($context->user() !== null) {
                 $basket = \Aimeos\Controller\Frontend::create($context, 'basket')->get();
                 $cntl = \Aimeos\Controller\Frontend::create($context, 'customer');
                 $item = $cntl->uses(['customer/address'])->get();
-
-                foreach ($basket->getAddress('delivery') as $address) {
-                    if ($address->getAddressId() == '' && $address->get('nostore', false) == false) {
-                        $addrItem = $cntl->createAddressItem()->copyFrom($address);
-                        $cntl->addAddressItem($addrItem)->store();
-                        $address->setAddressId((string) $addrItem->getId());
+                foreach ($basket->get_address('delivery') as $address) {
+                    if ($address->get_address_id() == '' && $address->get('nostore', false) == false) {
+                        $addr_item = $cntl->create_address_item()->copy_from($address);
+                        $cntl->add_address_item($addr_item)->store();
+                        $address->set_address_id((string) $addr_item->get_id());
                     }
                 }
             }
         } catch (\Exception $e) {
-            $msg = sprintf('Unable to save address for customer "%1$s": %2$s', $context->user(), $e->getMessage());
+            $msg = sprintf('Unable to save address for customer "%1$s": %2$s', $context->user(), $e->get_message());
             $context->logger()->info($msg, 'client/html');
         }
-
         parent::init();
     }
 }

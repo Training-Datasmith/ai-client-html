@@ -1,14 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2015-2026
  * @package Client
  * @subpackage Html
  */
-
 namespace Aimeos\Client\Html\Account\History;
 
 /**
@@ -51,7 +49,6 @@ class Standard extends \Aimeos\Client\Html\Base implements \Aimeos\Client\Html\I
      * @param string Last part of the class name
      * @since 2014.03
      */
-
     /**
      * Sets the necessary parameter values in the view.
      *
@@ -63,7 +60,6 @@ class Standard extends \Aimeos\Client\Html\Base implements \Aimeos\Client\Html\I
     public function data(\Aimeos\Base\View\Iface $view, array &$tags = [], ?string &$expire = null): \Aimeos\Base\View\Iface
     {
         $context = $this->context();
-
         /** client/html/account/history/domains
          * A list of domain names whose items should be available in the account history view template
          *
@@ -78,13 +74,9 @@ class Standard extends \Aimeos\Client\Html\Base implements \Aimeos\Client\Html\I
          */
         $domains = ['order'] + $context->config()->get('mshop/order/manager/subdomains', []);
         $domains = $context->config()->get('client/html/account/history/domains', $domains);
-
-        $view->historyItems = \Aimeos\Controller\Frontend::create($context, 'order')
-            ->uses($domains)->sort('-order.id')->search();
-
+        $view->history_items = \Aimeos\Controller\Frontend::create($context, 'order')->uses($domains)->sort('-order.id')->search();
         return parent::data($view, $tags, $expire);
     }
-
     /** client/html/account/history/template-body
      * Relative path to the HTML body template of the account history client.
      *
@@ -104,7 +96,6 @@ class Standard extends \Aimeos\Client\Html\Base implements \Aimeos\Client\Html\I
      * @since 2014.03
      * @see client/html/account/history/template-header
      */
-
     /** client/html/account/history/template-header
      * Relative path to the HTML header template of the account history client.
      *
@@ -125,7 +116,6 @@ class Standard extends \Aimeos\Client\Html\Base implements \Aimeos\Client\Html\I
      * @since 2014.03
      * @see client/html/account/history/template-body
      */
-
     /** client/html/account/history/decorators/excludes
      * Excludes decorators added by the "common" option from the account history html client
      *
@@ -149,7 +139,6 @@ class Standard extends \Aimeos\Client\Html\Base implements \Aimeos\Client\Html\I
      * @see client/html/account/history/decorators/global
      * @see client/html/account/history/decorators/local
      */
-
     /** client/html/account/history/decorators/global
      * Adds a list of globally available decorators only to the account history html client
      *
@@ -171,7 +160,6 @@ class Standard extends \Aimeos\Client\Html\Base implements \Aimeos\Client\Html\I
      * @see client/html/account/history/decorators/excludes
      * @see client/html/account/history/decorators/local
      */
-
     /** client/html/account/history/decorators/local
      * Adds a list of local decorators only to the account history html client
      *

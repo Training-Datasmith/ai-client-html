@@ -1,14 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2015-2026
  * @package Client
  * @subpackage Html
  */
-
 namespace Aimeos\Client\Html\Catalog\Count\Tree;
 
 /**
@@ -31,7 +29,6 @@ class Standard extends \Aimeos\Client\Html\Catalog\Base implements \Aimeos\Clien
     {
         $context = $this->context();
         $config = $context->config();
-
         /** client/html/catalog/count/tree/aggregate
          * Enables or disables generating product counts for the category catalog filter
          *
@@ -44,56 +41,36 @@ class Standard extends \Aimeos\Client\Html\Catalog\Base implements \Aimeos\Clien
         if ($config->get('client/html/catalog/count/tree/aggregate', true) == true) {
             $startid = $view->config('client/html/catalog/filter/tree/startid');
             $level = $view->config('client/html/catalog/lists/levels', \Aimeos\MW\Tree\Manager\Base::LEVEL_LIST);
-
             $cntl = \Aimeos\Controller\Frontend::create($context, 'catalog')->root(current((array) $startid));
-            $root = $cntl->getTree(\Aimeos\MW\Tree\Manager\Base::LEVEL_ONE);
-
-            if (($catId = $view->param('f_catid', $root->getId())) != null && $catId != $root->getId()) {
-                $cntl->visible($cntl->getPath($catId)->keys()->toArray());
+            $root = $cntl->get_tree(\Aimeos\MW\Tree\Manager\Base::LEVEL_ONE);
+            if (($cat_id = $view->param('f_catid', $root->get_id())) != null && $cat_id != $root->get_id()) {
+                $cntl->visible($cntl->get_path($cat_id)->keys()->to_array());
             } elseif ($level != \Aimeos\MW\Tree\Manager\Base::LEVEL_TREE) {
-                $cntl->visible([$root->getId()]);
+                $cntl->visible([$root->get_id()]);
             }
-
-            $tree = $cntl->getTree();
-            $cntl = \Aimeos\Controller\Frontend::create($context, 'product')
-                ->radius($view->param('f_point', []), $view->param('f_dist'))
-                ->category($tree->toList()->keys()->toArray())
-                ->supplier($view->param('f_supid', []))
-                ->allof($view->param('f_attrid', []))
-                ->oneOf($view->param('f_optid', []))
-                ->oneOf($view->param('f_oneid', []))
-                ->text($view->param('f_search'))
-                ->price($view->param('f_price'))
-                ->slice(0, 0x7fffffff) // restricted by mshop/common/manager/aggregate/limit
-                ->sort();
-
-            $view->treeCountList = $cntl->aggregate('index.catalog.id');
-
+            $tree = $cntl->get_tree();
+            $cntl = \Aimeos\Controller\Frontend::create($context, 'product')->radius($view->param('f_point', []), $view->param('f_dist'))->category($tree->to_list()->keys()->to_array())->supplier($view->param('f_supid', []))->allof($view->param('f_attrid', []))->one_of($view->param('f_optid', []))->one_of($view->param('f_oneid', []))->text($view->param('f_search'))->price($view->param('f_price'))->slice(0, 0x7fffffff)->sort();
+            $view->tree_count_list = $cntl->aggregate('index.catalog.id');
             if ($level === \Aimeos\MW\Tree\Manager\Base::LEVEL_TREE) {
-                $view->treeCountList = map($this->counts($this->traverse($tree, $view->treeCountList->toArray())));
+                $view->tree_count_list = map($this->counts($this->traverse($tree, $view->tree_count_list->to_array())));
             }
         }
-
         return parent::data($view, $tags, $expire);
     }
-
     /**
      * Returns the product counts per node
      *
      * @param \Aimeos\MShop\Catalog\Item\Iface $node Tree node, maybe with children
      * @return array Associative list of catalog IDs as keys and product counts as values
      */
-    protected function counts(\Aimeos\MShop\Catalog\Item\Iface $node): array
+    protected function counts(\Aimeos\M_Shop\Catalog\Item\Iface $node): array
     {
-        $list = [$node->getId() => $node->count];
-
-        foreach ($node->getChildren() as $child) {
+        $list = [$node->get_id() => $node->count];
+        foreach ($node->get_children() as $child) {
             $list += $this->counts($child);
         }
-
         return $list;
     }
-
     /**
      * Traverses the tree and adds the aggregated product counts to each node
      *
@@ -101,18 +78,15 @@ class Standard extends \Aimeos\Client\Html\Catalog\Base implements \Aimeos\Clien
      * @param array $counts Associative list of catalog IDs as keys and product counts as values
      * @return \Aimeos\MShop\Catalog\Item\Iface Updated tree node
      */
-    protected function traverse(\Aimeos\MShop\Catalog\Item\Iface $node, array $counts): \Aimeos\MShop\Catalog\Item\Iface
+    protected function traverse(\Aimeos\M_Shop\Catalog\Item\Iface $node, array $counts): \Aimeos\M_Shop\Catalog\Item\Iface
     {
-        $count = ($counts[$node->getId()] ?? 0);
-
-        foreach ($node->getChildren() as $child) {
+        $count = $counts[$node->get_id()] ?? 0;
+        foreach ($node->get_children() as $child) {
             $count += $this->traverse($child, $counts)->count;
         }
-
         $node->count = $count;
         return $node;
     }
-
     /** client/html/catalog/count/tree/template-body
      * Relative path to the HTML body template of the catalog count tree client.
      *

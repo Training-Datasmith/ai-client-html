@@ -4,9 +4,7 @@
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2020-2026
  */
-
 $enc = $this->encoder();
-
 /** client/html/catalog/home/url/target
  * Destination of the URL where the controller specified in the URL is known
  *
@@ -21,7 +19,6 @@ $enc = $this->encoder();
  * @see client/html/catalog/home/url/config
  * @see client/html/catalog/home/url/filter
  */
-
 /** client/html/catalog/home/url/controller
  * Name of the controller whose action should be called
  *
@@ -36,7 +33,6 @@ $enc = $this->encoder();
  * @see client/html/catalog/home/url/config
  * @see client/html/catalog/home/url/filter
  */
-
 /** client/html/catalog/home/url/action
  * Name of the action that should create the output
  *
@@ -51,7 +47,6 @@ $enc = $this->encoder();
  * @see client/html/catalog/home/url/config
  * @see client/html/catalog/home/url/filter
  */
-
 /** client/html/catalog/home/url/config
  * Associative list of configuration options used for generating the URL
  *
@@ -72,7 +67,6 @@ $enc = $this->encoder();
  * @see client/html/catalog/home/url/action
  * @see client/html/catalog/home/url/filter
  */
-
 /** client/html/catalog/home/url/filter
  * Removes parameters for the detail page before generating the URL
  *
@@ -86,53 +80,104 @@ $enc = $this->encoder();
  * @see client/html/catalog/home/url/action
  * @see client/html/catalog/home/url/config
  */
-
-?>
-<?php if (isset($this->homeTree)) : ?>
-
-	<title><?= $enc->html(strip_tags($this->homeTree->getName())) ?> | <?= $enc->html($this->get('contextSiteLabel', 'Aimeos')) ?></title>
-
-	<meta property="og:type" content="website">
-	<meta property="og:site_name" content="<?= $enc->attr($this->get('contextSiteLabel', 'Aimeos')) ?>">
-	<meta property="og:title" content="<?= $enc->attr(strip_tags($this->homeTree->getName())) ?>">
-	<meta property="og:url" content="<?= $enc->attr($this->link('client/html/catalog/home/url', [], ['absoluteUri' => true])) ?>">
-
-	<?php if ($icon = $this->get('contextSiteIcon')) : ?>
-		<meta property="og:image" content="<?= $enc->attr($this->content($icon)) ?>">
-		<meta name="twitter:card" content="summary_large_image">
-	<?php endif ?>
-
-	<?php foreach ($this->homeTree->getRefItems('text', 'meta-description', 'default') as $textItem) : ?>
-		<meta property="og:description" content="<?= $enc->attr($textItem->getContent()) ?>">
-		<meta name="description" content="<?= $enc->attr(strip_tags($textItem->getContent())) ?>">
-	<?php endforeach ?>
-
-	<?php foreach ($this->homeTree->getRefItems('text', 'meta-keyword', 'default') as $textItem) : ?>
-		<meta name="keywords" content="<?= $enc->attr(strip_tags($textItem->getContent())) ?>">
-	<?php endforeach ?>
-
-	<?php
-        if (($media = $this->homeTree->getRefItems('media', 'stage', 'default'))->isEmpty()) {
-            $media = $this->homeTree->getChildren()->getRefItems('media', 'stage', 'default');
-        }
+if (isset($this->home_tree)) {
     ?>
 
-	<?php if ($mediaItem = $media->flat()->first()) : ?>
+	<title><?php 
+    echo $enc->html(strip_tags($this->home_tree->get_name()));
+    ?> | <?php 
+    echo $enc->html($this->get('contextSiteLabel', 'Aimeos'));
+    ?></title>
+
+	<meta property="og:type" content="website">
+	<meta property="og:site_name" content="<?php 
+    echo $enc->attr($this->get('contextSiteLabel', 'Aimeos'));
+    ?>">
+	<meta property="og:title" content="<?php 
+    echo $enc->attr(strip_tags($this->home_tree->get_name()));
+    ?>">
+	<meta property="og:url" content="<?php 
+    echo $enc->attr($this->link('client/html/catalog/home/url', [], ['absoluteUri' => true]));
+    ?>">
+
+	<?php 
+    if ($icon = $this->get('contextSiteIcon')) {
+        ?>
+		<meta property="og:image" content="<?php 
+        echo $enc->attr($this->content($icon));
+        ?>">
+		<meta name="twitter:card" content="summary_large_image">
+	<?php 
+    }
+    ?>
+
+	<?php 
+    foreach ($this->home_tree->get_ref_items('text', 'meta-description', 'default') as $text_item) {
+        ?>
+		<meta property="og:description" content="<?php 
+        echo $enc->attr($text_item->get_content());
+        ?>">
+		<meta name="description" content="<?php 
+        echo $enc->attr(strip_tags($text_item->get_content()));
+        ?>">
+	<?php 
+    }
+    ?>
+
+	<?php 
+    foreach ($this->home_tree->get_ref_items('text', 'meta-keyword', 'default') as $text_item) {
+        ?>
+		<meta name="keywords" content="<?php 
+        echo $enc->attr(strip_tags($text_item->get_content()));
+        ?>">
+	<?php 
+    }
+    ?>
+
+	<?php 
+    if (($media = $this->home_tree->get_ref_items('media', 'stage', 'default'))->is_empty()) {
+        $media = $this->home_tree->get_children()->get_ref_items('media', 'stage', 'default');
+    }
+    ?>
+
+	<?php 
+    if ($media_item = $media->flat()->first()) {
+        ?>
 		<link rel="preload" as="image"
-			href="<?= $enc->attr($this->content($mediaItem->getPreview(), $mediaItem->getFileSystem())) ?>"
-			imagesrcset="<?= $enc->attr($this->imageset($mediaItem->getPreviews(true), $mediaItem->getFileSystem())) ?>">
-	<?php endif ?>
+			href="<?php 
+        echo $enc->attr($this->content($media_item->get_preview(), $media_item->get_file_system()));
+        ?>"
+			imagesrcset="<?php 
+        echo $enc->attr($this->imageset($media_item->get_previews(true), $media_item->get_file_system()));
+        ?>">
+	<?php 
+    }
+    ?>
 
-<?php else : ?>
+<?php 
+} else {
+    ?>
 
-	<title><?= $enc->html($this->get('contextSiteLabel', 'Aimeos')) ?></title>
+	<title><?php 
+    echo $enc->html($this->get('contextSiteLabel', 'Aimeos'));
+    ?></title>
 
-<?php endif ?>
+<?php 
+}
+?>
 
-<link rel="stylesheet" href="<?= $enc->attr($this->content($this->get('contextSiteTheme', 'default') . '/slider.css', 'fs-theme', true)) ?>">
-<link rel="stylesheet" href="<?= $enc->attr($this->content($this->get('contextSiteTheme', 'default') . '/catalog-home.css', 'fs-theme', true)) ?>">
+<link rel="stylesheet" href="<?php 
+echo $enc->attr($this->content($this->get('contextSiteTheme', 'default') . '/slider.css', 'fs-theme', true));
+?>">
+<link rel="stylesheet" href="<?php 
+echo $enc->attr($this->content($this->get('contextSiteTheme', 'default') . '/catalog-home.css', 'fs-theme', true));
+?>">
 
-<script defer src="<?= $enc->attr($this->content($this->get('contextSiteTheme', 'default') . '/slider.js', 'fs-theme', true)) ?>"></script>
-<script defer src="<?= $enc->attr($this->content($this->get('contextSiteTheme', 'default') . '/catalog-home.js', 'fs-theme', true)) ?>"></script>
+<script defer src="<?php 
+echo $enc->attr($this->content($this->get('contextSiteTheme', 'default') . '/slider.js', 'fs-theme', true));
+?>"></script>
+<script defer src="<?php 
+echo $enc->attr($this->content($this->get('contextSiteTheme', 'default') . '/catalog-home.js', 'fs-theme', true));
+?>"></script>
 
 <meta name="application-name" content="Aimeos">

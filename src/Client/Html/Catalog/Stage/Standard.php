@@ -1,14 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2015-2026
  * @package Client
  * @subpackage Html
  */
-
 namespace Aimeos\Client\Html\Catalog\Stage;
 
 /**
@@ -51,11 +49,9 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @param string Last part of the class name
      * @since 2014.03
      */
-
     private array $tags = [];
     private ?string $expire = null;
     private ?\Aimeos\Base\View\Iface $view = null;
-
     /**
      * Returns the HTML code for insertion into the body.
      *
@@ -66,7 +62,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
     {
         $prefixes = ['f_catid'];
         $config = $this->context()->config();
-
         /** client/html/catalog/stage/cache
          * Enables or disables caching only for the catalog stage component
          *
@@ -79,7 +74,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @see client/html/catalog/filter/cache
          * @see client/html/catalog/lists/cache
          */
-
         /** client/html/catalog/stage
          * All parameters defined for the catalog stage component and its subparts
          *
@@ -90,11 +84,9 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @see client/html/catalog#stage
          */
         $confkey = 'client/html/catalog/stage';
-
         if ($html = $this->cached('body', $uid, $prefixes, $confkey)) {
             return $this->modify($html, $uid);
         }
-
         /** client/html/catalog/stage/template-body
          * Relative path to the HTML body template of the catalog stage client.
          *
@@ -115,13 +107,10 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @see client/html/catalog/stage/template-header
          */
         $template = $config->get('client/html/catalog/stage/template-body', 'catalog/stage/body');
-
-        $view = ($this->view ??= $this->object()->data($this->view(), $this->tags, $this->expire));
+        $view = $this->view ??= $this->object()->data($this->view(), $this->tags, $this->expire);
         $html = $view->render($template);
-
         return $this->cache('body', $uid, $prefixes, $confkey, $html, $this->tags, $this->expire);
     }
-
     /**
      * Returns the HTML string for insertion into the header.
      *
@@ -133,11 +122,9 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
         $prefixes = ['f_catid'];
         $config = $this->context()->config();
         $confkey = 'client/html/catalog/stage';
-
         if ($html = $this->cached('header', $uid, $prefixes, $confkey)) {
             return $this->modify($html, $uid);
         }
-
         /** client/html/catalog/stage/template-header
          * Relative path to the HTML header template of the catalog stage client.
          *
@@ -159,13 +146,10 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @see client/html/catalog/stage/template-body
          */
         $template = $config->get('client/html/catalog/stage/template-header', 'catalog/stage/header');
-
-        $view = ($this->view ??= $this->object()->data($this->view(), $this->tags, $this->expire));
+        $view = $this->view ??= $this->object()->data($this->view(), $this->tags, $this->expire);
         $html = $view->render($template);
-
         return $this->cache('header', $uid, $prefixes, $confkey, $html, $this->tags, $this->expire);
     }
-
     /**
      * Sets the necessary parameter values in the view.
      *
@@ -178,11 +162,9 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
     {
         $context = $this->context();
         $config = $context->config();
-        $params = map($this->getClientParams($view->param(), ['f_', 'l_type']));
-
+        $params = map($this->get_client_params($view->param(), ['f_', 'l_type']));
         if ($catid = $params->get('f_catid', $config->get('client/html/catalog/lists/catid-default'))) {
             $controller = \Aimeos\Controller\Frontend::create($context, 'catalog');
-
             /** client/html/catalog/domains
              * A list of domain names whose items should be available in the catalog view templates
              *
@@ -190,7 +172,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
              */
             $domains = ['attribute', 'media', 'media/property', 'text'];
             $domains = $config->get('client/html/catalog/domains', $domains);
-
             /** client/html/catalog/stage/domains
              * A list of domain names whose items should be available in the catalog stage view template
              *
@@ -212,24 +193,17 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
              * @see client/html/catalog/lists/domains
              */
             $domains = $config->get('client/html/catalog/stage/domains', $domains);
-
-            $stageCatPath = $controller->uses($domains)->getPath($catid);
-
-            $mediaItems = $stageCatPath->getRefItems('media', 'stage', 'default')->find(fn (\Aimeos\Map $entry) => !$entry->isEmpty(), true);
-
-            $this->addMetaItems($stageCatPath, $expire, $tags);
-
-            $view->stageCurrentCatItem = $stageCatPath->last();
-            $view->stageMediaItems = $mediaItems;
-            $view->stageCatPath = $stageCatPath;
-            $view->stageCatId = $catid;
+            $stage_cat_path = $controller->uses($domains)->get_path($catid);
+            $media_items = $stage_cat_path->get_ref_items('media', 'stage', 'default')->find(fn(\Aimeos\Map $entry) => !$entry->is_empty(), true);
+            $this->add_meta_items($stage_cat_path, $expire, $tags);
+            $view->stage_current_cat_item = $stage_cat_path->last();
+            $view->stage_media_items = $media_items;
+            $view->stage_cat_path = $stage_cat_path;
+            $view->stage_cat_id = $catid;
         }
-
-        $view->stageParams = $params->all();
-
+        $view->stage_params = $params->all();
         return parent::data($view, $tags, $expire);
     }
-
     /** client/html/catalog/stage/decorators/excludes
      * Excludes decorators added by the "common" option from the catalog stage html client
      *
@@ -253,7 +227,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @see client/html/catalog/stage/decorators/global
      * @see client/html/catalog/stage/decorators/local
      */
-
     /** client/html/catalog/stage/decorators/global
      * Adds a list of globally available decorators only to the catalog stage html client
      *
@@ -275,7 +248,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @see client/html/catalog/stage/decorators/excludes
      * @see client/html/catalog/stage/decorators/local
      */
-
     /** client/html/catalog/stage/decorators/local
      * Adds a list of local decorators only to the catalog stage html client
      *

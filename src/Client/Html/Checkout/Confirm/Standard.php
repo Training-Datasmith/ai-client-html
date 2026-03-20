@@ -1,14 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2015-2026
  * @package Client
  * @subpackage Html
  */
-
 namespace Aimeos\Client\Html\Checkout\Confirm;
 
 /**
@@ -51,7 +49,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @param string Last part of the class name
      * @since 2014.03
      */
-
     /**
      * Processes the input, e.g. store given values.
      *
@@ -62,40 +59,30 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
     {
         $view = $this->view();
         $context = $this->context();
-
         $config = $context->config();
         $session = $context->session();
-
         if (($orderid = $session->get('aimeos/orderid')) === null) {
             throw new \Aimeos\Client\Html\Exception('No order ID available');
         }
-
         $ref = $config->get('mshop/order/manager/subdomains', []);
         $ref = $config->get('client/html/checkout/confirm/domains', $ref);
-        $orderCntl = \Aimeos\Controller\Frontend::create($context, 'order')->uses($ref);
-
+        $order_cntl = \Aimeos\Controller\Frontend::create($context, 'order')->uses($ref);
         if (($code = $view->param('code')) !== null) {
             $url = $view->link('client/html/checkout/confirm/url', ['code' => $code], ['absoluteUri' => true]);
-
-            $serviceCntl = \Aimeos\Controller\Frontend::create($context, 'service');
-            $orderItem = $serviceCntl->config(['payment.url-self' => $url])->updateSync($view->request(), $code, $orderid);
+            $service_cntl = \Aimeos\Controller\Frontend::create($context, 'service');
+            $order_item = $service_cntl->config(['payment.url-self' => $url])->update_sync($view->request(), $code, $orderid);
         } else {
-            $orderItem = $orderCntl->get($orderid, false);
+            $order_item = $order_cntl->get($orderid, false);
         }
-
         // update stock, coupons, etc.
-        $orderCntl->update($orderItem);
-
+        $order_cntl->update($order_item);
         parent::init();
-
-        if ($orderItem->getStatusPayment() > \Aimeos\MShop\Order\Item\Base::PAY_REFUSED) {
+        if ($order_item->get_status_payment() > \Aimeos\M_Shop\Order\Item\Base::PAY_REFUSED) {
             \Aimeos\Controller\Frontend::create($context, 'basket')->clear();
             $session->remove(array_keys($session->get('aimeos/basket/cache', [])));
         }
-
-        $orderCntl->save($orderItem);
+        $order_cntl->save($order_item);
     }
-
     /**
      * Sets the necessary parameter values in the view.
      *
@@ -108,11 +95,9 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
     {
         $context = $this->context();
         $config = $context->config();
-
         if (($id = $context->session()->get('aimeos/orderid')) === null) {
             throw new \Aimeos\Client\Html\Exception($context->translate('client', 'No order ID available in session'));
         }
-
         /** client/html/checkout/confirm/domains
          * List of domains to fetch items related to the order
          *
@@ -130,13 +115,10 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
         $ref = $config->get('mshop/order/manager/subdomains', []);
         $ref = $config->get('client/html/checkout/confirm/domains', $ref);
         $order = \Aimeos\Controller\Frontend::create($context, 'order')->uses($ref)->get($id, false);
-
-        $view->confirmOrderItem = $order;
-        $view->summaryBasket = $order;
-
+        $view->confirm_order_item = $order;
+        $view->summary_basket = $order;
         return parent::data($view, $tags, $expire);
     }
-
     /** client/html/checkout/confirm/template-body
      * Relative path to the HTML body template of the checkout confirm client.
      *
@@ -156,7 +138,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @since 2014.03
      * @see client/html/checkout/confirm/template-header
      */
-
     /** client/html/checkout/confirm/template-header
      * Relative path to the HTML header template of the checkout confirm client.
      *
@@ -177,7 +158,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @since 2014.03
      * @see client/html/checkout/confirm/template-body
      */
-
     /** client/html/checkout/confirm/decorators/excludes
      * Excludes decorators added by the "common" option from the checkout confirm html client
      *
@@ -202,7 +182,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @see client/html/checkout/confirm/decorators/global
      * @see client/html/checkout/confirm/decorators/local
      */
-
     /** client/html/checkout/confirm/decorators/global
      * Adds a list of globally available decorators only to the checkout confirm html client
      *
@@ -225,7 +204,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @see client/html/checkout/confirm/decorators/excludes
      * @see client/html/checkout/confirm/decorators/local
      */
-
     /** client/html/checkout/confirm/decorators/local
      * Adds a list of local decorators only to the checkout confirm html client
      *

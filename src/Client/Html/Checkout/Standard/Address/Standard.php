@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Metaways Infosystems GmbH, 2013
@@ -9,12 +8,10 @@ declare(strict_types=1);
  * @package Client
  * @subpackage Html
  */
-
 namespace Aimeos\Client\Html\Checkout\Standard\Address;
 
 // Strings for translation
 sprintf('address');
-
 /**
  * Default implementation of checkout address HTML client.
  *
@@ -55,8 +52,7 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @param array List of sub-client names
      * @since 2014.03
      */
-    private string $subPartPath = 'client/html/checkout/standard/address/subparts';
-
+    private string $sub_part_path = 'client/html/checkout/standard/address/subparts';
     /** client/html/checkout/standard/address/payment/name
      * Name of the payment part used by the checkout standard address client implementation
      *
@@ -66,7 +62,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @param string Last part of the client class name
      * @since 2014.03
      */
-
     /** client/html/checkout/standard/address/delivery/name
      * Name of the delivery part used by the checkout standard address client implementation
      *
@@ -76,8 +71,7 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @param string Last part of the client class name
      * @since 2014.03
      */
-    private array $subPartNames = ['payment', 'delivery'];
-
+    private array $sub_part_names = ['payment', 'delivery'];
     /**
      * Returns the HTML code for insertion into the body.
      *
@@ -89,14 +83,11 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
         $view = $this->view();
         $step = $view->get('standardStepActive', 'address');
         $onepage = $view->config('client/html/checkout/standard/onepage', []);
-
         if ($step != 'address' && !(in_array('address', $onepage) && in_array($step, $onepage))) {
             return '';
         }
-
         return parent::body($uid);
     }
-
     /**
      * Returns the sub-client given by its name.
      *
@@ -104,7 +95,7 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @param string|null $name Name of the sub-client (Default if null)
      * @return \Aimeos\Client\Html\Iface Sub-client object
      */
-    public function getSubClient(string $type, ?string $name = null): \Aimeos\Client\Html\Iface
+    public function get_sub_client(string $type, ?string $name = null): \Aimeos\Client\Html\Iface
     {
         /** client/html/checkout/standard/address/decorators/excludes
          * Excludes decorators added by the "common" option from the checkout standard address html client
@@ -130,7 +121,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @see client/html/checkout/standard/address/decorators/global
          * @see client/html/checkout/standard/address/decorators/local
          */
-
         /** client/html/checkout/standard/address/decorators/global
          * Adds a list of globally available decorators only to the checkout standard address html client
          *
@@ -153,7 +143,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @see client/html/checkout/standard/address/decorators/excludes
          * @see client/html/checkout/standard/address/decorators/local
          */
-
         /** client/html/checkout/standard/address/decorators/local
          * Adds a list of local decorators only to the checkout standard address html client
          *
@@ -176,10 +165,8 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @see client/html/checkout/standard/address/decorators/excludes
          * @see client/html/checkout/standard/address/decorators/global
          */
-
-        return $this->createSubClient('checkout/standard/address/' . $type, $name);
+        return $this->create_sub_client('checkout/standard/address/' . $type, $name);
     }
-
     /**
      * Processes the input, e.g. store given values.
      *
@@ -190,31 +177,25 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
     {
         $view = $this->view();
         $context = $this->context();
-
         try {
             parent::init();
-
-            if (!isset($view->standardStepActive)
-                && !$this->call('isAvailable', \Aimeos\Controller\Frontend::create($context, 'basket')->get())
-            ) {
-                $view->standardStepActive = 'address';
+            if (!isset($view->standard_step_active) && !$this->call('isAvailable', \Aimeos\Controller\Frontend::create($context, 'basket')->get())) {
+                $view->standard_step_active = 'address';
             }
         } catch (\Exception $e) {
-            $view->standardStepActive = 'address';
+            $view->standard_step_active = 'address';
             throw $e;
         }
     }
-
     /**
      * Returns the list of sub-client names configured for the client.
      *
      * @return array List of HTML client names
      */
-    protected function getSubClientNames(): array
+    protected function get_sub_client_names(): array
     {
-        return $this->context()->config()->get($this->subPartPath, $this->subPartNames);
+        return $this->context()->config()->get($this->sub_part_path, $this->sub_part_names);
     }
-
     /**
      * Sets the necessary parameter values in the view.
      *
@@ -226,30 +207,24 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
     public function data(\Aimeos\Base\View\Iface $view, array &$tags = [], ?string &$expire = null): \Aimeos\Base\View\Iface
     {
         $context = $this->context();
-        $localeManager = \Aimeos\MShop::create($context, 'locale');
+        $locale_manager = \Aimeos\M_Shop::create($context, 'locale');
         $controller = \Aimeos\Controller\Frontend::create($context, 'customer');
-        $orderManager = \Aimeos\MShop::create($context, 'order');
-
-        $deliveryAddressItems = [];
+        $order_manager = \Aimeos\M_Shop::create($context, 'order');
+        $delivery_address_items = [];
         $item = $controller->uses(['customer/address'])->get();
-        $paymentAddressItem = $orderManager->createAddress()->copyFrom($item->getPaymentAddress());
-
-        foreach ($item->getAddressItems() as $pos => $addrItem) {
-            $deliveryAddressItems[$pos] = $orderManager->createAddress()->copyFrom($addrItem);
+        $payment_address_item = $order_manager->create_address()->copy_from($item->get_payment_address());
+        foreach ($item->get_address_items() as $pos => $addr_item) {
+            $delivery_address_items[$pos] = $order_manager->create_address()->copy_from($addr_item);
         }
-
-        $view->addressCustomerItem = $item;
-        $view->addressPaymentItem = $paymentAddressItem;
-        $view->addressDeliveryItems = $deliveryAddressItems;
-        $view->addressSalutations = $this->salutations();
-        $view->addressCountries = $this->countries();
-        $view->addressStates = $this->states();
-        $view->addressLanguages = $localeManager->search($localeManager->filter(true))
-            ->col('locale.languageid', 'locale.languageid');
-
+        $view->address_customer_item = $item;
+        $view->address_payment_item = $payment_address_item;
+        $view->address_delivery_items = $delivery_address_items;
+        $view->address_salutations = $this->salutations();
+        $view->address_countries = $this->countries();
+        $view->address_states = $this->states();
+        $view->address_languages = $locale_manager->search($locale_manager->filter(true))->col('locale.languageid', 'locale.languageid');
         return parent::data($view, $tags, $expire);
     }
-
     /**
      * Returns the list of available countries
      *
@@ -258,7 +233,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
     protected function countries(): array
     {
         $context = $this->context();
-
         /** common/countries
          * List of available country codes for frontend and backend
          *
@@ -278,27 +252,23 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @since 2023.04
          */
         $countries = map($context->config()->get('common/countries', []));
-        $map = $countries->flip()->map(fn ($v, $key) => $context->translate('country', $key));
-
+        $map = $countries->flip()->map(fn($v, $key) => $context->translate('country', $key));
         // Don't destroy custom order of countries, only sort if order is strictly alphabetical
         if ($countries->is($countries->clone()->sort(), true)) {
             $map->asort();
         }
-
         return $countries->all();
     }
-
     /**
      * Tests if an item is available and the step can be skipped
      *
      * @param \Aimeos\MShop\Order\Item\Iface $basket Basket object
      * @return bool TRUE if step can be skipped, FALSE if not
      */
-    protected function isAvailable(\Aimeos\MShop\Order\Item\Iface $basket): bool
+    protected function is_available(\Aimeos\M_Shop\Order\Item\Iface $basket): bool
     {
-        return !empty($basket->getAddress('payment'));
+        return !empty($basket->get_address('payment'));
     }
-
     /**
      * Returns the list of configured salutation codes
      *
@@ -326,7 +296,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          */
         return $this->context()->config()->get('client/html/common/address/salutations', []);
     }
-
     /**
      * Returns the states map for the configured countries
      *
@@ -366,7 +335,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          */
         return $this->context()->config()->get('common/states', []);
     }
-
     /** client/html/checkout/standard/address/template-body
      * Relative path to the HTML body template of the checkout standard address client.
      *

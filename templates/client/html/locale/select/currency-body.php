@@ -5,9 +5,7 @@
  * @copyright Metaways Infosystems GmbH, 2014
  * @copyright Aimeos (aimeos.org), 2015-2026
  */
-
 $enc = $this->encoder();
-
 /** client/html/locale/select/currency/url/config
  * Associative list of configuration options used for generating the URL
  *
@@ -25,23 +23,38 @@ $enc = $this->encoder();
  * @since 2014.09
  */
 $config = $this->config('client/html/locale/select/currency/url/config', []);
-
 ?>
 <div class="locale-select-currency">
-	<h2 class="header"><?= $this->translate('client', 'Select currency') ?></h2>
+	<h2 class="header"><?php 
+echo $this->translate('client', 'Select currency');
+?></h2>
 
 	<ul class="select-menu">
-		<li class="select-dropdown select-current"><a href="#"><?= $this->get('selectCurrencyId', 'EUR') ?></a>
+		<li class="select-dropdown select-current"><a href="#"><?php 
+echo $this->get('selectCurrencyId', 'EUR');
+?></a>
 			<ul class="select-dropdown">
 
-				<?php foreach ($this->get('selectMap', map())->get($this->get('selectLanguageId', 'en'), []) as $currency => $locParam) : ?>
-					<li class="select-item <?= ($currency === $this->get('selectCurrencyId', 'EUR') ? 'active' : '') ?>">
-						<a href="<?= $enc->attr($this->url($this->request()->getTarget(), $this->param('controller'), $this->param('action'), array_merge($this->get('selectParams', []), $locParam), [], $config)) ?>"
-							title="<?= $enc->attr($currency) ?>">
-							<?= $enc->html($this->translate('currency', $currency), $enc::TRUST) ?>
+				<?php 
+foreach ($this->get('selectMap', map())->get($this->get('selectLanguageId', 'en'), []) as $currency => $loc_param) {
+    ?>
+					<li class="select-item <?php 
+    echo $currency === $this->get('selectCurrencyId', 'EUR') ? 'active' : '';
+    ?>">
+						<a href="<?php 
+    echo $enc->attr($this->url($this->request()->get_target(), $this->param('controller'), $this->param('action'), array_merge($this->get('selectParams', []), $loc_param), [], $config));
+    ?>"
+							title="<?php 
+    echo $enc->attr($currency);
+    ?>">
+							<?php 
+    echo $enc->html($this->translate('currency', $currency), $enc::TRUST);
+    ?>
 						</a>
 					</li>
-				<?php endforeach ?>
+				<?php 
+}
+?>
 
 			</ul>
 		</li>

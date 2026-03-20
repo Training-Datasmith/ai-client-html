@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Metaways Infosystems GmbH, 2012
@@ -9,7 +8,6 @@ declare(strict_types=1);
  * @package Client
  * @subpackage Html
  */
-
 namespace Aimeos\Client\Html\Catalog\Filter\Tree;
 
 /**
@@ -48,7 +46,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @see client/html/catalog/filter/tree/startid
          */
         $domains = $view->config('client/html/catalog/filter/tree/domains', ['text', 'media', 'media/property']);
-
         /** client/html/catalog/filter/tree/startid
          * The ID of the category node that should be the root of the displayed category tree
          *
@@ -67,26 +64,18 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @see client/html/catalog/filter/tree/domains
          */
         $startid = $view->config('client/html/catalog/filter/tree/startid');
-
-        $cntl = \Aimeos\Controller\Frontend::create($this->context(), 'catalog')
-            ->uses($domains)->root($startid);
-
+        $cntl = \Aimeos\Controller\Frontend::create($this->context(), 'catalog')->uses($domains)->root($startid);
         if (($currentid = $view->param('f_catid')) === null) {
-            $catItems = $cntl->getTree(\Aimeos\MW\Tree\Manager\Base::LEVEL_ONE)->toList();
+            $cat_items = $cntl->get_tree(\Aimeos\MW\Tree\Manager\Base::LEVEL_ONE)->to_list();
         } else {
-            $catItems = $cntl->getPath($currentid);
+            $cat_items = $cntl->get_path($currentid);
         }
-
-        $tree = $cntl->visible($catItems->keys()->all())->getTree($cntl::TREE);
-
-        $this->addMetaItemCatalog($tree, $expire, $tags, ['catalog']);
-
-        $view->treeCatalogPath = $catItems;
-        $view->treeCatalogTree = $tree;
-
+        $tree = $cntl->visible($cat_items->keys()->all())->get_tree($cntl::TREE);
+        $this->add_meta_item_catalog($tree, $expire, $tags, ['catalog']);
+        $view->tree_catalog_path = $cat_items;
+        $view->tree_catalog_tree = $tree;
         return parent::data($view, $tags, $expire);
     }
-
     /**
      * Returns the HTML string for insertion into the header.
      *
@@ -97,7 +86,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
     {
         return null;
     }
-
     /** client/html/catalog/filter/tree/template-body
      * Relative path to the HTML body template of the catalog filter tree client.
      *

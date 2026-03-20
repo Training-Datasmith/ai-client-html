@@ -1,14 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2016-2026
  * @package Client
  * @subpackage Html
  */
-
 namespace Aimeos\Client\Html\Account\Review;
 
 /**
@@ -51,7 +49,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @param string Last part of the class name
      * @since 2016.10
      */
-
     /**
      * Sets the necessary parameter values in the view.
      *
@@ -64,7 +61,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
     {
         $context = $this->context();
         $config = $context->config();
-
         /** client/html/account/review/size
          * Maximum number of products shown for review
          *
@@ -77,7 +73,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @see client/html/account/review/days-after
          */
         $size = $config->get('client/html/account/review/size', 10);
-
         /** client/html/account/review/days-after
          * Number of days after the product can be reviewed
          *
@@ -90,27 +85,12 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @see client/html/account/review/size
          */
         $days = $config->get('client/html/account/review/days-after', 0);
-
-        $orders = \Aimeos\Controller\Frontend::create($context, 'order')
-            ->compare('>', 'order.statuspayment', \Aimeos\MShop\Order\Item\Base::PAY_PENDING)
-            ->compare('<=', 'order.ctime', date('Y-m-d H:i:s', time() - $days * 86400))
-            ->uses(['order', 'order/product', 'product' => [], 'text' => ['name'], 'media' => ['default']])
-            ->sort('-order.ctime')
-            ->slice(0, $size)
-            ->search();
-
-        $orderProducts = $orders->getProducts()->flat(1)->rekey(fn ($item) => $item->getType() === 'select' ? $item->getParentProductId() : $item->getProductId());
-
-        $exclude = \Aimeos\Controller\Frontend::create($context, 'review')
-            ->for('product', $orderProducts->keys()->all())
-            ->slice(0, $orderProducts->count())
-            ->list()->getRefId();
-
-        $view->reviewProductItems = $orderProducts->except($exclude)->take($size);
-
+        $orders = \Aimeos\Controller\Frontend::create($context, 'order')->compare('>', 'order.statuspayment', \Aimeos\M_Shop\Order\Item\Base::PAY_PENDING)->compare('<=', 'order.ctime', date('Y-m-d H:i:s', time() - $days * 86400))->uses(['order', 'order/product', 'product' => [], 'text' => ['name'], 'media' => ['default']])->sort('-order.ctime')->slice(0, $size)->search();
+        $order_products = $orders->get_products()->flat(1)->rekey(fn($item) => $item->get_type() === 'select' ? $item->get_parent_product_id() : $item->get_product_id());
+        $exclude = \Aimeos\Controller\Frontend::create($context, 'review')->for('product', $order_products->keys()->all())->slice(0, $order_products->count())->list()->get_ref_id();
+        $view->review_product_items = $order_products->except($exclude)->take($size);
         return parent::data($view, $tags, $expire);
     }
-
     /**
      * Processes the input, e.g. store given values.
      *
@@ -120,31 +100,25 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
     public function init(): void
     {
         $view = $this->view();
-
         if (($reviews = $view->param('review', [])) !== []) {
             $ratings = 0;
             $context = $this->context();
-
             $cntl = \Aimeos\Controller\Frontend::create($context, 'review');
-            $addr = \Aimeos\Controller\Frontend::create($context, 'customer')->get()->getPaymentAddress();
-
+            $addr = \Aimeos\Controller\Frontend::create($context, 'customer')->get()->get_payment_address();
             foreach ($reviews as $values) {
-                $item = $cntl->create($values)->setDomain('product')->setName($addr->getFirstName());
-
-                if ($item->getRating()) {
-                    $cntl->save($item); // only if value is greater than 0
+                $item = $cntl->create($values)->set_domain('product')->set_name($addr->get_first_name());
+                if ($item->get_rating()) {
+                    $cntl->save($item);
+                    // only if value is greater than 0
                     $ratings++;
                 }
             }
-
             if ($ratings) {
                 $view->infos = array_merge($view->get('infos', []), [$view->translate('client', 'Thank you for your review!')]);
             }
         }
-
         parent::init();
     }
-
     /** client/html/account/review/template-body
      * Relative path to the HTML body template of the account review client.
      *
@@ -164,7 +138,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @since 2020.10
      * @see client/html/account/review/template-header
      */
-
     /** client/html/account/review/template-header
      * Relative path to the HTML header template of the account review client.
      *
@@ -185,7 +158,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @since 2020.10
      * @see client/html/account/review/template-body
      */
-
     /** client/html/account/review/decorators/excludes
      * Excludes decorators added by the "common" option from the account review html client
      *
@@ -210,7 +182,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @see client/html/account/review/decorators/global
      * @see client/html/account/review/decorators/local
      */
-
     /** client/html/account/review/decorators/global
      * Adds a list of globally available decorators only to the account review html client
      *
@@ -233,7 +204,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @see client/html/account/review/decorators/excludes
      * @see client/html/account/review/decorators/local
      */
-
     /** client/html/account/review/decorators/local
      * Adds a list of local decorators only to the account review html client
      *

@@ -1,14 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2015-2026
  * @package Client
  * @subpackage Html
  */
-
 namespace Aimeos\Client\Html\Locale\Select;
 
 /**
@@ -51,7 +49,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @param string Last part of the class name
      * @since 2014.03
      */
-
     /** client/html/locale/select/subparts
      * List of HTML sub-clients rendered within the locale select section
      *
@@ -84,8 +81,7 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @param array List of sub-client names
      * @since 2014.09
      */
-    private string $subPartPath = 'client/html/locale/select/subparts';
-
+    private string $sub_part_path = 'client/html/locale/select/subparts';
     /** client/html/locale/select/language/name
      * Name of the language part used by the locale selector client implementation
      *
@@ -95,7 +91,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @param string Last part of the client class name
      * @since 2014.09
      */
-
     /** client/html/locale/select/currency/name
      * Name of the currency part used by the locale selector client implementation
      *
@@ -105,12 +100,10 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @param string Last part of the client class name
      * @since 2014.09
      */
-    private array $subPartNames = [ 'language', 'currency' ];
-
+    private array $sub_part_names = ['language', 'currency'];
     private array $tags = [];
     private ?string $expire = null;
     private ?\Aimeos\Base\View\Iface $view = null;
-
     /**
      * Returns the HTML code for insertion into the body.
      *
@@ -119,13 +112,11 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      */
     public function body(string $uid = ''): string
     {
-        $view = ($this->view ??= $this->object()->data($this->view(), $this->tags, $this->expire));
-
+        $view = $this->view ??= $this->object()->data($this->view(), $this->tags, $this->expire);
         $html = '';
-        foreach ($this->getSubClients() as $subclient) {
-            $html .= $subclient->setView($view)->body($uid);
+        foreach ($this->get_sub_clients() as $subclient) {
+            $html .= $subclient->set_view($view)->body($uid);
         }
-
         /** client/html/locale/select/template-body
          * Relative path to the HTML body template of the locale select client.
          *
@@ -146,10 +137,8 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @see client/html/locale/select/template-header
          */
         $template = $this->context()->config()->get('client/html/locale/select/template-body', 'locale/select/body');
-
         return $view->set('body', $html)->render($template);
     }
-
     /**
      * Returns the HTML string for insertion into the header.
      *
@@ -158,8 +147,7 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      */
     public function header(string $uid = ''): ?string
     {
-        $view = ($this->view ??= $this->object()->data($this->view(), $this->tags, $this->expire));
-
+        $view = $this->view ??= $this->object()->data($this->view(), $this->tags, $this->expire);
         /** client/html/locale/select/template-header
          * Relative path to the HTML header template of the locale select client.
          *
@@ -181,10 +169,8 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @see client/html/locale/select/template-body
          */
         $template = $this->context()->config()->get('client/html/locale/select/template-header', 'locale/select/header');
-
         return $view->render($template);
     }
-
     /**
      * Returns the sub-client given by its name.
      *
@@ -192,21 +178,19 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @param string|null $name Name of the sub-client (Default if null)
      * @return \Aimeos\Client\Html\Iface Sub-client object
      */
-    public function getSubClient(string $type, ?string $name = null): \Aimeos\Client\Html\Iface
+    public function get_sub_client(string $type, ?string $name = null): \Aimeos\Client\Html\Iface
     {
-        return $this->createSubClient('locale/select/' . $type, $name);
+        return $this->create_sub_client('locale/select/' . $type, $name);
     }
-
     /**
      * Returns the list of sub-client names configured for the client.
      *
      * @return array List of HTML client names
      */
-    protected function getSubClientNames(): array
+    protected function get_sub_client_names(): array
     {
-        return $this->context()->config()->get($this->subPartPath, $this->subPartNames);
+        return $this->context()->config()->get($this->sub_part_path, $this->sub_part_names);
     }
-
     /**
      * Sets the necessary parameter values in the view.
      *
@@ -221,7 +205,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
         $context = $this->context();
         $config = $context->config();
         $locale = $context->locale();
-
         /** client/html/locale/select/language/param-name
          * Name of the parameter that contains the language ID value
          *
@@ -235,7 +218,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @see client/html/locale/select/currency/param-name
          */
         $langname = $config->get('client/html/locale/select/language/param-name', 'locale');
-
         /** client/html/locale/select/currency/param-name
          * Name of the parameter that contains the currency ID value
          *
@@ -249,24 +231,18 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
          * @see client/html/locale/select/language/param-name
          */
         $curname = $config->get('client/html/locale/select/currency/param-name', 'currency');
-
-        $items = \Aimeos\Controller\Frontend::create($context, 'locale')
-            ->sort('position')->slice(0, 10000)->search();
-
+        $items = \Aimeos\Controller\Frontend::create($context, 'locale')->sort('position')->slice(0, 10000)->search();
         foreach ($items as $item) {
-            $curId = $item->getCurrencyId();
-            $langId = $item->getLanguageId();
-            $map[$langId][$curId] = [$langname => $langId, $curname => $curId];
+            $cur_id = $item->get_currency_id();
+            $lang_id = $item->get_language_id();
+            $map[$lang_id][$cur_id] = [$langname => $lang_id, $curname => $cur_id];
         }
-
-        $view->selectMap = map($map);
-        $view->selectParams = $view->param();
-        $view->selectLanguageId = $locale->getLanguageId();
-        $view->selectCurrencyId = $locale->getCurrencyId();
-
+        $view->select_map = map($map);
+        $view->select_params = $view->param();
+        $view->select_language_id = $locale->get_language_id();
+        $view->select_currency_id = $locale->get_currency_id();
         return parent::data($view, $tags, $expire);
     }
-
     /** client/html/locale/select/decorators/excludes
      * Excludes decorators added by the "common" option from the locale select html client
      *
@@ -290,7 +266,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @see client/html/locale/select/decorators/global
      * @see client/html/locale/select/decorators/local
      */
-
     /** client/html/locale/select/decorators/global
      * Adds a list of globally available decorators only to the locale select html client
      *
@@ -312,7 +287,6 @@ class Standard extends \Aimeos\Client\Html\Common\Client\Factory\Base implements
      * @see client/html/locale/select/decorators/excludes
      * @see client/html/locale/select/decorators/local
      */
-
     /** client/html/locale/select/decorators/local
      * Adds a list of local decorators only to the locale select html client
      *
